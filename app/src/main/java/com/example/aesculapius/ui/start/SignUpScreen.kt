@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui
+package com.example.aesculapius.ui.start
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,18 +23,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,19 +42,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chargemap.compose.numberpicker.ListItemPicker
-import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.data.days
 import com.example.aesculapius.data.months
+import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import java.time.LocalDate
 import java.time.LocalTime

@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui
+package com.example.aesculapius.ui.start
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

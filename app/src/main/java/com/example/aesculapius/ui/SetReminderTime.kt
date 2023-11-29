@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import java.time.LocalTime
 import androidx.compose.ui.platform.LocalContext
+import com.example.aesculapius.ui.navigation.NavigationDestination
 
 object SetReminderTime : NavigationDestination {
     override val route = "SetReminderTime"

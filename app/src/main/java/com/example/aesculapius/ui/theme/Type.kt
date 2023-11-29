@@ -24,11 +24,12 @@ val Roboto = FontFamily(
 
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.3.sp,
+        color = Color.Black
     ),
     labelLarge = TextStyle(
         fontFamily = Inter,
@@ -99,5 +100,23 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 45.sp,
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        letterSpacing = 0.1.sp,
+        color = primary
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = Color.Black
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
     )
 )

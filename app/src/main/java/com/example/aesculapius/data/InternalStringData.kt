@@ -1,5 +1,9 @@
 package com.example.aesculapius.data
 
+import com.example.aesculapius.R
+import com.example.aesculapius.ui.home.NavigationItemContent
+import com.example.aesculapius.ui.home.PageType
+
 data class OnboardingItem(
     val title: String,
     val description: String
@@ -9,6 +13,13 @@ enum class Hours {
     Morning,
     Evening
 }
+
+val navigationItemContentList = listOf(
+    NavigationItemContent(pageType = PageType.Statistics, icon = R.drawable.statistics_icon),
+    NavigationItemContent(pageType = PageType.Therapy, icon = R.drawable.therapy_icon),
+    NavigationItemContent(pageType = PageType.Tests, icon = R.drawable.tests_icon),
+    NavigationItemContent(pageType = PageType.Profile, icon = R.drawable.profile_icon)
+)
 
 val onboardingList = listOf(
     OnboardingItem(

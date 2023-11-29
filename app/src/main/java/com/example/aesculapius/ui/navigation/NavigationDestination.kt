@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui
+package com.example.aesculapius.ui.navigation
 
 interface NavigationDestination {
     val route: String
