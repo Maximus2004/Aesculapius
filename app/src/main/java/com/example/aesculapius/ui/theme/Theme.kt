@@ -26,14 +26,11 @@ private val LightColorScheme = lightColorScheme(
     secondary = secondary,
     background = background,
     onSurface = onSurface,
-    onBackground = onBackground
+    onBackground = onBackground,
+    onPrimary = onPrimary
 
     /* Other default colors to override
-    primary = Purple40,
-    secondary = PurpleGrey40,
     tertiary = Pink40,
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
@@ -54,7 +51,7 @@ fun AesculapiusTheme(content: @Composable () -> Unit) {
         typography = Typography,
         content = content,
         shapes = Shapes(
-            small = RoundedCornerShape(8.dp),
+            small = RoundedCornerShape(10.dp),
             medium = RoundedCornerShape(100.dp),
             large = RoundedCornerShape(28.dp)
         )
