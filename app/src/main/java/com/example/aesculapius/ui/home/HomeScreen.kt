@@ -1,12 +1,19 @@
 package com.example.aesculapius.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,19 +21,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
+import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
-import com.example.aesculapius.ui.therapy.TopBarTherapy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,11 +39,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     val homeViewModel: HomeViewModel = viewModel()
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     Scaffold(
-        topBar = { TopBarTherapy() },
+        topBar = {
+            TopBar(screenName = homeUiState.currentPageName, isHelpButton = homeUiState.isHelpButton)
+        },
         bottomBar = {
             BottomNavigationBar(
                 currentTab = homeUiState.currentPage,
-                onTabPressed = { homeViewModel.updateCurrentPage(it) },
+                onTabPressed = { pageType, pageName, isHelpButton ->
+                    homeViewModel.updateCurrentPage(pageType, pageName, isHelpButton)
+                },
                 navigationItemContentList = navigationItemContentList
             )
         }) { contentPadding ->
@@ -46,15 +55,41 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = modifier.padding(
                 top = contentPadding.calculateTopPadding(),
                 bottom = contentPadding.calculateBottomPadding(),
-                start = 11.dp,
-                end = 11.dp
+                start = 16.dp,
+                end = 16.dp
             )
         ) {
-            when(homeUiState.currentPage) {
+            when (homeUiState.currentPage) {
                 PageType.Therapy -> TherapyScreen(modifier = Modifier)
+                PageType.Profile -> ProfileScreen(modifier = Modifier.padding(top = 24.dp))
                 else -> TempScreen()
             }
         }
+    }
+}
+
+@Composable
+fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Boolean) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 26.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = screenName,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(start = 24.dp)
+        )
+        Spacer(Modifier.weight(1f))
+        if (isHelpButton)
+            IconButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(end = 16.dp).size(24.dp)
+            ) {
+                Icon(imageVector = Icons.Outlined.Info, contentDescription = null, tint = Color(0xFF49454F))
+            }
     }
 }
 
@@ -66,7 +101,7 @@ fun TempScreen() {
 @Composable
 fun BottomNavigationBar(
     currentTab: PageType,
-    onTabPressed: ((PageType) -> Unit),
+    onTabPressed: ((PageType, String, Boolean) -> Unit),
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
@@ -80,7 +115,13 @@ fun BottomNavigationBar(
         for (navItem in navigationItemContentList) {
             NavigationBarItem(
                 selected = currentTab == navItem.pageType,
-                onClick = { onTabPressed(navItem.pageType) },
+                onClick = {
+                    onTabPressed(
+                        navItem.pageType,
+                        navItem.pageName,
+                        navItem.isHelpButton
+                    )
+                },
                 icon = {
                     Image(
                         painterResource(id = navItem.icon),

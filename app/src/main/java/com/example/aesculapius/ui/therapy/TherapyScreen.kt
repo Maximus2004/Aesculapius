@@ -27,8 +27,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -180,23 +182,6 @@ fun MedicineCard(modifier: Modifier = Modifier, medicine: Medicine) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-    }
-}
-
-@Composable
-fun TopBarTherapy(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 26.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Базисная терапия",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(start = 24.dp)
-        )
     }
 }
 

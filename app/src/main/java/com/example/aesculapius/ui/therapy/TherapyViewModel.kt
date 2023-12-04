@@ -17,7 +17,7 @@ class TherapyViewModel : ViewModel() {
     // текущую дату, когда это необходимо для отображения лекарств
     val currentDate = mutableStateListOf(LocalDate.now())
 
-    // актуаьные лекарства на этот день
+    // актуальные лекарства на этот день
     private var _currentMedicines = MutableStateFlow(TherapyUiState())
     val currentMedicines: StateFlow<TherapyUiState> = _currentMedicines
 

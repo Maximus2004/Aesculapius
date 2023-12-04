@@ -11,7 +11,13 @@ class HomeViewModel() : ViewModel() {
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-    fun updateCurrentPage(pageType: PageType) {
-        _homeUiState.update { it.copy(currentPage = pageType) }
+    fun updateCurrentPage(pageType: PageType, currentPageName: String, isHelpButton: Boolean) {
+        _homeUiState.update {
+            HomeUiState(
+                currentPage = pageType,
+                currentPageName = currentPageName,
+                isHelpButton = isHelpButton
+            )
+        }
     }
 }

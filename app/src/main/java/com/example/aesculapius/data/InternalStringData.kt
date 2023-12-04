@@ -15,10 +15,10 @@ enum class Hours {
 }
 
 val navigationItemContentList = listOf(
-    NavigationItemContent(pageType = PageType.Statistics, icon = R.drawable.statistics_icon),
-    NavigationItemContent(pageType = PageType.Therapy, icon = R.drawable.therapy_icon),
-    NavigationItemContent(pageType = PageType.Tests, icon = R.drawable.tests_icon),
-    NavigationItemContent(pageType = PageType.Profile, icon = R.drawable.profile_icon)
+    NavigationItemContent(pageType = PageType.Statistics, icon = R.drawable.statistics_icon, pageName = "Статистика", isHelpButton = true),
+    NavigationItemContent(pageType = PageType.Therapy, icon = R.drawable.therapy_icon, pageName = "Базисная терапия", isHelpButton = false),
+    NavigationItemContent(pageType = PageType.Tests, icon = R.drawable.tests_icon, pageName = "Отчётность", isHelpButton = true),
+    NavigationItemContent(pageType = PageType.Profile, icon = R.drawable.profile_icon, pageName = "Профиль и прочее", isHelpButton = false)
 )
 
 val onboardingList = listOf(

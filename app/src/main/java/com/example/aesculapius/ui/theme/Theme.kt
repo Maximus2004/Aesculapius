@@ -40,10 +40,11 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun AesculapiusTheme(content: @Composable () -> Unit) {
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.setSystemBarsColor(color = background)
-    }
+//    TODO only for preview
+//    val systemUiController = rememberSystemUiController()
+//    SideEffect {
+//        systemUiController.setSystemBarsColor(color = background)
+//    }
 
     val colorScheme = LightColorScheme
     MaterialTheme(
