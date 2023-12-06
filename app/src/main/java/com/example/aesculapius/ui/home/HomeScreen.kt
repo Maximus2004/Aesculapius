@@ -30,10 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.profile.ProfileScreen
+import com.example.aesculapius.ui.statistics.StatisticsScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     val homeViewModel: HomeViewModel = viewModel()
@@ -54,14 +54,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         Column(
             modifier = modifier.padding(
                 top = contentPadding.calculateTopPadding(),
-                bottom = contentPadding.calculateBottomPadding(),
-                start = 16.dp,
-                end = 16.dp
+                bottom = contentPadding.calculateBottomPadding()
             )
         ) {
             when (homeUiState.currentPage) {
-                PageType.Therapy -> TherapyScreen(modifier = Modifier)
-                PageType.Profile -> ProfileScreen(modifier = Modifier.padding(top = 24.dp))
+                PageType.Therapy -> TherapyScreen(modifier = Modifier.padding(horizontal = 16.dp))
+                PageType.Profile -> ProfileScreen(modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp))
+                PageType.Statistics -> StatisticsScreen()
                 else -> TempScreen()
             }
         }

@@ -3,6 +3,8 @@ package com.example.aesculapius.data
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.home.NavigationItemContent
 import com.example.aesculapius.ui.home.PageType
+import com.example.aesculapius.ui.statistics.GraphicTypeContent
+import com.example.aesculapius.ui.statistics.GraphicTypes
 
 data class OnboardingItem(
     val title: String,
@@ -19,6 +21,14 @@ val navigationItemContentList = listOf(
     NavigationItemContent(pageType = PageType.Therapy, icon = R.drawable.therapy_icon, pageName = "Базисная терапия", isHelpButton = false),
     NavigationItemContent(pageType = PageType.Tests, icon = R.drawable.tests_icon, pageName = "Отчётность", isHelpButton = true),
     NavigationItemContent(pageType = PageType.Profile, icon = R.drawable.profile_icon, pageName = "Профиль и прочее", isHelpButton = false)
+)
+
+val graphicsNavigationItemContentList = listOf(
+    GraphicTypeContent(graphicTypes = GraphicTypes.Week, nameOfType = "неделя"),
+    GraphicTypeContent(graphicTypes = GraphicTypes.Month, nameOfType = "месяц"),
+    GraphicTypeContent(graphicTypes = GraphicTypes.ThreeMonths, nameOfType = "3 месяца"),
+    GraphicTypeContent(graphicTypes = GraphicTypes.HalfYear, nameOfType = "полгода"),
+    GraphicTypeContent(graphicTypes = GraphicTypes.Year, nameOfType = "год"),
 )
 
 val onboardingList = listOf(

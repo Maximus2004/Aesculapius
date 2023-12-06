@@ -27,24 +27,24 @@ private val LightColorScheme = lightColorScheme(
     background = background,
     onSurface = onSurface,
     onBackground = onBackground,
-    onPrimary = onPrimary
+    onPrimary = onPrimary,
+    tertiary = tertiary
 
     /* Other default colors to override
     tertiary = Pink40,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
     */
 )
 
 @Composable
 fun AesculapiusTheme(content: @Composable () -> Unit) {
 //    TODO only for preview
-//    val systemUiController = rememberSystemUiController()
-//    SideEffect {
-//        systemUiController.setSystemBarsColor(color = background)
-//    }
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(color = background)
+    }
 
     val colorScheme = LightColorScheme
     MaterialTheme(

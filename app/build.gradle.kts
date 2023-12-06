@@ -64,8 +64,18 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.21.5-rc")
     implementation("com.chargemap.compose:numberpicker:1.0.3")
     implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.1.0")
+    implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.1.1")
     implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.1.1")
+
+    // For Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose:1.13.1")
+
+    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
+
+    // Houses the core logic for charts and other elements. Included in all other modules.
+    implementation("com.patrykandpatrick.vico:core:1.13.1")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
