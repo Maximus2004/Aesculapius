@@ -72,8 +72,5 @@ internal fun rememberMarker(): Marker {
 }
 
 private val labelBackgroundShape = MarkerCorneredShape(Corner.FullyRounded)
-private val labelHorizontalPaddingValue = 4.dp
-private val labelVerticalPaddingValue = 4.dp
-private val labelPadding = dimensionsOf(labelHorizontalPaddingValue, labelVerticalPaddingValue)
 private val indicatorInnerAndCenterComponentPaddingValue = 4.dp
 private val indicatorCenterAndOuterComponentPaddingValue = 2.dp

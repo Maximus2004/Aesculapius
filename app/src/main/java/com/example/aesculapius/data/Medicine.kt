@@ -5,7 +5,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
-// информация о каждом лекарстве
+// info about every medicine
 data class Medicine(
     @DrawableRes val image: Int,
     val name: String,
