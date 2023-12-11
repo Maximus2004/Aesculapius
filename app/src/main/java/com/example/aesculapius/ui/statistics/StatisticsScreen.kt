@@ -84,7 +84,7 @@ import com.patrykandpatrick.vico.core.component.text.VerticalPosition
 import com.patrykandpatrick.vico.core.entry.ChartModelProducer
 
 @Composable
-fun StatisticsScreen() {
+fun StatisticsScreen(modifier: Modifier = Modifier) {
     val statisticsViewModel: StatisticsViewModel = viewModel()
     val staticsUiState = statisticsViewModel.staticsUiState.collectAsState().value
 
@@ -212,12 +212,7 @@ fun StatisticsScreen() {
         modelProducerColumn.setEntries(datasetForModelColumn)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(color = Color.White)
-    ) {
+    Column(modifier = modifier) {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(
                 text = if (isLineChart) "Значения ПСВ" else "АСТ тестирование",

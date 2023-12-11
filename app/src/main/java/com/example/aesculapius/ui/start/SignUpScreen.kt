@@ -121,7 +121,7 @@ fun SignUpScreen(
         Spacer(Modifier.weight(1f))
         Button(
             onClick = { onChangeCurrentPage() },
-        enabled = name != "" && surname != "" && patronymic != "",
+            enabled = name != "" && surname != "" && patronymic != "",
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .size(height = 56.dp, width = 312.dp),

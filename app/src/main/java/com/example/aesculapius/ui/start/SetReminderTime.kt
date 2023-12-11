@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui
+package com.example.aesculapius.ui.start
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import java.time.LocalTime
 import androidx.compose.ui.platform.LocalContext
+import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 
 object SetReminderTime : NavigationDestination {
@@ -48,7 +49,7 @@ object SetReminderTime : NavigationDestination {
     val routeWithArgs: String = "$route/{$depart}"
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SetReminderTime(
     title: String,
@@ -61,7 +62,12 @@ fun SetReminderTime(
     var minutes by remember { mutableStateOf(textMinutes) }
     var hours by remember { mutableStateOf(textHours) }
     val context = LocalContext.current
-    Scaffold(topBar = { TopBar(onNavigateBack = onNavigateBack) }) { paddingValue ->
+    Scaffold(topBar = {
+        TopBar(
+            onNavigateBack = onNavigateBack,
+            text = "Время напомнинаний"
+        )
+    }) { paddingValue ->
         Column(
             Modifier.padding(top = paddingValue.calculateTopPadding() + 27.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -89,7 +95,10 @@ fun SetReminderTime(
                         TextInputTime(
                             text = hours,
                             keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number
+                            ),
                             modifier = Modifier.width(83.dp),
                             onValueChanged = { hours = it }
                         )
@@ -100,7 +109,10 @@ fun SetReminderTime(
                         TextInputTime(
                             text = minutes,
                             keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number
+                            ),
                             modifier = Modifier.width(83.dp),
                             onValueChanged = { minutes = it }
                         )
@@ -126,7 +138,8 @@ fun SetReminderTime(
                             else
                                 onDoneButton(LocalTime.of(hoursFinal, minutesFinal))
                         } catch (e: NumberFormatException) {
-                            Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
+                                .show()
                         } catch (e: IllegalArgumentException) {
                             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                         }
@@ -162,32 +175,4 @@ fun TextInputTime(
         ),
         shape = MaterialTheme.shapes.small
     )
-}
-
-@Composable
-fun TopBar(
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 20.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = onNavigateBack) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = Color(0xFF49454F)
-            )
-        }
-        Text(
-            text = "Время напоминаний",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }
 }

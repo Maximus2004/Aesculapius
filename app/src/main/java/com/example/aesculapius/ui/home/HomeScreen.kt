@@ -1,6 +1,7 @@
 package com.example.aesculapius.ui.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -29,8 +31,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
+import com.example.aesculapius.ui.navigation.TestsNavigation
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.statistics.StatisticsScreen
+import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
 
@@ -60,8 +64,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             when (homeUiState.currentPage) {
                 PageType.Therapy -> TherapyScreen(modifier = Modifier.padding(horizontal = 16.dp))
                 PageType.Profile -> ProfileScreen(modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp))
-                PageType.Statistics -> StatisticsScreen()
-                else -> TempScreen()
+                PageType.Statistics -> StatisticsScreen(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(color = Color.White))
+                PageType.Tests -> TestsNavigation()
             }
         }
     }
@@ -85,7 +92,9 @@ fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Bool
         if (isHelpButton)
             IconButton(
                 onClick = { /*TODO*/ },
-                modifier = Modifier.padding(end = 16.dp).size(24.dp)
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(24.dp)
             ) {
                 Icon(imageVector = Icons.Outlined.Info, contentDescription = null, tint = Color(0xFF49454F))
             }

@@ -13,16 +13,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.start.OnboardingScreen
-import com.example.aesculapius.ui.SetReminderTime
+import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
 import com.example.aesculapius.ui.start.SignUpViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun StartNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
+fun StartNavigation(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
@@ -79,9 +80,7 @@ fun StartNavigation(navController: NavHostController, modifier: Modifier = Modif
                 onDateChanged = { signUpViewModel.onDateChanged(it) },
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
-                onClickSetReminder = {
-                    navController.navigate("${SetReminderTime.route}/${it}")
-                }
+                onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
             )
         }
     }

@@ -114,12 +114,16 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        color = Color.Black
+        color = Color.Black,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
     ),
     headlineLarge = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.W500,
         fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
     ),
     bodySmall = TextStyle(
         fontFamily = Roboto,
