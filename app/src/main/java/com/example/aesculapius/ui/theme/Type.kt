@@ -103,6 +103,7 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 45.sp,
+        color = Color(0xFF21005D)
     ),
     headlineSmall = TextStyle(
         fontFamily = Roboto,

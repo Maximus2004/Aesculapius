@@ -80,6 +80,7 @@ fun SignUpScreen(
     onHeightChanged: (String) -> Unit,
     onWeightChanged: (String) -> Unit,
     onClickSetReminder: (Hours) -> Unit,
+    onEndRegistration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -103,7 +104,6 @@ fun SignUpScreen(
                 onSurnameChanged = { onSurnameChanged(it) },
                 onChangedPatronymic = { onChangedPatronymic(it) }
             )
-
             1 -> BirthdayFiled(onDateChanged = { onDateChanged(it) })
             2 -> HeightWeightFields(
                 onHeightChanged = { onHeightChanged(it) },
@@ -111,7 +111,6 @@ fun SignUpScreen(
                 height = height,
                 weight = weight
             )
-
             3 -> ReminderFields(
                 onClickSetReminder = { onClickSetReminder(it) },
                 eveningTime = eveningTime,
@@ -120,7 +119,7 @@ fun SignUpScreen(
         }
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = { onChangeCurrentPage() },
+            onClick = { if (currentPage == 3) onEndRegistration() else onChangeCurrentPage() },
             enabled = name != "" && surname != "" && patronymic != "",
             modifier = Modifier
                 .padding(bottom = 24.dp)

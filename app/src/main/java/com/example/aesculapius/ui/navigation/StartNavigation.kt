@@ -22,8 +22,12 @@ import com.example.aesculapius.ui.start.SignUpScreen
 import com.example.aesculapius.ui.start.SignUpViewModel
 import java.time.format.DateTimeFormatter
 
+object StartNavigation: NavigationDestination {
+    override val route = "StartNavigation"
+}
+
 @Composable
-fun StartNavigation(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
+fun StartNavigation(onEndRegistration: () -> Unit, modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
@@ -80,6 +84,7 @@ fun StartNavigation(modifier: Modifier = Modifier, navController: NavHostControl
                 onDateChanged = { signUpViewModel.onDateChanged(it) },
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
+                onEndRegistration = { onEndRegistration() },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
             )
         }

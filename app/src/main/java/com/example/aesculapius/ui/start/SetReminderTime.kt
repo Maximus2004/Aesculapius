@@ -171,7 +171,8 @@ fun TextInputTime(
         textStyle = MaterialTheme.typography.displayLarge,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedLabelColor = Color(0xFF6750A4),
-            unfocusedLabelColor = Color(0xFFAB90F1)
+            unfocusedLabelColor = Color(0xFFAB90F1),
+            containerColor = Color(0xFFD8D1E9)
         ),
         shape = MaterialTheme.shapes.small
     )

@@ -23,6 +23,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
+import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.navigation.TestsNavigation
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.statistics.StatisticsScreen
@@ -38,16 +43,24 @@ import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
 
+object HomeScreen: NavigationDestination {
+    override val route = "HomeScreen"
+}
+
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     val homeViewModel: HomeViewModel = viewModel()
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
+    var isBarsDisplayed by remember { mutableStateOf(true) }
     Scaffold(
         topBar = {
-            TopBar(screenName = homeUiState.currentPageName, isHelpButton = homeUiState.isHelpButton)
+            if (isBarsDisplayed) TopBar(
+                screenName = homeUiState.currentPageName,
+                isHelpButton = homeUiState.isHelpButton
+            )
         },
         bottomBar = {
-            BottomNavigationBar(
+            if (isBarsDisplayed) BottomNavigationBar(
                 currentTab = homeUiState.currentPage,
                 onTabPressed = { pageType, pageName, isHelpButton ->
                     homeViewModel.updateCurrentPage(pageType, pageName, isHelpButton)
@@ -63,12 +76,22 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) {
             when (homeUiState.currentPage) {
                 PageType.Therapy -> TherapyScreen(modifier = Modifier.padding(horizontal = 16.dp))
-                PageType.Profile -> ProfileScreen(modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp))
-                PageType.Statistics -> StatisticsScreen(modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(color = Color.White))
-                PageType.Tests -> TestsNavigation()
+                PageType.Profile -> ProfileScreen(
+                    modifier = Modifier.padding(
+                        top = 24.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    )
+                )
+
+                PageType.Statistics -> StatisticsScreen(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .background(color = Color.White)
+                )
+
+                PageType.Tests -> TestsNavigation(turnOffBars = { isBarsDisplayed = false }, turnOnBars = { isBarsDisplayed = true })
             }
         }
     }
@@ -96,7 +119,11 @@ fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Bool
                     .padding(end = 16.dp)
                     .size(24.dp)
             ) {
-                Icon(imageVector = Icons.Outlined.Info, contentDescription = null, tint = Color(0xFF49454F))
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    tint = Color(0xFF49454F)
+                )
             }
     }
 }

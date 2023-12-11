@@ -4,8 +4,6 @@ import java.time.LocalDate
 
 data class Test(
     val listOfQuestion: MutableList<Question>,
-    val testName: String,
-    val testDescription: String,
     val targetTime: LocalDate,
     val badResult: String,
     val mediumResult: String,
