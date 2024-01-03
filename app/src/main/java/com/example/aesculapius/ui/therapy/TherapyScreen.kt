@@ -1,9 +1,5 @@
 package com.example.aesculapius.ui.therapy
 
-import android.util.Log
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -25,25 +21,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,12 +48,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.aesculapius.data.Medicine
-import com.example.aesculapius.data.medicines
-import com.example.aesculapius.data.medicinesActive
-import com.example.aesculapius.ui.home.HomeViewModel
+import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
@@ -68,7 +62,6 @@ import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarS
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import io.github.boguszpawlowski.composecalendar.week.Week
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -76,95 +69,146 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+object TherapyScreen : NavigationDestination {
+    override val route = "TherapyScreen"
+}
+
 @Composable
-fun TherapyScreen(modifier: Modifier = Modifier) {
-    val therapyViewModel: TherapyViewModel = viewModel()
-    val currentMedicines = therapyViewModel.currentMedicines.collectAsState().value
-
-    val currentWeekDates = therapyViewModel.currentWeekDates.collectAsState().value
-
-    // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
-    var isActiveMedicines by remember { mutableStateOf(true) }
-    Column(modifier = modifier.fillMaxSize()) {
-        CalendarItem(
-            currentDate = therapyViewModel.getCurrentDate(),
-            onDateChanged = { therapyViewModel.updateCurrentDate(it) },
-            getActiveAmount = { therapyViewModel.getAmountActive(it) },
-            weekDates = currentWeekDates,
-            getWeekDates = { therapyViewModel.getWeekDates(it) }
+fun TherapyScreen(
+    currentDate: LocalDate,
+    getWeekDates: (LocalDate) -> Unit,
+    updateCurrentDate: (LocalDate) -> Boolean,
+    currentLoadingState: CurrentLoadingState,
+    currentWeekDates: Week,
+    onCreateNewMedicine: () -> Unit,
+    getActiveAmount: (LocalDate) -> Int,
+    modifier: Modifier = Modifier
+) {
+    Box() {
+        Column(modifier = modifier.fillMaxSize()) {
+            CalendarItem(
+                currentDate = currentDate,
+                onDateChanged = { updateCurrentDate(it) },
+                getActiveAmount = { getActiveAmount(it) },
+                weekDates = currentWeekDates,
+                getWeekDates = { getWeekDates(it) }
+            )
+            when (currentLoadingState) {
+                is CurrentLoadingState.Loading ->
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                is CurrentLoadingState.Success -> MedicinesScreen(currentLoadingState.therapyuiState)
+            }
+        }
+        FloatingButton(
+            onClick = { onCreateNewMedicine() },
+            modifier = Modifier.align(Alignment.BottomEnd)
         )
-        Card(
-            elevation = 0.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(vertical = 29.dp)
-        ) {
-            Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
-                Text(text = "Ежедневный прогресс", style = MaterialTheme.typography.bodyLarge)
-                LinearProgressIndicator(
-                    progress = currentMedicines.progress,
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .padding(top = 12.dp, bottom = 10.dp)
-                        .height(6.dp)
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.small)
-                )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = "${(currentMedicines.progress * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
-        Row(modifier = Modifier.padding(bottom = 24.dp)) {
-            Button(
-                onClick = { isActiveMedicines = true },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                    contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Активные", style = MaterialTheme.typography.headlineSmall)
-            }
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = { isActiveMedicines = false },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                    contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Завершённые", style = MaterialTheme.typography.headlineSmall)
-            }
-        }
-        LazyColumn() {
-            if (isActiveMedicines)
-                items(currentMedicines.currentActiveMedicines) { medicine ->
-                    MedicineCard(medicine = medicine, modifier = Modifier.padding(bottom = 16.dp))
-                }
-            else
-                items(currentMedicines.currentEndedMedicines) { medicine ->
-                    MedicineCard(medicine = medicine, modifier = Modifier.padding(bottom = 16.dp))
-                }
-        }
     }
 }
 
 @Composable
-fun MedicineCard(modifier: Modifier = Modifier, medicine: Medicine) {
+fun MedicinesScreen(currentMedicines: TherapyUiState) {
+    // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
+    var isActiveMedicines by remember { mutableStateOf(true) }
+    Card(
+        elevation = 0.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(vertical = 29.dp)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+            Text(text = "Ежедневный прогресс", style = MaterialTheme.typography.bodyLarge)
+            LinearProgressIndicator(
+                progress = currentMedicines.progress,
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 10.dp)
+                    .height(6.dp)
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.small)
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.weight(1f))
+                Text(
+                    text = "${(currentMedicines.progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+    Row(modifier = Modifier.padding(bottom = 24.dp)) {
+        Button(
+            onClick = { isActiveMedicines = true },
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+            ),
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(text = "Активные", style = MaterialTheme.typography.headlineSmall)
+        }
+        Spacer(Modifier.width(8.dp))
+        Button(
+            onClick = { isActiveMedicines = false },
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+            ),
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(text = "Завершённые", style = MaterialTheme.typography.headlineSmall)
+        }
+    }
+    LazyColumn() {
+        if (isActiveMedicines)
+            items(currentMedicines.currentActiveMedicines) { medicine ->
+                MedicineCard(
+                    medicine = medicine,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        else
+            items(currentMedicines.currentEndedMedicines) { medicine ->
+                MedicineCard(
+                    medicine = medicine,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+    }
+}
+
+@Composable
+fun FloatingButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier
+            .padding(16.dp)
+            .size(56.dp),
+        containerColor = MaterialTheme.colorScheme.primary,
+        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            tint = Color.White,
+            modifier = Modifier.size(24.dp),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem) {
     Card(
         elevation = 0.dp,
         modifier = modifier
@@ -277,7 +321,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
 @Composable
 fun DayContent(
     state: DayState<DynamicSelectionState>,
-    activeAmount: Int,
+    getActiveAmount: (LocalDate) -> Int,
 ) {
     var currentColorCircle by remember { mutableStateOf(Color(0xFFB0A3D1)) }
 
@@ -288,8 +332,8 @@ fun DayContent(
     // вынесли выполнение условий в корутину, чтобы не блокировать UI
     LaunchedEffect(key1 = Unit) {
         currentColorCircle = withContext(Dispatchers.Main) {
-            if (state.date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
-            else if (activeAmount > 0) Color(0xFFFC3B69)
+            if (date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
+            else if (getActiveAmount(date) > 0) Color(0xFFFC3B69)
             else Color(0xFF9ED209)
         }
     }
@@ -408,7 +452,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
 fun CalendarItem(
     modifier: Modifier = Modifier,
     onDateChanged: (LocalDate) -> Boolean,
-    getActiveAmount: (DayState<DynamicSelectionState>) -> Int,
+    getActiveAmount: (LocalDate) -> Int,
     currentDate: LocalDate,
     weekDates: Week,
     getWeekDates: (LocalDate) -> Unit
@@ -432,7 +476,7 @@ fun CalendarItem(
                 confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
             ),
             dayContent = { state ->
-                DayContent(state = state, activeAmount = getActiveAmount(state))
+                DayContent(state = state, getActiveAmount = { getActiveAmount(it) })
             },
             daysOfWeekHeader = { daysOfWeek ->
                 DaysOfWeekHeader(daysOfWeek = daysOfWeek)
@@ -450,7 +494,7 @@ fun CalendarItem(
                 confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
             ),
             dayContent = { state ->
-                DayContent(state = state, activeAmount = getActiveAmount(state))
+                DayContent(state = state, getActiveAmount = { getActiveAmount(it) })
             },
             monthHeader = { monthState ->
                 MonthHeader(monthState = monthState, onClickMonth = {

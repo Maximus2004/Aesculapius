@@ -1,4 +1,4 @@
-package com.example.aesculapius.data
+package com.example.aesculapius.ui.therapy
 
 import androidx.annotation.DrawableRes
 import java.time.Duration
@@ -9,8 +9,7 @@ import java.time.LocalTime
 data class Medicine(
     @DrawableRes val image: Int,
     val name: String,
-    val dose: Int,
-    val time: LocalTime,
-    val startDate: LocalDate,
-    val endDate: LocalDate
+    val undername: String,
+    val doses: List<String>,
+    val frequency: List<String>
 )

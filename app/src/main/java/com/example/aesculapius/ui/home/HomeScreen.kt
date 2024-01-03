@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.navigation.TestsNavigation
+import com.example.aesculapius.ui.navigation.TherapyNavigation
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.statistics.StatisticsScreen
 import com.example.aesculapius.ui.tests.TestsScreen
@@ -75,7 +76,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
         ) {
             when (homeUiState.currentPage) {
-                PageType.Therapy -> TherapyScreen(modifier = Modifier.padding(horizontal = 16.dp))
+                PageType.Therapy -> TherapyNavigation(turnOffBars = { isBarsDisplayed = false }, turnOnBars = { isBarsDisplayed = true })
                 PageType.Profile -> ProfileScreen(
                     modifier = Modifier.padding(
                         top = 24.dp,

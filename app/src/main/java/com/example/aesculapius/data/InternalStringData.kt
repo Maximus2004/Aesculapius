@@ -25,6 +25,12 @@ enum class TestType {
     Metrics
 }
 
+enum class CurrentMedicineType {
+    Aerosol,
+    Powder,
+    Tablets
+}
+
 val navigationItemContentList = listOf(
     NavigationItemContent(
         pageType = PageType.Statistics,
