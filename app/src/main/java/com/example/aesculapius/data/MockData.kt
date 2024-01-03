@@ -7,7 +7,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Серетид",
-        undername = "(салметерол + флутиказон)",
+        undername = "салметерол + флутиказон",
         doses = listOf(
             "25+50 мкг/доза",
             "25+125 мкг/доза",
@@ -23,7 +23,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Сальмекорт",
-        undername = "(салметерол + флутиказон)",
+        undername = "салметерол + флутиказон",
         doses = listOf(
             "25+50 мкг/доза",
             "25+125 мкг/доза",
@@ -39,7 +39,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Респисальф Эйр",
-        undername = "(салметерол + флутиказон)",
+        undername = "салметерол + флутиказон",
         doses = listOf(
             "25+125 мкг/доза",
             "25+250 мкг/доза"
@@ -54,7 +54,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Симбикорт рапихалер",
-        undername = "(будесонид+ формотерол)",
+        undername = "будесонид+ формотерол",
         doses = listOf(
             "80/4,5 мкг/доза",
             "160/4,5 мкг/доза"
@@ -69,7 +69,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Формотерол Эйр",
-        undername = "(формотерол)",
+        undername = "формотерол",
         doses = listOf("12 мкг/доза"),
         frequency = listOf(
             "По 1 дозе 2 раза в сутки",
@@ -81,7 +81,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Беклазон Эко",
-        undername = "(беклометазон)",
+        undername = "беклометазон",
         doses = listOf(
             "50 мкг/доза",
             "100 мкг/доза",
@@ -97,7 +97,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Беклометазон Эйр",
-        undername = "(беклометазон)",
+        undername = "беклометазон",
         doses = listOf(
             "50 мкг/доза",
             "100 мкг/доза",
@@ -113,7 +113,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Беклометазон Аэронатив",
-        undername = "(беклометазон)",
+        undername = "беклометазон",
         doses = listOf(
             "50 мкг/доза",
             "100 мкг/доза",
@@ -129,7 +129,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Фликсотид",
-        undername = "(флутиказон)",
+        undername = "флутиказон",
         doses = listOf(
             "50 мкг/доза",
             "125 мкг/доза",
@@ -145,7 +145,7 @@ val medicinesAerosol = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Флутиказон Эйр",
-        undername = "(флутиказон)",
+        undername = "флутиказон",
         doses = listOf(
             "50 мкг/доза",
             "125 мкг/доза",
@@ -164,7 +164,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Серетид мультидиск",
-        undername = "(флутиказон)",
+        undername = "флутиказон",
         doses = listOf(
             "50+100 мкг/доза",
             "50+250 мкг/доза",
@@ -178,7 +178,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Салтиказон",
-        undername = "(салметерол + флутиказон)",
+        undername = "салметерол + флутиказон",
         doses = listOf(
             "50+100 мкг/доза",
             "50+250 мкг/доза",
@@ -192,7 +192,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Респисальф",
-        undername = "(салметерол + флутиказон)",
+        undername = "салметерол + флутиказон",
         doses = listOf(
             "50+100 мкг/доза",
             "50+250 мкг/доза",
@@ -206,7 +206,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Симбикорт турбухалер",
-        undername = "(будесонид+ формотерол)",
+        undername = "будесонид + формотерол",
         doses = listOf(
             "80/4,5 мкг/доза",
             "160/4,5 мкг/доза",
@@ -222,7 +222,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Формисонид",
-        undername = "(будесонид+ формотерол)",
+        undername = "будесонид + формотерол",
         doses = listOf(
             "80/4,5 мкг/доза",
             "160/4,5 мкг/доза",
@@ -238,7 +238,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Респифорб комби",
-        undername = "(будесонид+ формотерол)",
+        undername = "будесонид + формотерол",
         doses = listOf(
             "200/12 мкг/доза",
             "400/12 мкг/доза"
@@ -253,7 +253,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Респифорб капсулы",
-        undername = "(будесонид+ формотерол)",
+        undername = "будесонид+ формотерол",
         doses = listOf(
             "80/4,5 мкг/доза",
             "160/4,5 мкг/доза",
@@ -269,7 +269,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Релвар эллипта",
-        undername = "(вилантерол+ флутиказон)",
+        undername = "вилантерол+ флутиказон",
         doses = listOf(
             "22+92 мкг/доза",
             "22+184 мкг/доза"
@@ -282,7 +282,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Формотерол",
-        undername = "(формотерол)",
+        undername = "формотерол",
         doses = listOf(
             "12 мкг/доза",
         ),
@@ -296,7 +296,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Пульмикорт турбухалер",
-        undername = "(будесонид)",
+        undername = "будесонид",
         doses = listOf(
             "100 мкг/доза",
             "200 мкг/доза"
@@ -311,7 +311,7 @@ val medicinesPowder = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Будесонид изихейлер",
-        undername = "(будесонид)",
+        undername = "будесонид",
         doses = listOf(
             "200 мкг/доза",
         ),
@@ -328,7 +328,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Сингуляр",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -341,7 +341,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Монтелукаст",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -354,7 +354,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Монтелар",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -367,7 +367,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Экталуст",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -380,7 +380,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Синглон",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -393,7 +393,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Алмонт",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",
@@ -406,7 +406,7 @@ val medicinesTablets = listOf(
     Medicine(
         image = R.drawable.medicines_example,
         name = "Монлер",
-        undername = "(монтелукаст)",
+        undername = "монтелукаст",
         doses = listOf(
             "4 мг",
             "5 мг",

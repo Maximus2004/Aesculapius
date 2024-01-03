@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,33 +17,36 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
+import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.start.OnboardingScreen
 import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
 import com.example.aesculapius.ui.start.SignUpViewModel
 import java.time.format.DateTimeFormatter
 
-object StartNavigation: NavigationDestination {
-    override val route = "StartNavigation"
-}
-
 @Composable
-fun StartNavigation(onEndRegistration: () -> Unit, modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
+fun MainScreen(navController: NavHostController = rememberNavController()) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
+
     NavHost(
         navController = navController,
         startDestination = OnboardingScreen.route,
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         composable(route = OnboardingScreen.route) {
             OnboardingScreen(onClickEnd = { navController.navigate(SignUpScreen.route) })
         }
-        composable(route = SetReminderTime.routeWithArgs,
-            arguments = listOf(navArgument(name = SetReminderTime.depart) { type = NavType.StringType })
+        composable(
+            route = SetReminderTime.routeWithArgs,
+            arguments = listOf(navArgument(name = SetReminderTime.depart) {
+                type = NavType.StringType
+            })
         ) { backStackEntry ->
-            val arg = Hours.valueOf(backStackEntry.arguments?.getString(SetReminderTime.depart) ?: "Morning")
+            val arg = Hours.valueOf(
+                backStackEntry.arguments?.getString(SetReminderTime.depart) ?: "Morning"
+            )
             when (arg) {
                 Hours.Morning -> SetReminderTime(
                     title = "Утреннее напоминание",
@@ -84,9 +88,16 @@ fun StartNavigation(onEndRegistration: () -> Unit, modifier: Modifier = Modifier
                 onDateChanged = { signUpViewModel.onDateChanged(it) },
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
-                onEndRegistration = { onEndRegistration() },
+                onEndRegistration = {
+                    navController.navigate(HomeScreen.route) {
+                        popUpTo(OnboardingScreen.route) { inclusive = true }
+                    }
+                },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
             )
+        }
+        composable(route = HomeScreen.route) {
+            HomeScreen()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.tests
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,9 @@ fun TestScreen(
     var currentPage by remember { mutableIntStateOf(0) }
     val currentAnswers by remember { mutableStateOf(MutableList(questionsList.size) { -1 }) }
     var currentAnswer by remember { mutableIntStateOf(-1) }
+
+    BackHandler { isAlertDialogShown = true }
+
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = { isAlertDialogShown = true },

@@ -50,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
@@ -82,6 +83,7 @@ fun TherapyScreen(
     currentWeekDates: Week,
     onCreateNewMedicine: () -> Unit,
     getActiveAmount: (LocalDate) -> Int,
+    isAfterCurrentDate: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box() {
@@ -98,7 +100,11 @@ fun TherapyScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
-                is CurrentLoadingState.Success -> MedicinesScreen(currentLoadingState.therapyuiState)
+
+                is CurrentLoadingState.Success -> MedicinesScreen(
+                    currentLoadingState.therapyuiState,
+                    isAfterCurrentDate = isAfterCurrentDate
+                )
             }
         }
         FloatingButton(
@@ -109,7 +115,7 @@ fun TherapyScreen(
 }
 
 @Composable
-fun MedicinesScreen(currentMedicines: TherapyUiState) {
+fun MedicinesScreen(currentMedicines: TherapyUiState, isAfterCurrentDate: Boolean) {
     // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
     var isActiveMedicines by remember { mutableStateOf(true) }
     Card(
@@ -144,33 +150,59 @@ fun MedicinesScreen(currentMedicines: TherapyUiState) {
             }
         }
     }
-    Row(modifier = Modifier.padding(bottom = 24.dp)) {
-        Button(
-            onClick = { isActiveMedicines = true },
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(text = "Активные", style = MaterialTheme.typography.headlineSmall)
+    if (isAfterCurrentDate) {
+        Row(modifier = Modifier.padding(bottom = 24.dp)) {
+            Button(
+                onClick = {},
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFB0A3D1),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Предстоящие", style = MaterialTheme.typography.headlineSmall)
+            }
+            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.weight(1f))
         }
-        Spacer(Modifier.width(8.dp))
-        Button(
-            onClick = { isActiveMedicines = false },
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(text = "Завершённые", style = MaterialTheme.typography.headlineSmall)
+    } else {
+        Row(modifier = Modifier.padding(bottom = 24.dp)) {
+            Button(
+                onClick = { isActiveMedicines = true },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                    contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Активные", style = MaterialTheme.typography.headlineSmall)
+            }
+            Spacer(Modifier.width(8.dp))
+            Button(
+                onClick = { isActiveMedicines = false },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                    contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Завершённые", style = MaterialTheme.typography.headlineSmall)
+            }
         }
     }
     LazyColumn() {
-        if (isActiveMedicines)
+        if (isAfterCurrentDate) {
+            items(currentMedicines.currentActiveMedicines + currentMedicines.currentEndedMedicines) { medicine ->
+                MedicineCard(
+                    medicine = medicine,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        }
+        else if (isActiveMedicines)
             items(currentMedicines.currentActiveMedicines) { medicine ->
                 MedicineCard(
                     medicine = medicine,
@@ -184,6 +216,7 @@ fun MedicinesScreen(currentMedicines: TherapyUiState) {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
+
     }
 }
 
@@ -213,7 +246,7 @@ fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem) {
         elevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
-            .height(108.dp),
+            .height(112.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
@@ -227,13 +260,38 @@ fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.weight(0.30f)
             )
-            Text(
-                text = medicine.name,
+            Column(
                 modifier = Modifier
                     .weight(0.70f)
-                    .padding(start = 16.dp, top = 12.dp),
-                style = MaterialTheme.typography.bodyLarge
-            )
+                    .padding(start = 16.dp, top = 12.dp, end = 16.dp)
+            ) {
+                Text(
+                    text = medicine.name,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.Black
+                )
+                Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
+                Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
+                Row(modifier = Modifier.padding(top = 16.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.sun_icon),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                        tint = Color.Black
+                    )
+                    Text(
+                        text = "1 доза утром",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = "30 дней",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -507,4 +565,22 @@ fun CalendarItem(
             }
         )
 //    }
+}
+
+@Preview
+@Composable
+fun MedCardPreview() {
+    AesculapiusTheme {
+        MedicineCard(
+            medicine = MedicineItem(
+                name = "Симбикорт Турбухалер",
+                undername = "будесонид + формотерол",
+                dose = "320/9 мкг/доза",
+                frequency = "1 доза утром",
+                image = R.drawable.medicines_example,
+                startDate = LocalDate.now(),
+                endDate = LocalDate.now()
+            )
+        )
+    }
 }
