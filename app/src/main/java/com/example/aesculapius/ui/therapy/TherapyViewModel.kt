@@ -40,6 +40,7 @@ class TherapyViewModel : ViewModel() {
     }
 
     // при обновлении даты требует обновить список лекарств к употреблению в это время
+    // (связано с работой с данными, поэтому выполняется в фоне, чтобы не блокировать ui)
     fun updateCurrentDate(newDate: LocalDate): Boolean {
         viewModelScope.launch {
             currentLoadingState = CurrentLoadingState.Loading
@@ -67,22 +68,20 @@ class TherapyViewModel : ViewModel() {
         _listUserMedicines.value.add(medicineItem)
     }
 
-    // отображает неделю, на которой находится пользователь
+    // отображает неделю, на которой находится пользователь (слишком быстро, чтобы выносит в фон)
     fun getWeekDates(currentDate: LocalDate) {
-        viewModelScope.launch(Dispatchers.Default) {
-            val weekDates = ArrayList<LocalDate>()
-            var startOfWeek = currentDate
-            while (startOfWeek.dayOfWeek != DayOfWeek.MONDAY) {
-                startOfWeek = startOfWeek.minusDays(1)
-            }
-            for (i in 0 until 7) {
-                weekDates.add(startOfWeek.plusDays(i.toLong()))
-            }
-            _currentWeekDates.update { Week(weekDates) }
+        val weekDates = ArrayList<LocalDate>()
+        var startOfWeek = currentDate
+        while (startOfWeek.dayOfWeek != DayOfWeek.MONDAY) {
+            startOfWeek = startOfWeek.minusDays(1)
         }
+        for (i in 0 until 7) {
+            weekDates.add(startOfWeek.plusDays(i.toLong()))
+        }
+        _currentWeekDates.update { Week(weekDates) }
     }
 
-    // служит для отображения индикторов под датами
+    // служит для отображения индикторов под датами (вызывается из LaunchedEffect, здесь не в фоне)
     fun getAmountActive(date: LocalDate): Int {
         return _listUserMedicines.value.filter {
             it.startDate == date || (date.isAfter(it.startDate) && date.isBefore(
@@ -96,6 +95,7 @@ class TherapyViewModel : ViewModel() {
     }
 }
 
+// удобно для использования в случае загрузки
 sealed interface CurrentLoadingState {
     data class Success(val therapyuiState: TherapyUiState) : CurrentLoadingState
     object Loading : CurrentLoadingState

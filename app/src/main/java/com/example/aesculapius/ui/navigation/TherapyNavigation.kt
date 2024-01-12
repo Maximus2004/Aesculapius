@@ -36,10 +36,8 @@ fun TherapyNavigation(
     ) {
         composable(route = TherapyScreen.route) {
             TherapyScreen(
-                onCreateNewMedicine = {
-                    navController.navigate(NewMedicineScreen.route)
-                    turnOffBars()
-                },
+                onCreateNewMedicine = { navController.navigate(NewMedicineScreen.route) },
+                turnOnBars = { turnOnBars() },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 currentLoadingState = currentLoadingState,
                 currentWeekDates = currentWeekDates,
@@ -52,17 +50,14 @@ fun TherapyNavigation(
         }
         composable(route = NewMedicineScreen.route) {
             NewMedicineScreen(
-                onNavigateBack = {
-                    turnOnBars()
-                    navController.navigateUp()
-                },
+                onNavigateBack = { navController.navigateUp() },
                 onClickFinishButton = {
                     therapyViewModel.addMedicineItem(it)
                     navController.popBackStack()
                     navController.navigate(TherapyScreen.route)
                     therapyViewModel.updateCurrentDate(LocalDate.now())
-                    turnOnBars()
                 },
+                turnOffBars = { turnOffBars() },
                 currentDate = therapyViewModel.getCurrentDate(),
             )
         }

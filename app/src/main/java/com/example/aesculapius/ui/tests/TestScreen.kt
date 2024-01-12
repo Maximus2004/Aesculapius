@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -55,19 +57,23 @@ fun TestScreen(
     testName: String,
     questionsList: MutableList<Question>,
     onNavigateBack: () -> Unit,
-    onClickSummary: () -> Unit
+    onClickSummary: () -> Unit,
+    turnOffBars: () -> Unit
 ) {
     var isAlertDialogShown by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
     val currentAnswers by remember { mutableStateOf(MutableList(questionsList.size) { -1 }) }
     var currentAnswer by remember { mutableIntStateOf(-1) }
 
-    BackHandler { isAlertDialogShown = true }
+    BackHandler { onNavigateBack() }
+    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = { isAlertDialogShown = true },
-            text = testName
+            text = testName,
+            existHelpButton = true,
+            onClickHelpButton = { /* TODO */ }
         )
     }) { paddingValues ->
         Column(
@@ -167,7 +173,7 @@ fun TestScreen(
                 modifier = Modifier
                     .padding(bottom = 30.dp)
                     .height(56.dp)
-                    .width(312.dp)
+                    .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(16.dp)
             ) {

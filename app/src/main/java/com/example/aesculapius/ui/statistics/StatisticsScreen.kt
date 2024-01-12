@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,7 +110,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
     var pointsAmountText by remember { mutableIntStateOf(-1) }
     var dateBegin by remember { mutableStateOf(LocalDate.now().minusDays(6)) }
 
-    // CouroutineScope launches every time when key changes (imitation on fetching data)
+    // CouroutineScope launches every time when key changes (imitation of fetching data)
     LaunchedEffect(key1 = staticsUiState) {
         datasetForModel.clear()
         datasetLineSpec.clear()
@@ -211,133 +214,174 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
         datasetForModelColumn.add(dataColumnPoints)
         modelProducerColumn.setEntries(datasetForModelColumn)
     }
-
-    Column(modifier = modifier) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = if (isLineChart) "Значения ПСВ" else "АСТ тестирование",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 22.dp).fillMaxWidth()
-            )
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column() {
-                    if (!isLineChart)
-                        DisplayDatesForColumn(
-                            pointsAmountText = pointsAmountText,
-                            dateTextColumn = dateTextColumn
-                        )
-                    else
-                        DisplayDatesForLine(
-                            graphicTypes = staticsUiState.graphicTypes,
-                            dateText = dateText, dateBegin = dateBegin
-                        )
-                }
-                Spacer(Modifier.weight(1f))
-                Card(
-                    elevation = 0.dp,
-                    modifier = Modifier
-                        .clickable { isLineChart = !isLineChart }
-                        .wrapContentSize(),
-                    shape = RoundedCornerShape(16.dp),
-                    backgroundColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Row(modifier = Modifier.padding(4.dp)) {
-                        Card(
-                            modifier = Modifier.size(44.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            elevation = 0.dp,
-                            backgroundColor = if (isLineChart) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.line_graphic_icon),
-                                contentDescription = null,
-                                alignment = Alignment.Center,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(10.dp)
-                            )
+    Box() {
+        LazyColumn(modifier = modifier) {
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = if (isLineChart) "Значения ПСВ" else "АСТ тестирование",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(vertical = 22.dp)
+                            .fillMaxWidth()
+                    )
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = 24.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column() {
+                            if (!isLineChart)
+                                DisplayDatesForColumn(
+                                    pointsAmountText = pointsAmountText,
+                                    dateTextColumn = dateTextColumn
+                                )
+                            else
+                                DisplayDatesForLine(
+                                    graphicTypes = staticsUiState.graphicTypes,
+                                    dateText = dateText, dateBegin = dateBegin
+                                )
                         }
+                        Spacer(Modifier.weight(1f))
                         Card(
-                            modifier = Modifier.size(44.dp),
-                            shape = RoundedCornerShape(12.dp),
                             elevation = 0.dp,
-                            backgroundColor = if (!isLineChart) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                            modifier = Modifier
+                                .clickable { isLineChart = !isLineChart }
+                                .wrapContentSize(),
+                            shape = RoundedCornerShape(16.dp),
+                            backgroundColor = MaterialTheme.colorScheme.secondary
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.bar_chart_icon),
-                                contentDescription = null,
-                                alignment = Alignment.Center,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(10.dp)
+                            Row(modifier = Modifier.padding(4.dp)) {
+                                Card(
+                                    modifier = Modifier.size(44.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    elevation = 0.dp,
+                                    backgroundColor = if (isLineChart) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.line_graphic_icon),
+                                        contentDescription = null,
+                                        alignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(10.dp)
+                                    )
+                                }
+                                Card(
+                                    modifier = Modifier.size(44.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    elevation = 0.dp,
+                                    backgroundColor = if (!isLineChart) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.bar_chart_icon),
+                                        contentDescription = null,
+                                        alignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(10.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    val assets = LocalContext.current
+                    val customTypeface =
+                        Typeface.createFromAsset(assets.assets, "inter_regular.ttf")
+
+                    ProvideChartStyle {
+                        if (isLineChart)
+                            ShowLineChart(
+                                datasetForModel = datasetForModel,
+                                datasetDates = datasetDates,
+                                modelProducer = modelProducer,
+                                datasetLineSpec = datasetLineSpec,
+                                onChangeMarker = { dateText = it },
+                                typeface = customTypeface
+                            )
+                        else {
+                            ShowColumnChart(
+                                typeface = customTypeface,
+                                onDataChanged = { x, y ->
+                                    pointsAmountText = y
+                                    dateTextColumn = datasetDatesColumn[x]
+                                },
+                                modelProducerColumn = modelProducerColumn
                             )
                         }
                     }
                 }
-            }
-            val assets = LocalContext.current
-            val customTypeface = Typeface.createFromAsset(assets.assets, "inter_regular.ttf")
-
-            ProvideChartStyle {
-                if (isLineChart)
-                    ShowLineChart(
-                        datasetForModel = datasetForModel,
-                        datasetDates = datasetDates,
-                        modelProducer = modelProducer,
-                        datasetLineSpec = datasetLineSpec,
-                        onChangeMarker = { dateText = it },
-                        typeface = customTypeface
-                    )
-                else {
-                    ShowColumnChart(
-                        typeface = customTypeface,
-                        onDataChanged = { x, y ->
-                            pointsAmountText = y
-                            dateTextColumn = datasetDatesColumn[x]
-                        },
-                        modelProducerColumn = modelProducerColumn
-                    )
+                if (isLineChart) {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = 16.dp, start = 3.dp)
+                            .fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                    ) {
+                        graphicsNavigationItemContentList.forEach {
+                            Card(
+                                modifier = Modifier
+                                    .height(32.dp)
+                                    .wrapContentWidth()
+                                    .clickable { statisticsViewModel.updateCurrentNavType(it) }
+                                    .padding(end = 3.dp),
+                                backgroundColor = if (it == staticsUiState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                                contentColor = if (it == staticsUiState) Color.White else MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(12.dp),
+                                elevation = 0.dp
+                            ) {
+                                Text(
+                                    text = it.nameOfType,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    modifier = Modifier.padding(
+                                        horizontal = 8.dp,
+                                        vertical = 6.dp
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
+                Text(
+                    text = "Отслеживание тенденций и изменений",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 32.dp, start = 23.dp, end = 23.dp)
+                )
+                Text(
+                    text = "Следите за динамикой Вашего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(top = 8.dp, start = 23.dp, end = 23.dp)
+                )
+                Spacer(Modifier.height(90.dp))
             }
         }
-        if (isLineChart) {
-            Row(
-                modifier = Modifier
-                    .padding(top = 32.dp, bottom = 16.dp, start = 3.dp)
-                    .fillMaxWidth(), horizontalArrangement = Arrangement.Center
-            ) {
-                graphicsNavigationItemContentList.forEach {
-                    Card(
-                        modifier = Modifier
-                            .height(32.dp)
-                            .wrapContentWidth()
-                            .clickable { statisticsViewModel.updateCurrentNavType(it) }
-                            .padding(end = 3.dp),
-                        backgroundColor = if (it == staticsUiState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-                        contentColor = if (it == staticsUiState) Color.White else MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = 0.dp
-                    ) {
-                        Text(
-                            text = it.nameOfType,
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
-                        )
-                    }
-                }
-            }
+        Button(
+            onClick = { /* TODO */ },
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "Скачать статистику",
+                style = MaterialTheme.typography.displaySmall,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
 
 @Composable
-fun ShowColumnChart(typeface: Typeface, modelProducerColumn: ChartEntryModelProducer, onDataChanged: (Int, Int) -> Unit) {
+fun ShowColumnChart(
+    typeface: Typeface,
+    modelProducerColumn: ChartEntryModelProducer,
+    onDataChanged: (Int, Int) -> Unit
+) {
     val defaultColumns = currentChartStyle.columnChart.columns
     val thresholdLineNullLevel = rememberNullLevel(typeface)
     Chart(
@@ -405,7 +449,10 @@ fun ShowColumnChart(typeface: Typeface, modelProducerColumn: ChartEntryModelProd
                 markerEntryModels: List<Marker.EntryModel>,
             ) {
                 super.onMarkerMoved(marker, markerEntryModels)
-                onDataChanged(markerEntryModels.first().entry.x.toInt(), markerEntryModels.first().entry.y.toInt())
+                onDataChanged(
+                    markerEntryModels.first().entry.x.toInt(),
+                    markerEntryModels.first().entry.y.toInt()
+                )
             }
 
             // update data on marker shown
@@ -414,7 +461,10 @@ fun ShowColumnChart(typeface: Typeface, modelProducerColumn: ChartEntryModelProd
                 markerEntryModels: List<Marker.EntryModel>
             ) {
                 super.onMarkerShown(marker, markerEntryModels)
-                onDataChanged(markerEntryModels.first().entry.x.toInt(), markerEntryModels.first().entry.y.toInt())
+                onDataChanged(
+                    markerEntryModels.first().entry.x.toInt(),
+                    markerEntryModels.first().entry.y.toInt()
+                )
             }
         }
     )
@@ -430,7 +480,9 @@ fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate) {
         style = MaterialTheme.typography.bodyLarge
     )
     Text(
-        text = "${LocalDate.now().minusYears(1).format(formatter)} - ${LocalDate.now().format(formatter)}",
+        text = "${LocalDate.now().minusYears(1).format(formatter)} - ${
+            LocalDate.now().format(formatter)
+        }",
         style = MaterialTheme.typography.bodySmall
     )
 }

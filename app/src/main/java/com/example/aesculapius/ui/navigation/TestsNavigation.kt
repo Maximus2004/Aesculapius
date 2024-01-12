@@ -12,19 +12,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.aesculapius.data.Hours
 import com.example.aesculapius.data.TestType
 import com.example.aesculapius.data.astTest
 import com.example.aesculapius.data.recTest
-import com.example.aesculapius.ui.start.OnboardingScreen
-import com.example.aesculapius.ui.start.SetReminderTime
-import com.example.aesculapius.ui.start.SignUpScreen
+import com.example.aesculapius.ui.tests.ASTTestOnboardingScreen
 import com.example.aesculapius.ui.tests.ASTTestResult
-import com.example.aesculapius.ui.tests.MetricsScreen
+import com.example.aesculapius.ui.tests.ASTTestResultScreen
+import com.example.aesculapius.ui.tests.MetricsOnboardingScreen
+import com.example.aesculapius.ui.tests.MetricsTestScreen
+import com.example.aesculapius.ui.tests.RecommendationsOnboardingScreen
 import com.example.aesculapius.ui.tests.TestScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun TestsNavigation(
@@ -42,21 +41,14 @@ fun TestsNavigation(
     ) {
         composable(route = TestsScreen.route) {
             TestsScreen(
-                onClickASTTest = {
-                    turnOffBars()
-                    navController.navigate("${TestScreen.route}/${TestType.AST}")
-                },
-                onClickMetricsTest = {
-                    turnOffBars()
-                    navController.navigate("${TestScreen.route}/${TestType.Metrics}")
-                },
-                onClickRecTest = {
-                    turnOffBars()
-                    navController.navigate("${TestScreen.route}/${TestType.Recommendations}")
-                },
+                onClickASTTest = { navController.navigate(ASTTestOnboardingScreen.route) },
+                onClickMetricsTest = { navController.navigate(MetricsOnboardingScreen.route) },
+                onClickRecTest = { navController.navigate(RecommendationsOnboardingScreen.route) },
+                turnOnBars = { turnOnBars() },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
+        // не делаем несколько отдельных compopsables, так как экран для двух первых тестов один
         composable(
             route = TestScreen.routeWithArgs,
             arguments = listOf(navArgument(name = TestScreen.depart) { type = NavType.StringType })
@@ -68,31 +60,65 @@ fun TestsNavigation(
                 TestType.AST -> TestScreen(
                     testName = "АСТ тестирование",
                     questionsList = astTest.listOfQuestion,
-                    onNavigateBack = {
-                        navController.navigateUp()
-                        turnOnBars()
+                    onNavigateBack = { navController.navigateUp() },
+                    onClickSummary = {
+                        navController.navigate(ASTTestResult.route) {
+                            popUpTo(TestsScreen.route) { inclusive = false }
+                        }
                     },
-                    onClickSummary = { navController.navigate(ASTTestResult.route) }
+                    turnOffBars = { turnOffBars() }
                 )
 
                 TestType.Recommendations -> TestScreen(
                     testName = "Тест приверженности",
                     questionsList = recTest.listOfQuestion,
-                    onNavigateBack = {
-                        navController.navigateUp()
-                        turnOnBars()
+                    onNavigateBack = { navController.navigateUp() },
+                    onClickSummary = {
+                        navController.navigate(ASTTestResult.route) {
+                            popUpTo(TestsScreen.route) { inclusive = false }
+                        }
                     },
-                    onClickSummary = { navController.navigate(ASTTestResult.route) }
+                    turnOffBars = { turnOffBars() }
                 )
 
-                TestType.Metrics -> MetricsScreen()
+                TestType.Metrics -> MetricsTestScreen(
+                    onNavigateBack = { navController.navigateUp() },
+                    onClickDoneButton = {
+                        navController.navigate(TestsScreen.route) {
+                            popUpTo(TestsScreen.route) { inclusive = false }
+                        }
+                    },
+                    turnOffBars = { turnOffBars() }
+                )
             }
         }
+        composable(route = MetricsOnboardingScreen.route) {
+            MetricsOnboardingScreen(
+                onNavigateBack = { navController.navigateUp() },
+                turnOffBars = { turnOffBars() },
+                onClickBeginButton = { navController.navigate("${TestScreen.route}/${TestType.Metrics}") }
+            )
+        }
+        composable(route = ASTTestOnboardingScreen.route) {
+            ASTTestOnboardingScreen(
+                onNavigateBack = { navController.navigateUp() },
+                turnOffBars = { turnOffBars() },
+                onClickBeginButton = { navController.navigate("${TestScreen.route}/${TestType.AST}") }
+            )
+        }
+        composable(route = RecommendationsOnboardingScreen.route) {
+            RecommendationsOnboardingScreen(
+                onNavigateBack = { navController.navigateUp() },
+                turnOffBars = { turnOffBars() },
+                onClickBeginButton = { navController.navigate("${TestScreen.route}/${TestType.Recommendations}") }
+            )
+        }
         composable(route = ASTTestResult.route) {
-            ASTTestResult(onClickReturnButton = {
-                navController.navigate(TestsScreen.route)
-                turnOnBars()
-            })
+            ASTTestResultScreen(
+                onClickReturnButton = { navController.navigate(TestsScreen.route) },
+                onNavigateBack = { navController.navigateUp() },
+                turnOffBars = { turnOffBars() }
+            )
         }
     }
 }

@@ -2,11 +2,13 @@ package com.example.aesculapius.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +23,9 @@ import androidx.compose.ui.unit.dp
 fun TopBar(
     onNavigateBack: () -> Unit,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    existHelpButton: Boolean = false,
+    onClickHelpButton: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -43,5 +47,19 @@ fun TopBar(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(start = 16.dp)
         )
+        Spacer(Modifier.weight(1f))
+        if (existHelpButton)
+            IconButton(
+                onClick = { onClickHelpButton() },
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    tint = Color(0xFF49454F)
+                )
+            }
     }
 }

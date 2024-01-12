@@ -84,139 +84,159 @@ fun TherapyScreen(
     onCreateNewMedicine: () -> Unit,
     getActiveAmount: (LocalDate) -> Int,
     isAfterCurrentDate: Boolean,
+    turnOnBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isActiveMedicines by remember { mutableStateOf(true) }
+    LaunchedEffect(key1 = Unit) { turnOnBars() }
+
     Box() {
-        Column(modifier = modifier.fillMaxSize()) {
-            CalendarItem(
-                currentDate = currentDate,
-                onDateChanged = { updateCurrentDate(it) },
-                getActiveAmount = { getActiveAmount(it) },
-                weekDates = currentWeekDates,
-                getWeekDates = { getWeekDates(it) }
-            )
+        LazyColumn(modifier = modifier.fillMaxSize()) {
+            item {
+                CalendarItem(
+                    currentDate = currentDate,
+                    onDateChanged = { updateCurrentDate(it) },
+                    getActiveAmount = { getActiveAmount(it) },
+                    weekDates = currentWeekDates,
+                    getWeekDates = { getWeekDates(it) }
+                )
+            }
             when (currentLoadingState) {
                 is CurrentLoadingState.Loading ->
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    item {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
                     }
 
-                is CurrentLoadingState.Success -> MedicinesScreen(
-                    currentLoadingState.therapyuiState,
-                    isAfterCurrentDate = isAfterCurrentDate
-                )
+                is CurrentLoadingState.Success -> {
+
+                    // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
+                    val currentMedicines = currentLoadingState.therapyuiState
+
+                    item {
+                        Card(
+                            elevation = 0.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(vertical = 29.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(
+                                    horizontal = 24.dp,
+                                    vertical = 16.dp
+                                )
+                            ) {
+                                Text(
+                                    text = "Ежедневный прогресс",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                LinearProgressIndicator(
+                                    progress = currentMedicines.progress,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .padding(top = 12.dp, bottom = 10.dp)
+                                        .height(6.dp)
+                                        .fillMaxWidth()
+                                        .clip(MaterialTheme.shapes.small)
+                                )
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Text(
+                                        text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Spacer(Modifier.weight(1f))
+                                    Text(
+                                        text = "${(currentMedicines.progress * 100).toInt()}%",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+                        }
+
+                        if (isAfterCurrentDate) {
+                            Row(modifier = Modifier.padding(bottom = 24.dp)) {
+                                Button(
+                                    onClick = {},
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFB0A3D1),
+                                        contentColor = Color.White
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Предстоящие",
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                Spacer(Modifier.weight(1f))
+                            }
+                        } else {
+                            Row(modifier = Modifier.padding(bottom = 24.dp)) {
+                                Button(
+                                    onClick = { isActiveMedicines = true },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Активные",
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                Button(
+                                    onClick = { isActiveMedicines = false },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Завершённые",
+                                        style = MaterialTheme.typography.headlineSmall
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (isAfterCurrentDate) {
+                        items(currentMedicines.currentActiveMedicines + currentMedicines.currentEndedMedicines) { medicine ->
+                            MedicineCard(
+                                medicine = medicine,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                    } else if (isActiveMedicines)
+                        items(currentMedicines.currentActiveMedicines) { medicine ->
+                            MedicineCard(
+                                medicine = medicine,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                    else
+                        items(currentMedicines.currentEndedMedicines) { medicine ->
+                            MedicineCard(
+                                medicine = medicine,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                        }
+                }
             }
         }
         FloatingButton(
             onClick = { onCreateNewMedicine() },
             modifier = Modifier.align(Alignment.BottomEnd)
         )
-    }
-}
-
-@Composable
-fun MedicinesScreen(currentMedicines: TherapyUiState, isAfterCurrentDate: Boolean) {
-    // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
-    var isActiveMedicines by remember { mutableStateOf(true) }
-    Card(
-        elevation = 0.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(vertical = 29.dp)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
-            Text(text = "Ежедневный прогресс", style = MaterialTheme.typography.bodyLarge)
-            LinearProgressIndicator(
-                progress = currentMedicines.progress,
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 10.dp)
-                    .height(6.dp)
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.small)
-            )
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = "${(currentMedicines.progress * 100).toInt()}%",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
-    }
-    if (isAfterCurrentDate) {
-        Row(modifier = Modifier.padding(bottom = 24.dp)) {
-            Button(
-                onClick = {},
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFB0A3D1),
-                    contentColor = Color.White
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Предстоящие", style = MaterialTheme.typography.headlineSmall)
-            }
-            Spacer(Modifier.width(8.dp))
-            Spacer(Modifier.weight(1f))
-        }
-    } else {
-        Row(modifier = Modifier.padding(bottom = 24.dp)) {
-            Button(
-                onClick = { isActiveMedicines = true },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                    contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Активные", style = MaterialTheme.typography.headlineSmall)
-            }
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = { isActiveMedicines = false },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                    contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Завершённые", style = MaterialTheme.typography.headlineSmall)
-            }
-        }
-    }
-    LazyColumn() {
-        if (isAfterCurrentDate) {
-            items(currentMedicines.currentActiveMedicines + currentMedicines.currentEndedMedicines) { medicine ->
-                MedicineCard(
-                    medicine = medicine,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-        }
-        else if (isActiveMedicines)
-            items(currentMedicines.currentActiveMedicines) { medicine ->
-                MedicineCard(
-                    medicine = medicine,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-        else
-            items(currentMedicines.currentEndedMedicines) { medicine ->
-                MedicineCard(
-                    medicine = medicine,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-
     }
 }
 

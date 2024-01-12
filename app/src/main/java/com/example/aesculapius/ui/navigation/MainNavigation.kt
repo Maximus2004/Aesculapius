@@ -96,6 +96,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
             )
         }
+        // включает в себя все основные компоненты
         composable(route = HomeScreen.route) {
             HomeScreen()
         }

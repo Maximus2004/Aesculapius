@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,11 +64,12 @@ fun NewMedicineScreen(
     onNavigateBack: () -> Unit,
     onClickFinishButton: (MedicineItem) -> Unit,
     currentDate: LocalDate,
+    turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentMedicineType by remember { mutableStateOf(CurrentMedicineType.Aerosol) }
 
-    BackHandler { onNavigateBack() }
+    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(onNavigateBack = { onNavigateBack() }, text = "Новый препарат")

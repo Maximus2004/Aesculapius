@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,11 +39,14 @@ object TestsScreen : NavigationDestination {
 
 @Composable
 fun TestsScreen(
-    onClickRecTest: () -> Unit = {},
-    onClickASTTest: () -> Unit = {},
-    onClickMetricsTest: () -> Unit = {},
+    onClickRecTest: () -> Unit,
+    onClickASTTest: () -> Unit,
+    onClickMetricsTest: () -> Unit,
+    turnOnBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(key1 = Unit) { turnOnBars() }
+
     LazyColumn(modifier = modifier) {
         item {
             Text(
@@ -58,61 +62,75 @@ fun TestsScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 40.dp, start = 8.dp, end = 8.dp)
             )
-            Card(
-                elevation = 0.dp,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Ввод метрик с пикфлоуметра",
-                        style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "Контролируйте состояние своих легких для лучшего здоровья",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.time_icon),
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp, top = 8.dp)
+            Box() {
+                Card(
+                    elevation = 0.dp,
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Ввод метрик с пикфлоуметра",
+                            style = MaterialTheme.typography.headlineLarge,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                            color = Color.Black
                         )
                         Text(
-                            text = "Через 6 дней",
-                            style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(top = 8.dp)
+                            text = "Контролируйте состояние своих легких для лучшего здоровья",
+                            style = MaterialTheme.typography.labelSmall
                         )
-                        Spacer(Modifier.weight(1f))
-                        Card(
+                        Row(
                             modifier = Modifier
-                                .height(40.dp)
-                                .width(106.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            backgroundColor = MaterialTheme.colorScheme.secondary
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                            Icon(
+                                painter = painterResource(id = R.drawable.time_icon),
+                                contentDescription = null,
+                                modifier = Modifier.padding(end = 8.dp, top = 8.dp)
+                            )
+                            Text(
+                                text = "Время пришло!",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                            Spacer(Modifier.weight(1f))
+                            Card(
+                                modifier = Modifier
+                                    .height(40.dp)
+                                    .width(81.dp)
+                                    .clickable { onClickMetricsTest() },
+                                shape = RoundedCornerShape(12.dp),
+                                backgroundColor = MaterialTheme.colorScheme.primary
                             ) {
-                                Text(
-                                    text = "Недоступно",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    textAlign = TextAlign.Center,
-                                    color = Color.White
-                                )
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Начать",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        textAlign = TextAlign.Center,
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
+                }
+                Canvas(
+                    modifier = Modifier
+                        .padding(top = 13.dp, start = 9.dp)
+                        .size(16.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    drawCircle(
+                        color = Color(0xFFFC3B69),
+                        center = center
+                    )
                 }
             }
             Box {
@@ -263,3 +281,23 @@ fun TestsScreen(
         }
     }
 }
+
+//Card(
+//modifier = Modifier
+//.height(40.dp)
+//.width(106.dp),
+//shape = RoundedCornerShape(12.dp),
+//backgroundColor = MaterialTheme.colorScheme.secondary
+//) {
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Text(
+//            text = "Недоступно",
+//            style = MaterialTheme.typography.headlineMedium,
+//            textAlign = TextAlign.Center,
+//            color = Color.White
+//        )
+//    }
+//}

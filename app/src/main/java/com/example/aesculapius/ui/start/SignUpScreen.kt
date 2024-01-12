@@ -151,7 +151,7 @@ fun ReminderFields(
             .padding(top = 24.dp, bottom = 16.dp)
             .clickable { onClickSetReminder(Hours.Morning) },
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(5.dp)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row() {
             Column(modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 16.dp)) {
@@ -184,7 +184,7 @@ fun ReminderFields(
             .wrapContentHeight()
             .clickable { onClickSetReminder(Hours.Evening) },
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(5.dp)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row() {
             Column(modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 16.dp)) {

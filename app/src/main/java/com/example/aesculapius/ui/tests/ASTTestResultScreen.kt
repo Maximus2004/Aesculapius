@@ -1,22 +1,22 @@
 package com.example.aesculapius.ui.tests
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +32,7 @@ object ASTTestResult : NavigationDestination {
 }
 
 @Composable
-fun ASTTestResult(onClickReturnButton: () -> Unit) {
+fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onClickReturnButton: () -> Unit) {
     val textASTResult = buildAnnotatedString {
         append("Вы ")
         withStyle(
@@ -89,8 +89,11 @@ fun ASTTestResult(onClickReturnButton: () -> Unit) {
         }
         append(" свидетельствует о неконтролируемой астме.")
     }
+
+    LaunchedEffect(key1 = Unit) { turnOffBars() }
+
     Scaffold(topBar = {
-        TopBar(text = "АСТ тестирование", onNavigateBack = { }) }) { paddingValues ->
+        TopBar(text = "АСТ тестирование", onNavigateBack = { onNavigateBack() }) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -99,12 +102,16 @@ fun ASTTestResult(onClickReturnButton: () -> Unit) {
             Text(
                 text = "Ваш результат:",
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 8.dp, top = 10.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .padding(bottom = 8.dp, top = 10.dp)
+                    .align(Alignment.CenterHorizontally)
             )
             Text(
                 text = "25 баллов",
                 style = MaterialTheme.typography.displayMedium,
-                modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .align(Alignment.CenterHorizontally)
             )
             Text(
                 text = textASTResult,
@@ -134,7 +141,7 @@ fun ASTTestResult(onClickReturnButton: () -> Unit) {
                 modifier = Modifier
                     .padding(bottom = 30.dp)
                     .height(56.dp)
-                    .width(312.dp)
+                    .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(16.dp)
             ) {
