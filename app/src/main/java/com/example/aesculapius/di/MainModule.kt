@@ -1,0 +1,28 @@
+package com.example.aesculapius.di
+
+import android.app.Application
+import android.content.Context
+import androidx.room.Room
+import com.example.aesculapius.database.AesculapiusDatabase
+import com.example.aesculapius.database.AesculapiusRepository
+import com.example.aesculapius.database.ItemDAO
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+// мы не имеем доступа к исходному коду Room, поэтому создаём модуль, который вернёт нам объект бд
+@Module
+// данный объект будет доступен любой части приложения
+@InstallIn(SingletonComponent::class)
+object MainModule {
+    // раньше делали при помощи Injection, теерь редачим не конструктор класса, а его объект
+    @Provides
+    // предоставляет объект бд, один на весь проект (Singleton)
+    @Singleton
+    // в Dagger по умолчанию есть функция, возвращающая Application, поэтому не возникет проблем
+    fun provideAesculapiusDB(application: Application): ItemDAO {
+        return AesculapiusDatabase.getDatabase(application.applicationContext).itemDao()
+    }
+}

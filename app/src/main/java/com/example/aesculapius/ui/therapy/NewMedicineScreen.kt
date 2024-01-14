@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.therapy
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -62,7 +63,15 @@ object NewMedicineScreen : NavigationDestination {
 @Composable
 fun NewMedicineScreen(
     onNavigateBack: () -> Unit,
-    onClickFinishButton: (MedicineItem) -> Unit,
+    onClickFinishButton: (
+        image: Int,
+        name: String,
+        undername: String,
+        dose: String,
+        frequency: String,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) -> Unit,
     currentDate: LocalDate,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
@@ -183,13 +192,12 @@ fun NewMedicineScreen(
                     }
                 }
             }
+            lateinit var currentMedicineItem: Medicine
             var selectedItemIndex by remember { mutableIntStateOf(0) }
             var selectedDosesIndex by remember { mutableIntStateOf(0) }
             var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
-            var summaryMedicineItem by remember { mutableStateOf<MedicineItem?>(null) }
             when (currentMedicineType) {
                 CurrentMedicineType.Aerosol -> {
-                    selectedItemIndex = 0
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesAerosol.size) { index -> medicinesAerosol[index].name },
@@ -208,20 +216,10 @@ fun NewMedicineScreen(
                         onCloseAction = { index -> selectedFrequencyIndex = index },
                         modifier = Modifier.padding(top = 40.dp)
                     )
-                    val currentMedicineItem = medicinesAerosol[selectedItemIndex]
-                    summaryMedicineItem = MedicineItem(
-                        name = currentMedicineItem.name,
-                        undername = currentMedicineItem.undername,
-                        dose = currentMedicineItem.doses[selectedDosesIndex],
-                        frequency = currentMedicineItem.frequency[selectedFrequencyIndex],
-                        startDate = currentDate,
-                        endDate = currentDate.plusMonths(1),
-                        image = currentMedicineItem.image
-                    )
+                    currentMedicineItem = medicinesAerosol[selectedItemIndex]
                 }
 
                 CurrentMedicineType.Powder -> {
-                    selectedItemIndex = 0
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesPowder.size) { index -> medicinesPowder[index].name },
@@ -240,20 +238,10 @@ fun NewMedicineScreen(
                         onCloseAction = { index -> selectedFrequencyIndex = index },
                         modifier = Modifier.padding(top = 40.dp)
                     )
-                    val currentMedicineItem = medicinesPowder[selectedItemIndex]
-                    summaryMedicineItem = MedicineItem(
-                        name = currentMedicineItem.name,
-                        undername = currentMedicineItem.undername,
-                        dose = currentMedicineItem.doses[selectedDosesIndex],
-                        frequency = currentMedicineItem.frequency[selectedFrequencyIndex],
-                        startDate = currentDate,
-                        endDate = currentDate.plusMonths(1),
-                        image = currentMedicineItem.image
-                    )
+                    currentMedicineItem = medicinesPowder[selectedItemIndex]
                 }
 
                 CurrentMedicineType.Tablets -> {
-                    selectedItemIndex = 0
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesTablets.size) { index -> medicinesTablets[index].name },
@@ -272,21 +260,22 @@ fun NewMedicineScreen(
                         onCloseAction = { index -> selectedFrequencyIndex = index },
                         modifier = Modifier.padding(top = 40.dp)
                     )
-                    val currentMedicineItem = medicinesTablets[selectedItemIndex]
-                    summaryMedicineItem = MedicineItem(
-                        name = currentMedicineItem.name,
-                        undername = currentMedicineItem.undername,
-                        dose = currentMedicineItem.doses[selectedDosesIndex],
-                        frequency = currentMedicineItem.frequency[selectedFrequencyIndex],
-                        startDate = currentDate,
-                        endDate = currentDate.plusMonths(1),
-                        image = currentMedicineItem.image
-                    )
+                    currentMedicineItem = medicinesTablets[selectedItemIndex]
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { onClickFinishButton(summaryMedicineItem!!) },
+                onClick = {
+                    Log.i("TAGTAG", currentMedicineItem.name)
+                    onClickFinishButton(
+                    currentMedicineItem.image,
+                    currentMedicineItem.name,
+                    currentMedicineItem.undername,
+                    currentMedicineItem.doses[selectedDosesIndex],
+                    currentMedicineItem.frequency[selectedFrequencyIndex],
+                    currentDate,
+                    currentDate.plusMonths(1),
+                ) },
                 modifier = Modifier
                     .padding(bottom = 30.dp)
                     .height(56.dp)

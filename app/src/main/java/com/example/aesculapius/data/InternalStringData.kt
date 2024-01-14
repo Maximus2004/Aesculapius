@@ -3,16 +3,12 @@ package com.example.aesculapius.data
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.home.NavigationItemContent
 import com.example.aesculapius.ui.home.PageType
+import com.example.aesculapius.ui.start.OnboardingItem
 import com.example.aesculapius.ui.statistics.GraphicTypeContent
 import com.example.aesculapius.ui.statistics.GraphicTypes
 import com.example.aesculapius.ui.tests.Question
 import com.example.aesculapius.ui.tests.Test
 import java.time.LocalDate
-
-data class OnboardingItem(
-    val title: String,
-    val description: String
-)
 
 enum class Hours {
     Morning,
@@ -182,5 +178,4 @@ val days = mapOf(
     "дек" to 31
 )
 
-val months =
-    listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")
+val months = listOf("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек")

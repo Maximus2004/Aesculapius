@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,11 +24,12 @@ fun TherapyNavigation(
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
+    therapyViewModel: TherapyViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    val therapyViewModel: TherapyViewModel = viewModel()
     val currentLoadingState = therapyViewModel.currentLoadingState
     val currentWeekDates = therapyViewModel.currentWeekDates.collectAsState().value
+    val isWeek = therapyViewModel.isWeek.collectAsState().value
 
     NavHost(
         navController = navController,
@@ -36,6 +38,8 @@ fun TherapyNavigation(
     ) {
         composable(route = TherapyScreen.route) {
             TherapyScreen(
+                isWeek = isWeek,
+                therapyViewModel = therapyViewModel,
                 onCreateNewMedicine = { navController.navigate(NewMedicineScreen.route) },
                 turnOnBars = { turnOnBars() },
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -44,18 +48,19 @@ fun TherapyNavigation(
                 getWeekDates = { therapyViewModel.getWeekDates(it) },
                 currentDate = therapyViewModel.getCurrentDate(),
                 updateCurrentDate = { therapyViewModel.updateCurrentDate(it) },
-                getActiveAmount = { therapyViewModel.getAmountActive(it) },
-                isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now())
+                isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now()),
+                onClickChangeWeek = { therapyViewModel.changeIsWeek(it) }
             )
         }
         composable(route = NewMedicineScreen.route) {
             NewMedicineScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onClickFinishButton = {
-                    therapyViewModel.addMedicineItem(it)
-                    navController.popBackStack()
-                    navController.navigate(TherapyScreen.route)
-                    therapyViewModel.updateCurrentDate(LocalDate.now())
+                onClickFinishButton = { image, name, undername, dose, frequency, startDate, endDate ->
+                    therapyViewModel.addMedicineItem(image, name, undername, dose, frequency, startDate, endDate)
+                    navController.navigate(TherapyScreen.route) {
+                        popUpTo(TherapyScreen.route) { inclusive = false }
+                    }
+                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 },
                 turnOffBars = { turnOffBars() },
                 currentDate = therapyViewModel.getCurrentDate(),

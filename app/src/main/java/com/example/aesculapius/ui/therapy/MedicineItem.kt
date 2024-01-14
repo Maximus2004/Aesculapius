@@ -1,11 +1,16 @@
 package com.example.aesculapius.ui.therapy
 
-import android.media.Image
 import androidx.annotation.DrawableRes
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.time.LocalDate
 
+@Entity(tableName = "medicines_items")
 data class MedicineItem(
-    @DrawableRes val image: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
+    @DrawableRes
+    val image: Int,
     val name: String,
     val undername: String,
     val dose: String,

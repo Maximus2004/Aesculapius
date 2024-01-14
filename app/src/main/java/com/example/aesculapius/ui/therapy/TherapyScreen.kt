@@ -76,15 +76,17 @@ object TherapyScreen : NavigationDestination {
 
 @Composable
 fun TherapyScreen(
+    therapyViewModel: TherapyViewModel,
     currentDate: LocalDate,
     getWeekDates: (LocalDate) -> Unit,
     updateCurrentDate: (LocalDate) -> Boolean,
     currentLoadingState: CurrentLoadingState,
     currentWeekDates: Week,
     onCreateNewMedicine: () -> Unit,
-    getActiveAmount: (LocalDate) -> Int,
     isAfterCurrentDate: Boolean,
     turnOnBars: () -> Unit,
+    isWeek: Boolean,
+    onClickChangeWeek: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isActiveMedicines by remember { mutableStateOf(true) }
@@ -94,18 +96,20 @@ fun TherapyScreen(
         LazyColumn(modifier = modifier.fillMaxSize()) {
             item {
                 CalendarItem(
+                    therapyViewModel = therapyViewModel,
                     currentDate = currentDate,
                     onDateChanged = { updateCurrentDate(it) },
-                    getActiveAmount = { getActiveAmount(it) },
                     weekDates = currentWeekDates,
-                    getWeekDates = { getWeekDates(it) }
+                    getWeekDates = { getWeekDates(it) },
+                    isWeek = isWeek,
+                    onClickChangeWeek = { onClickChangeWeek(it) }
                 )
             }
             when (currentLoadingState) {
                 is CurrentLoadingState.Loading ->
                     item {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).padding(top = 100.dp))
                         }
                     }
 
@@ -399,7 +403,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
 @Composable
 fun DayContent(
     state: DayState<DynamicSelectionState>,
-    getActiveAmount: (LocalDate) -> Int,
+    therapyViewModel: TherapyViewModel
 ) {
     var currentColorCircle by remember { mutableStateOf(Color(0xFFB0A3D1)) }
 
@@ -409,9 +413,9 @@ fun DayContent(
 
     // вынесли выполнение условий в корутину, чтобы не блокировать UI
     LaunchedEffect(key1 = Unit) {
-        currentColorCircle = withContext(Dispatchers.Main) {
+        currentColorCircle = withContext(Dispatchers.IO) {
             if (date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
-            else if (getActiveAmount(date) > 0) Color(0xFFFC3B69)
+            else if (therapyViewModel.getAmountActive(date) > 0) Color(0xFFFC3B69)
             else Color(0xFF9ED209)
         }
     }
@@ -530,12 +534,13 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
 fun CalendarItem(
     modifier: Modifier = Modifier,
     onDateChanged: (LocalDate) -> Boolean,
-    getActiveAmount: (LocalDate) -> Int,
     currentDate: LocalDate,
     weekDates: Week,
-    getWeekDates: (LocalDate) -> Unit
+    getWeekDates: (LocalDate) -> Unit,
+    therapyViewModel: TherapyViewModel,
+    isWeek: Boolean,
+    onClickChangeWeek: (Boolean) -> Unit
 ) {
-    var isWeek by remember { mutableStateOf(true) }
 //    анимасьон
 //    Column(
 //        modifier = Modifier.animateContentSize(
@@ -545,6 +550,7 @@ fun CalendarItem(
 //            )
 //        )
 //    ) {
+    // внутри ViewModel currentDate обновляется так, чтобы не триггерить recomposition календаря снова
     if (isWeek)
         SelectableWeekCalendar(
             modifier = modifier,
@@ -554,13 +560,13 @@ fun CalendarItem(
                 confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
             ),
             dayContent = { state ->
-                DayContent(state = state, getActiveAmount = { getActiveAmount(it) })
+                DayContent(state = state, therapyViewModel = therapyViewModel)
             },
             daysOfWeekHeader = { daysOfWeek ->
                 DaysOfWeekHeader(daysOfWeek = daysOfWeek)
             },
             weekHeader = { weekState ->
-                WeekHeader(weekState = weekState, onClickWeek = { isWeek = it })
+                WeekHeader(weekState = weekState, onClickWeek = { onClickChangeWeek(it) })
             }
         )
     else
@@ -572,11 +578,11 @@ fun CalendarItem(
                 confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
             ),
             dayContent = { state ->
-                DayContent(state = state, getActiveAmount = { getActiveAmount(it) })
+                DayContent(state = state, therapyViewModel = therapyViewModel)
             },
             monthHeader = { monthState ->
                 MonthHeader(monthState = monthState, onClickMonth = {
-                    isWeek = it
+                    onClickChangeWeek(it)
                     getWeekDates(currentDate)
                 })
             },
@@ -585,22 +591,4 @@ fun CalendarItem(
             }
         )
 //    }
-}
-
-@Preview
-@Composable
-fun MedCardPreview() {
-    AesculapiusTheme {
-        MedicineCard(
-            medicine = MedicineItem(
-                name = "Симбикорт Турбухалер",
-                undername = "будесонид + формотерол",
-                dose = "320/9 мкг/доза",
-                frequency = "1 доза утром",
-                image = R.drawable.medicines_example,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now()
-            )
-        )
-    }
 }
