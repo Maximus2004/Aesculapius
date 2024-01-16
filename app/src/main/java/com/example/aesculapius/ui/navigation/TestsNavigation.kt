@@ -3,8 +3,10 @@ package com.example.aesculapius.ui.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -32,7 +34,8 @@ fun TestsNavigation(
     turnOnBars: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
-    val testsViewModel: TestsViewModel = viewModel()
+    val testsViewModel: TestsViewModel = hiltViewModel()
+    val summaryScore = testsViewModel.summaryScore.collectAsState().value
 
     NavHost(
         navController = navController,
@@ -62,6 +65,7 @@ fun TestsNavigation(
                     questionsList = astTest.listOfQuestion,
                     onNavigateBack = { navController.navigateUp() },
                     onClickSummary = {
+                        testsViewModel.updateSummaryScore(it)
                         navController.navigate(ASTTestResult.route) {
                             popUpTo(TestsScreen.route) { inclusive = false }
                         }
@@ -83,7 +87,8 @@ fun TestsNavigation(
 
                 TestType.Metrics -> MetricsTestScreen(
                     onNavigateBack = { navController.navigateUp() },
-                    onClickDoneButton = {
+                    onClickDoneButton = { first, second, third ->
+                        testsViewModel.insertNewMetrics(first, second, third)
                         navController.navigate(TestsScreen.route) {
                             popUpTo(TestsScreen.route) { inclusive = false }
                         }
@@ -117,7 +122,8 @@ fun TestsNavigation(
             ASTTestResultScreen(
                 onClickReturnButton = { navController.navigate(TestsScreen.route) },
                 onNavigateBack = { navController.navigateUp() },
-                turnOffBars = { turnOffBars() }
+                turnOffBars = { turnOffBars() },
+                summaryScore = summaryScore
             )
         }
     }

@@ -2,6 +2,8 @@ package com.example.aesculapius.database
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.example.aesculapius.ui.tests.MetricsItem
+import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -22,4 +24,16 @@ interface ItemDAO {
 
     @Query("SELECT * from medicines_items WHERE (startDate <= :currentDate) AND (endDate > :currentDate)")
     suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineItem>
+
+    @Query("INSERT INTO score_items VALUES(NULL, :score, :date)")
+    suspend fun insertASTTestScore(date: LocalDate, score: Int)
+
+    @Query("SELECT * from score_items")
+    fun getAllASTResults(): Flow<List<ScoreItem>>
+
+    @Query("INSERT INTO metrics_items VALUES(NULL, :metrics, :date)")
+    suspend fun insertMetrics(metrics: Float, date: LocalDate)
+
+    @Query("SELECT * from metrics_items WHERE (date <= :endDate) AND (date >= :startDate)")
+    suspend fun getAllMetrics(startDate: LocalDate, endDate: LocalDate): List<MetricsItem>
 }

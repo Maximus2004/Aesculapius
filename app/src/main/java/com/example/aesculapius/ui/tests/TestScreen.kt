@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.tests
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -41,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.ui.TopBar
@@ -57,13 +60,14 @@ fun TestScreen(
     testName: String,
     questionsList: MutableList<Question>,
     onNavigateBack: () -> Unit,
-    onClickSummary: () -> Unit,
-    turnOffBars: () -> Unit
+    onClickSummary: (Int) -> Unit,
+    turnOffBars: () -> Unit,
 ) {
     var isAlertDialogShown by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
     val currentAnswers by remember { mutableStateOf(MutableList(questionsList.size) { -1 }) }
     var currentAnswer by remember { mutableIntStateOf(-1) }
+    val context = LocalContext.current
 
     BackHandler { onNavigateBack() }
     LaunchedEffect(key1 = Unit) { turnOffBars() }
@@ -161,8 +165,14 @@ fun TestScreen(
             Button(
                 onClick = {
                     if (currentPage == questionsList.size - 1) {
-                        currentAnswers[currentPage] = currentAnswer
-                        onClickSummary()
+                        if (-1 in currentAnswers && currentAnswer == -1) {
+                            Toast.makeText(context, "Ответьте на все вопросы", Toast.LENGTH_SHORT).show()
+                            currentAnswers[currentPage] = currentAnswer
+                        }
+                        else {
+                            currentAnswers[currentPage] = currentAnswer
+                            onClickSummary(currentAnswers.sum() + currentAnswers.size)
+                        }
                     } else {
                         currentAnswers[currentPage] = currentAnswer
                         currentPage++

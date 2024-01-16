@@ -32,8 +32,8 @@ object ASTTestResult : NavigationDestination {
 }
 
 @Composable
-fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onClickReturnButton: () -> Unit) {
-    val textASTResult = buildAnnotatedString {
+fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onClickReturnButton: () -> Unit, summaryScore: Int) {
+    val textASTResultGood = buildAnnotatedString {
         append("Вы ")
         withStyle(
             style = SpanStyle(
@@ -46,6 +46,39 @@ fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onC
             append("полностью контролировали")
         }
         append(" астму за последние 4 недели. У Вас не было симптомов астмы и связанных с ней ограничений. Проконсультируйтесь с врачом, если ситуация изменится.")
+    }
+    val textASTResultMedium = buildAnnotatedString {
+        append("За последние 4 недели Вы ")
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            append("хорошо контролировали")
+        }
+        append(" астму, но ")
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            append("не полностью.")
+        }
+        append(" Ваш врач поможет Вам добиться полного контроля.")
+    }
+    val textASTResultBad = buildAnnotatedString {
+        append("Вам ")
+        withStyle(
+            style = SpanStyle(
+                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            append("не удавалось контролировать")
+        }
+        append(" астму. Ваш врач может посоветовать Вам, какие меры нужно применять, чтобы добиться улучшения контроля над Вашим заболеванием.")
     }
     val textASTGoodResult = buildAnnotatedString {
         append("Сумма ")
@@ -107,14 +140,14 @@ fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onC
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "25 баллов",
+                text = "$summaryScore баллов",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .padding(bottom = 24.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = textASTResult,
+                text = if (summaryScore == 25) textASTResultGood else if (summaryScore in 20..24) textASTResultMedium else textASTResultBad,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 40.dp),
             )

@@ -39,7 +39,7 @@ import com.example.aesculapius.ui.theme.AesculapiusTheme
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MetricsTestScreen(
-    onClickDoneButton: () -> Unit,
+    onClickDoneButton: (first: Float, second: Float, third: Float) -> Unit,
     onNavigateBack: () -> Unit,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
@@ -123,13 +123,13 @@ fun MetricsTestScreen(
             Button(
                 onClick = {
                     try {
-                        val temp1 = firstMetrics.toInt()
-                        val temp2 = secondMetrics.toInt()
-                        val temp3 = thirdMetrics.toInt()
+                        val temp1 = firstMetrics.toFloat()
+                        val temp2 = secondMetrics.toFloat()
+                        val temp3 = thirdMetrics.toFloat()
                         if (temp1 < 0 || temp2 < 0 || temp3 < 0)
                             throw IllegalArgumentException("Неверный формат метрик")
                         else
-                            onClickDoneButton()
+                            onClickDoneButton(temp1, temp2, temp3)
                     } catch (e: NumberFormatException) {
                         Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
                             .show()

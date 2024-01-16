@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         AndroidThreeTen.init(this)
         setContent {
             AesculapiusTheme {
-                MainScreen()
+                HomeScreen()
             }
         }
     }

@@ -1,10 +1,7 @@
 package com.example.aesculapius.ui.statistics
 
-import android.graphics.Paint
 import android.graphics.Typeface
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,7 +32,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,12 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.aesculapius.R
 import com.example.aesculapius.data.graphicsNavigationItemContentList
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.rememberEndAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.column.columnChart
@@ -59,23 +51,16 @@ import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
 import com.patrykandpatrick.vico.compose.component.shapeComponent
 import com.patrykandpatrick.vico.compose.component.textComponent
-import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
-import com.patrykandpatrick.vico.compose.style.ChartStyle
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.compose.style.currentChartStyle
-import com.patrykandpatrick.vico.core.DefaultDimens
 import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
-import com.patrykandpatrick.vico.core.axis.AxisPosition
-import com.patrykandpatrick.vico.core.axis.formatter.PercentageFormatAxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
-import com.patrykandpatrick.vico.core.chart.column.ColumnChart
 import com.patrykandpatrick.vico.core.chart.decoration.ThresholdLine
 import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
-import com.patrykandpatrick.vico.core.extension.half
 import com.patrykandpatrick.vico.core.marker.Marker
 import com.patrykandpatrick.vico.core.marker.MarkerVisibilityChangeListener
 import java.time.LocalDate
@@ -83,26 +68,20 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 import com.patrykandpatrick.vico.core.component.shape.Shapes
-import com.patrykandpatrick.vico.core.component.text.VerticalPosition
-import com.patrykandpatrick.vico.core.entry.ChartModelProducer
 
 @Composable
 fun StatisticsScreen(modifier: Modifier = Modifier) {
-    val statisticsViewModel: StatisticsViewModel = viewModel()
-    val staticsUiState = statisticsViewModel.staticsUiState.collectAsState().value
+    val statisticsViewModel: StatisticsViewModel = hiltViewModel()
+    val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
+    val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
+    val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
+    val datesForLineChart = statisticsViewModel.listLocalDate.collectAsState().value
+    val modelProducerLine = statisticsViewModel.chartEntryModelLine.collectAsState().value
 
     var isLineChart by remember { mutableStateOf(true) }
 
-    // can't init with by, because fun hasn't get
-    val modelProducer = remember { ChartEntryModelProducer() }
-    val modelProducerColumn = remember { ChartEntryModelProducer() }
-
     // dates for bar and line charts, setting styles for line charts
     val datasetLineSpec = remember { arrayListOf<LineChart.LineSpec>() }
-    val datasetForModel = remember { mutableStateListOf<List<FloatEntry>>() }
-    val datasetForModelColumn = remember { mutableStateListOf<List<FloatEntry>>() }
-    val datasetDates = remember { arrayListOf<LocalDate>() }
-    val datasetDatesColumn = remember { arrayListOf<LocalDate>() }
 
     // states for data changes
     var dateText by remember { mutableStateOf(LocalDate.now()) }
@@ -111,22 +90,8 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
     var dateBegin by remember { mutableStateOf(LocalDate.now().minusDays(6)) }
 
     // CouroutineScope launches every time when key changes (imitation of fetching data)
-    LaunchedEffect(key1 = staticsUiState) {
-        datasetForModel.clear()
+    LaunchedEffect(key1 = statisticsUiState) {
         datasetLineSpec.clear()
-        datasetDates.clear()
-        datasetForModelColumn.clear()
-        datasetDatesColumn.clear()
-
-        // fetch data for column chart (get points and dates for every x)
-        var xPosColumn = 0f
-        val dataColumnPoints = arrayListOf<FloatEntry>()
-        for (i in 1..12) {
-            val randomYFloat = (0..25).random().toFloat()
-            dataColumnPoints.add(FloatEntry(x = xPosColumn, y = randomYFloat))
-            xPosColumn += 1f
-            datasetDatesColumn.add(LocalDate.now().minusMonths((12 - i).toLong()))
-        }
 
         // setting styles for line chart
         datasetLineSpec.add(
@@ -137,82 +102,42 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
         )
 
         // depending on different time periods, set dateBegin, dataPoints and datasetDates
-        var xPos = 0f
-        val dataPoints = arrayListOf<FloatEntry>()
-        when (staticsUiState.graphicTypes) {
+        when (statisticsUiState.graphicTypes) {
             GraphicTypes.Week -> {
-                dateBegin = LocalDate.now().minusDays(6)
-                for (i in 1..7) {
-                    val randomYFloat = (0..500).random().toFloat()
-                    dataPoints.add(FloatEntry(x = xPos, y = randomYFloat))
-                    xPos += 1f
-                    datasetDates.add(LocalDate.now().minusDays((7 - i).toLong()))
-                }
+                statisticsViewModel.setMetricsOnDatesShort(
+                    LocalDate.now().minusWeeks(1),
+                    LocalDate.now()
+                )
             }
 
             GraphicTypes.Month -> {
-                dateBegin = LocalDate.now().minusMonths(1)
-                for (i in 1..ChronoUnit.DAYS.between(dateBegin, LocalDate.now())) {
-                    val randomYFloat = (0..500).random().toFloat()
-                    dataPoints.add(FloatEntry(x = xPos, y = randomYFloat))
-                    xPos += 1f
-                    datasetDates.add(LocalDate.now().minusDays((30 - i).toLong()))
-                }
+                statisticsViewModel.setMetricsOnDatesShort(
+                    LocalDate.now().minusMonths(1),
+                    LocalDate.now()
+                )
             }
 
             GraphicTypes.ThreeMonths -> {
-                dateBegin = LocalDate.now().minusMonths(3)
-                var tempSum = 0.0f
-                for (i in 1..ChronoUnit.DAYS.between(dateBegin, LocalDate.now())) {
-                    val randomYFloat = (0..500).random().toFloat()
-                    tempSum += randomYFloat
-                    if ((i % 7).toInt() == 0) {
-                        dataPoints.add(FloatEntry(x = xPos, y = tempSum / 7))
-                        xPos += 1f
-                        datasetDates.add(LocalDate.now().minusDays((90 - i)))
-                        tempSum = 0.0f
-                    }
-                }
+                statisticsViewModel.setMetricsOnDatesLong(
+                    LocalDate.now().minusMonths(3),
+                    LocalDate.now()
+                )
             }
 
             GraphicTypes.HalfYear -> {
-                dateBegin = LocalDate.now().minusMonths(6)
-                var tempSum = 0.0f
-                for (i in 1..ChronoUnit.DAYS.between(dateBegin, LocalDate.now())) {
-                    val randomYFloat = (0..500).random().toFloat()
-                    tempSum += randomYFloat
-                    if ((i % 7).toInt() == 0) {
-                        dataPoints.add(FloatEntry(x = xPos, y = tempSum / 7))
-                        xPos += 1f
-                        datasetDates.add(LocalDate.now().minusDays((180 - i)))
-                        tempSum = 0.0f
-                    }
-                }
+                statisticsViewModel.setMetricsOnDatesLong(
+                    LocalDate.now().minusMonths(6),
+                    LocalDate.now()
+                )
             }
 
             else -> {
-                dateBegin = LocalDate.now().minusYears(1)
-                var tempSum = 0.0f
-                for (i in 1..ChronoUnit.DAYS.between(dateBegin, LocalDate.now())) {
-                    val randomYFloat = (0..500).random().toFloat()
-                    tempSum += randomYFloat
-                    if ((i % 7).toInt() == 0) {
-                        dataPoints.add(FloatEntry(x = xPos, y = tempSum / 7))
-                        xPos += 1f
-                        datasetDates.add(LocalDate.now().minusDays((364 - i)))
-                        tempSum = 0.0f
-                    }
-                }
+                statisticsViewModel.setMetricsOnDatesLong(
+                    LocalDate.now().minusYears(1),
+                    LocalDate.now()
+                )
             }
         }
-
-        // add points to model for line chart
-        datasetForModel.add(dataPoints)
-        modelProducer.setEntries(datasetForModel)
-
-        // add points to model for column chart
-        datasetForModelColumn.add(dataColumnPoints)
-        modelProducerColumn.setEntries(datasetForModelColumn)
     }
     Box() {
         LazyColumn(modifier = modifier) {
@@ -240,7 +165,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                                 )
                             else
                                 DisplayDatesForLine(
-                                    graphicTypes = staticsUiState.graphicTypes,
+                                    graphicTypes = statisticsUiState.graphicTypes,
                                     dateText = dateText, dateBegin = dateBegin
                                 )
                         }
@@ -294,9 +219,8 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                     ProvideChartStyle {
                         if (isLineChart)
                             ShowLineChart(
-                                datasetForModel = datasetForModel,
-                                datasetDates = datasetDates,
-                                modelProducer = modelProducer,
+                                datasetDates = datesForLineChart,
+                                modelProducer = modelProducerLine,
                                 datasetLineSpec = datasetLineSpec,
                                 onChangeMarker = { dateText = it },
                                 typeface = customTypeface
@@ -306,9 +230,10 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                                 typeface = customTypeface,
                                 onDataChanged = { x, y ->
                                     pointsAmountText = y
-                                    dateTextColumn = datasetDatesColumn[x]
+                                    dateTextColumn = datesForColumnChart[x]
                                 },
-                                modelProducerColumn = modelProducerColumn
+                                modelProducerColumn = modelProducerColumn,
+                                amountPoints = datesForColumnChart.size
                             )
                         }
                     }
@@ -326,8 +251,8 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                                     .wrapContentWidth()
                                     .clickable { statisticsViewModel.updateCurrentNavType(it) }
                                     .padding(end = 3.dp),
-                                backgroundColor = if (it == staticsUiState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-                                contentColor = if (it == staticsUiState) Color.White else MaterialTheme.colorScheme.primary,
+                                backgroundColor = if (it == statisticsUiState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
+                                contentColor = if (it == statisticsUiState) Color.White else MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(12.dp),
                                 elevation = 0.dp
                             ) {
@@ -354,7 +279,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 8.dp, start = 23.dp, end = 23.dp)
                 )
-                Spacer(Modifier.height(90.dp))
+                Spacer(Modifier.height(130.dp))
             }
         }
         Button(
@@ -378,6 +303,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun ShowColumnChart(
+    amountPoints: Int,
     typeface: Typeface,
     modelProducerColumn: ChartEntryModelProducer,
     onDataChanged: (Int, Int) -> Unit
@@ -391,7 +317,7 @@ fun ShowColumnChart(
                 defaultColumns.map { _ ->
                     LineComponent(
                         color = Color(0xFF6750A4).toArgb(),
-                        thicknessDp = 8f,
+                        thicknessDp = 6f,
                         shape = Shapes.roundedCornerShape(
                             topLeftPercent = 40,
                             topRightPercent = 40,
@@ -404,7 +330,7 @@ fun ShowColumnChart(
             decorations = remember(thresholdLineNullLevel) {
                 listOf(thresholdLineNullLevel)
             },
-            spacing = 14.dp
+            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 300.dp
         ),
         chartModelProducer = modelProducerColumn,
         isZoomEnabled = false,
@@ -577,77 +503,74 @@ private fun rememberNullLevel(customTypeface: Typeface): ThresholdLine {
 
 @Composable
 fun ShowLineChart(
-    datasetForModel: SnapshotStateList<List<FloatEntry>>,
     datasetLineSpec: ArrayList<LineChart.LineSpec>,
     modelProducer: ChartEntryModelProducer,
-    datasetDates: ArrayList<LocalDate>,
+    datasetDates: MutableList<LocalDate>,
     onChangeMarker: (LocalDate) -> Unit,
     typeface: Typeface
 ) {
-    if (datasetForModel.isNotEmpty()) {
-        val thresholdLine = rememberNullLevel(typeface)
-        Chart(
-            chart = lineChart(
-                lines = datasetLineSpec,
-                decorations = remember(thresholdLine) { listOf(thresholdLine) }
+    val thresholdLine = rememberNullLevel(typeface)
+    Chart(
+        chart = lineChart(
+            lines = datasetLineSpec,
+            decorations = remember(thresholdLine) { listOf(thresholdLine) }
+        ),
+        chartModelProducer = modelProducer,
+        isZoomEnabled = false,
+        chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
+        startAxis = rememberStartAxis(
+            label = textComponent(
+                color = MaterialTheme.colorScheme.secondary,
+                textSize = 12.sp,
+                typeface = typeface
             ),
-            chartModelProducer = modelProducer,
-            isZoomEnabled = false,
-            chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
-            startAxis = rememberStartAxis(
-                label = textComponent(
-                    color = MaterialTheme.colorScheme.secondary,
-                    textSize = 12.sp,
-                    typeface = typeface
-                ),
-                valueFormatter = { value, _ -> value.toInt().toString() },
-                tickLength = 0.dp,
-                tick = LineComponent(color = Color.Transparent.toArgb()),
-                axis = LineComponent(color = Color.Transparent.toArgb()),
-                verticalLabelPosition = VerticalAxis.VerticalLabelPosition.Top,
-                horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
-                itemPlacer = AxisItemPlacer.Vertical.default(maxItemCount = 6),
-                guideline = LineComponent(
-                    strokeColor = MaterialTheme.colorScheme.onSurface.toArgb(),
-                    color = MaterialTheme.colorScheme.onSurface.toArgb(),
-                    thicknessDp = 1f
-                )
+            valueFormatter = { value, _ -> value.toInt().toString() },
+            tickLength = 0.dp,
+            tick = LineComponent(color = Color.Transparent.toArgb()),
+            axis = LineComponent(color = Color.Transparent.toArgb()),
+            verticalLabelPosition = VerticalAxis.VerticalLabelPosition.Top,
+            horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
+            itemPlacer = AxisItemPlacer.Vertical.default(maxItemCount = 6),
+            guideline = LineComponent(
+                strokeColor = MaterialTheme.colorScheme.onSurface.toArgb(),
+                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                thicknessDp = 1f
+            )
+        ),
+        horizontalLayout = HorizontalLayout.FullWidth(
+            unscalableStartPaddingDp = 45f,
+            unscalableEndPaddingDp = 20f
+        ),
+        bottomAxis = rememberBottomAxis(
+            label = null,
+            axis = LineComponent(
+                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                thicknessDp = 1f
             ),
-            horizontalLayout = HorizontalLayout.FullWidth(
-                unscalableStartPaddingDp = 45f,
-                unscalableEndPaddingDp = 20f
-            ),
-            bottomAxis = rememberBottomAxis(
-                label = null,
-                axis = LineComponent(
-                    color = MaterialTheme.colorScheme.onSurface.toArgb(),
-                    thicknessDp = 1f
-                ),
-                tickLength = 0.dp,
-                guideline = null
-            ),
-            marker = rememberMarker(),
-            markerVisibilityChangeListener = object : MarkerVisibilityChangeListener {
-                // update data when on marker moved
-                override fun onMarkerMoved(
-                    marker: Marker,
-                    markerEntryModels: List<Marker.EntryModel>,
-                ) {
-                    super.onMarkerMoved(marker, markerEntryModels)
-                    onChangeMarker(datasetDates[markerEntryModels.first().entry.x.toInt()])
-                }
-
-                // update data on marker shown
-                override fun onMarkerShown(
-                    marker: Marker,
-                    markerEntryModels: List<Marker.EntryModel>
-                ) {
-                    super.onMarkerShown(marker, markerEntryModels)
-                    onChangeMarker(datasetDates[markerEntryModels.first().entry.x.toInt()])
-                }
+            tickLength = 0.dp,
+            guideline = null
+        ),
+        marker = rememberMarker(),
+        markerVisibilityChangeListener = object : MarkerVisibilityChangeListener {
+            // update data when on marker moved
+            override fun onMarkerMoved(
+                marker: Marker,
+                markerEntryModels: List<Marker.EntryModel>,
+            ) {
+                super.onMarkerMoved(marker, markerEntryModels)
+                onChangeMarker(datasetDates[markerEntryModels.first().entry.x.toInt()])
             }
-        )
-    }
+
+            // update data on marker shown
+            override fun onMarkerShown(
+                marker: Marker,
+                markerEntryModels: List<Marker.EntryModel>
+            ) {
+                super.onMarkerShown(marker, markerEntryModels)
+                onChangeMarker(datasetDates[markerEntryModels.first().entry.x.toInt()])
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

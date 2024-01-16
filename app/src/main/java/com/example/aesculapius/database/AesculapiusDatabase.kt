@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.aesculapius.ui.tests.MetricsItem
+import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
 
-@Database(entities = [MedicineItem::class], version = 1, exportSchema = false)
+@Database(entities = [MedicineItem::class, ScoreItem::class, MetricsItem::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AesculapiusDatabase: RoomDatabase() {
     abstract fun itemDao(): ItemDAO
