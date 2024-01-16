@@ -28,7 +28,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,14 +59,13 @@ import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.marker.Marker
 import com.patrykandpatrick.vico.core.marker.MarkerVisibilityChangeListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 import com.patrykandpatrick.vico.core.component.shape.Shapes
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun StatisticsScreen(modifier: Modifier = Modifier) {
@@ -75,67 +73,54 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
     val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
     val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
     val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
-    val datesForLineChart = statisticsViewModel.listLocalDate.collectAsState().value
+    val datesForLineChart = statisticsViewModel.datesForLineChart.collectAsState().value
     val modelProducerLine = statisticsViewModel.chartEntryModelLine.collectAsState().value
 
     var isLineChart by remember { mutableStateOf(true) }
 
     // dates for bar and line charts, setting styles for line charts
     val datasetLineSpec = remember { arrayListOf<LineChart.LineSpec>() }
+    // setting styles for line chart
+    datasetLineSpec.add(
+        LineChart.LineSpec(
+            lineColor = Color(0xFF6750A4).toArgb(),
+            lineThicknessDp = 4f
+        )
+    )
 
     // states for data changes
-    var dateText by remember { mutableStateOf(LocalDate.now()) }
+    var dateTextLine by remember { mutableStateOf(LocalDate.now()) }
     var dateTextColumn by remember { mutableStateOf(LocalDate.now()) }
     var pointsAmountText by remember { mutableIntStateOf(-1) }
     var dateBegin by remember { mutableStateOf(LocalDate.now().minusDays(6)) }
 
     // CouroutineScope launches every time when key changes (imitation of fetching data)
     LaunchedEffect(key1 = statisticsUiState) {
-        datasetLineSpec.clear()
-
-        // setting styles for line chart
-        datasetLineSpec.add(
-            LineChart.LineSpec(
-                lineColor = Color(0xFF6750A4).toArgb(),
-                lineThicknessDp = 4f
-            )
-        )
-
         // depending on different time periods, set dateBegin, dataPoints and datasetDates
         when (statisticsUiState.graphicTypes) {
             GraphicTypes.Week -> {
-                statisticsViewModel.setMetricsOnDatesShort(
-                    LocalDate.now().minusWeeks(1),
-                    LocalDate.now()
-                )
+                dateBegin = LocalDate.now().minusWeeks(1)
+                statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
             }
 
             GraphicTypes.Month -> {
-                statisticsViewModel.setMetricsOnDatesShort(
-                    LocalDate.now().minusMonths(1),
-                    LocalDate.now()
-                )
+                dateBegin = LocalDate.now().minusMonths(1)
+                statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
             }
 
             GraphicTypes.ThreeMonths -> {
-                statisticsViewModel.setMetricsOnDatesLong(
-                    LocalDate.now().minusMonths(3),
-                    LocalDate.now()
-                )
+                dateBegin = LocalDate.now().minusMonths(3)
+                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
             }
 
             GraphicTypes.HalfYear -> {
-                statisticsViewModel.setMetricsOnDatesLong(
-                    LocalDate.now().minusMonths(6),
-                    LocalDate.now()
-                )
+                dateBegin = LocalDate.now().minusMonths(6)
+                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
             }
 
             else -> {
-                statisticsViewModel.setMetricsOnDatesLong(
-                    LocalDate.now().minusYears(1),
-                    LocalDate.now()
-                )
+                dateBegin = LocalDate.now().minusYears(1)
+                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
             }
         }
     }
@@ -166,7 +151,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                             else
                                 DisplayDatesForLine(
                                     graphicTypes = statisticsUiState.graphicTypes,
-                                    dateText = dateText, dateBegin = dateBegin
+                                    dateText = dateTextLine, dateBegin = dateBegin
                                 )
                         }
                         Spacer(Modifier.weight(1f))
@@ -222,10 +207,10 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                                 datasetDates = datesForLineChart,
                                 modelProducer = modelProducerLine,
                                 datasetLineSpec = datasetLineSpec,
-                                onChangeMarker = { dateText = it },
+                                onChangeMarker = { dateTextLine = it },
                                 typeface = customTypeface
                             )
-                        else {
+                        else
                             ShowColumnChart(
                                 typeface = customTypeface,
                                 onDataChanged = { x, y ->
@@ -235,7 +220,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                                 modelProducerColumn = modelProducerColumn,
                                 amountPoints = datesForColumnChart.size
                             )
-                        }
+
                     }
                 }
                 if (isLineChart) {
@@ -330,7 +315,7 @@ fun ShowColumnChart(
             decorations = remember(thresholdLineNullLevel) {
                 listOf(thresholdLineNullLevel)
             },
-            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 300.dp
+            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 200.dp
         ),
         chartModelProducer = modelProducerColumn,
         isZoomEnabled = false,

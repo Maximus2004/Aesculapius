@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.statistics
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aesculapius.database.AesculapiusRepository
@@ -16,9 +17,11 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
-class StatisticsViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository) : ViewModel() {
+class StatisticsViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository) :
+    ViewModel() {
     private val _statisticsUiState = MutableStateFlow(GraphicTypeContent())
     val statisticsUiState: StateFlow<GraphicTypeContent> = _statisticsUiState
 
@@ -29,7 +32,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     val chartEntryModelLine = _chartEntryModelLine
 
     private val _listLocalDate = MutableStateFlow(mutableListOf<LocalDate>())
-    val listLocalDate = _listLocalDate
+    val datesForLineChart = _listLocalDate
 
     // отслеживаем, когда приходят новые изменения и разбиваем данные на точки и даты для каждой точки
     val datesForColumnChart = aesculapiusRepository.getAllASTResults().map {
@@ -50,6 +53,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
 
     fun setMetricsOnDatesShort(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
+        _listLocalDate.value = mutableListOf()
         aesculapiusRepository.getAllMetrics(startDate, endDate).forEachIndexed { index, item ->
             tempEntries.add(FloatEntry(index.toFloat(), item.metrics))
             _listLocalDate.value.add(item.date)
@@ -57,23 +61,32 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
         _chartEntryModelLine.value.setEntries(tempEntries)
     }
 
+    fun initLineChartData() = viewModelScope.launch {
+        aesculapiusRepository.deleteAllMetrics()
+        repeat(20) { index ->
+            aesculapiusRepository.insertMetrics(Random.nextFloat()*1000, LocalDate.now().minusDays((20 - index).toLong()))
+        }
+    }
+
     fun setMetricsOnDatesLong(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
-        var newStartDate = startDate
-        var newEndDate = endDate
-        while (newStartDate.dayOfWeek != DayOfWeek.SUNDAY) {
-            newStartDate = newStartDate.minusDays(1)
-            newEndDate = newEndDate.minusDays(1)
-        }
+        _listLocalDate.value = mutableListOf()
         var tempCount = 0f
-        aesculapiusRepository.getAllMetrics(newStartDate, newEndDate).forEachIndexed { index, item ->
-            tempCount += item.metrics
-            if (index % 7 == 6) {
-                tempEntries.add(FloatEntry(((index + 1) / 7).toFloat(), String.format("%.1f", tempCount / 7).replace(",", ".").toFloat()))
-                _listLocalDate.value.add(item.date.minusDays(6))
-                tempCount = 0f
+        aesculapiusRepository.getAllMetrics(startDate, endDate)
+            .forEachIndexed { index, item ->
+                tempCount += item.metrics
+                if (index % 7 == 6) {
+                    tempEntries.add(
+                        FloatEntry(
+                            ((index + 1) / 7 - 1).toFloat(),
+                            String.format("%.1f", tempCount / 7).replace(",", ".").toFloat()
+                        )
+                    )
+                    Log.i("TAGTAG", item.metrics.toString())
+                    _listLocalDate.value.add(item.date.minusDays(6))
+                    tempCount = 0f
+                }
             }
-        }
         _chartEntryModelLine.value.setEntries(tempEntries)
     }
 

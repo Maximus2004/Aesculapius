@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class TestsViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository): ViewModel() {

@@ -40,6 +40,10 @@ class AesculapiusRepository @Inject constructor(val itemDAO: ItemDAO) {
         return itemDAO.getAllMetrics(startDate, endDate)
     }
 
+    suspend fun deleteAllMetrics() {
+        itemDAO.deleteAllMetrics()
+    }
+
     suspend fun insertMetrics(metrics: Float, date: LocalDate) {
         return itemDAO.insertMetrics(metrics, date)
     }

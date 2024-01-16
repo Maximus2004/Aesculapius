@@ -36,4 +36,7 @@ interface ItemDAO {
 
     @Query("SELECT * from metrics_items WHERE (date <= :endDate) AND (date >= :startDate)")
     suspend fun getAllMetrics(startDate: LocalDate, endDate: LocalDate): List<MetricsItem>
+
+    @Query("DELETE from metrics_items")
+    suspend fun deleteAllMetrics()
 }
