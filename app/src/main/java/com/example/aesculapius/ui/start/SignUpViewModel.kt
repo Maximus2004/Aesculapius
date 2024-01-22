@@ -42,14 +42,4 @@ class SignUpViewModel : ViewModel() {
             it.copy(birthday = date)
         }
     }
-    fun onMorningTimeChanged(time: LocalTime) {
-        _uiStateSignUp.update {
-            it.copy(reminderMorning = time)
-        }
-    }
-    fun onEveningTimeChanged(time: LocalTime) {
-        _uiStateSignUp.update {
-            it.copy(reminderEvening = time)
-        }
-    }
 }

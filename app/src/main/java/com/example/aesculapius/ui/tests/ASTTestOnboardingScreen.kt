@@ -43,9 +43,7 @@ fun ASTTestOnboardingScreen(
         append("Каждую неделю отвечайте на несколько вопросов в анкете. Это займет всего ")
         withStyle(
             style = SpanStyle(
-                fontFamily = Roboto,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.primary
             )
         ) {
@@ -54,9 +52,7 @@ fun ASTTestOnboardingScreen(
         append(" и поможет вам и вашему врачу лучше понимать вашу астму. Вопросы о вашем самочувствии, симптомах и образе жизни помогут сформировать полную картину")
         withStyle(
             style = SpanStyle(
-                fontFamily = Roboto,
                 fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.primary
             )
         ) {

@@ -3,8 +3,11 @@ package com.example.aesculapius
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.aesculapius.ui.home.HomeScreen
-import com.example.aesculapius.ui.navigation.MainScreen
+import com.example.aesculapius.ui.navigation.MainNavigation
+import com.example.aesculapius.ui.profile.ProfileViewModel
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,7 +19,23 @@ class MainActivity : ComponentActivity() {
         AndroidThreeTen.init(this)
         setContent {
             AesculapiusTheme {
-                HomeScreen()
+                val profileViewModel: ProfileViewModel = hiltViewModel()
+                val isUserRegistered = profileViewModel.isUserRegistered.collectAsState().value
+                val morningReminder = profileViewModel.morningReminder.collectAsState().value
+                val eveningReminder = profileViewModel.eveningReminder.collectAsState().value
+                if (isUserRegistered) HomeScreen(
+                    morningReminder = morningReminder,
+                    eveningReminder = eveningReminder,
+                    saveMorningReminder = { profileViewModel.saveMorningTime(it) },
+                    saveEveningReminder = { profileViewModel.saveEveningTime(it) }
+                )
+                else MainNavigation(
+                    morningReminder = morningReminder,
+                    eveningReminder = eveningReminder,
+                    saveMorningReminder = { profileViewModel.saveMorningTime(it) },
+                    saveEveningReminder = { profileViewModel.saveEveningTime(it) },
+                    onEndRegistration = { profileViewModel.changeUser(true) }
+                )
             }
         }
     }

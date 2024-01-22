@@ -13,16 +13,30 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
+import com.example.aesculapius.data.Hours
+import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import java.time.LocalTime
+
+object ProfileScreen : NavigationDestination {
+    override val route = "ProfileScreen"
+}
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
+fun ProfileScreen(
+    turnOnBars: () -> Unit,
+    onClickSetReminder: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(key1 = Unit) { turnOnBars() }
+
     Column(modifier = modifier.fillMaxSize()) {
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -51,7 +65,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
             elevation = 0.dp
         ) {
             Column {
-                SingleItem(image = R.drawable.timer_icon, name = "Настройка напоминаний")
+                SingleItem(image = R.drawable.timer_icon, name = "Настройка напоминаний", onClick = { onClickSetReminder() })
                 Divider(
                     color = MaterialTheme.colorScheme.secondary,
                     thickness = 1.dp,
@@ -71,10 +85,10 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SingleItem(image: Int, name: String) {
+fun SingleItem(image: Int, name: String, onClick: () -> Unit = {}) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
+        modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp).clickable { onClick() }
     ) {
         Image(painter = painterResource(id = image), contentDescription = null)
         Text(
@@ -82,13 +96,5 @@ fun SingleItem(image: Int, name: String) {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    AesculapiusTheme {
-        ProfileScreen()
     }
 }

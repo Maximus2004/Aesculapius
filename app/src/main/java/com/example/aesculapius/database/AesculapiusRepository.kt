@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
-class AesculapiusRepository @Inject constructor(val itemDAO: ItemDAO) {
+class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
     suspend fun insertMedicineItem(
         image: Int,
         name: String,

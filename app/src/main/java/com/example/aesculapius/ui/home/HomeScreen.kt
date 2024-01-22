@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.navigation.ProfileNavigation
 import com.example.aesculapius.ui.navigation.TestsNavigation
 import com.example.aesculapius.ui.navigation.TherapyNavigation
 import com.example.aesculapius.ui.profile.ProfileScreen
@@ -43,13 +44,20 @@ import com.example.aesculapius.ui.statistics.StatisticsScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
+import java.time.LocalTime
 
-object HomeScreen: NavigationDestination {
+object HomeScreen : NavigationDestination {
     override val route = "HomeScreen"
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    morningReminder: LocalTime,
+    eveningReminder: LocalTime,
+    saveMorningReminder: (LocalTime) -> Unit,
+    saveEveningReminder: (LocalTime) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val homeViewModel: HomeViewModel = viewModel()
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
@@ -76,13 +84,17 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
         ) {
             when (homeUiState.currentPage) {
-                PageType.Therapy -> TherapyNavigation(turnOffBars = { isBarsDisplayed = false }, turnOnBars = { isBarsDisplayed = true })
-                PageType.Profile -> ProfileScreen(
-                    modifier = Modifier.padding(
-                        top = 24.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    )
+                PageType.Therapy -> TherapyNavigation(
+                    turnOffBars = { isBarsDisplayed = false },
+                    turnOnBars = { isBarsDisplayed = true })
+
+                PageType.Profile -> ProfileNavigation(
+                    morningReminder = morningReminder,
+                    eveningReminder = eveningReminder,
+                    saveMorningReminder = { saveMorningReminder(it) },
+                    saveEveningReminder = { saveEveningReminder(it) },
+                    turnOffBars = { isBarsDisplayed = false },
+                    turnOnBars = { isBarsDisplayed = true }
                 )
 
                 PageType.Statistics -> StatisticsScreen(
@@ -92,7 +104,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         .background(color = Color.White)
                 )
 
-                PageType.Tests -> TestsNavigation(turnOffBars = { isBarsDisplayed = false }, turnOnBars = { isBarsDisplayed = true })
+                PageType.Tests -> TestsNavigation(
+                    turnOffBars = { isBarsDisplayed = false },
+                    turnOnBars = { isBarsDisplayed = true })
             }
         }
     }
@@ -168,13 +182,5 @@ fun BottomNavigationBar(
                 alwaysShowLabel = false,
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CalendarPreview() {
-    AesculapiusTheme {
-        HomeScreen()
     }
 }

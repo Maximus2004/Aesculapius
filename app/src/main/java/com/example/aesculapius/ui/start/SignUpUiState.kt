@@ -10,6 +10,4 @@ data class SignUpUiState(
     val birthday: LocalDate = LocalDate.now(),
     val height: String = "",
     val weight: String = "",
-    val reminderMorning: LocalTime = LocalTime.now(),
-    val reminderEvening: LocalTime = LocalTime.now()
 )

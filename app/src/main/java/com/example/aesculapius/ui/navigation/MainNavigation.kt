@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,10 +21,18 @@ import com.example.aesculapius.ui.start.OnboardingScreen
 import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
 import com.example.aesculapius.ui.start.SignUpViewModel
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
+fun MainNavigation(
+    morningReminder: LocalTime,
+    eveningReminder: LocalTime,
+    saveMorningReminder: (LocalTime) -> Unit,
+    saveEveningReminder: (LocalTime) -> Unit,
+    onEndRegistration: () -> Unit,
+    navController: NavHostController = rememberNavController()
+) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
@@ -50,24 +57,26 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             when (arg) {
                 Hours.Morning -> SetReminderTime(
                     title = "Утреннее напоминание",
-                    textHours = signUpUiState.reminderMorning.format(DateTimeFormatter.ofPattern("HH")),
-                    textMinutes = signUpUiState.reminderMorning.format(DateTimeFormatter.ofPattern("mm")),
+                    textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                    textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        signUpViewModel.onMorningTimeChanged(it)
+                        saveMorningReminder(it)
                         navController.navigateUp()
                     },
-                    onNavigateBack = { navController.navigateUp() }
+                    onNavigateBack = { navController.navigateUp() },
+                    textTopBar = "Время напоминаний"
                 )
 
                 Hours.Evening -> SetReminderTime(
                     title = "Вечернее напоминание",
-                    textHours = signUpUiState.reminderEvening.format(DateTimeFormatter.ofPattern("HH")),
-                    textMinutes = signUpUiState.reminderEvening.format(DateTimeFormatter.ofPattern("mm")),
+                    textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                    textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        signUpViewModel.onEveningTimeChanged(it)
+                        saveEveningReminder(it)
                         navController.navigateUp()
                     },
-                    onNavigateBack = { navController.navigateUp() }
+                    onNavigateBack = { navController.navigateUp() },
+                    textTopBar = "Время напоминаний"
                 )
             }
         }
@@ -78,8 +87,8 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 patronymic = signUpUiState.patronymic,
                 height = signUpUiState.height,
                 weight = signUpUiState.weight,
-                eveningTime = signUpUiState.reminderEvening,
-                morningTime = signUpUiState.reminderMorning,
+                eveningTime = eveningReminder,
+                morningTime = morningReminder,
                 currentPage = currentPage,
                 onChangeCurrentPage = { currentPage++ },
                 onNameChanged = { signUpViewModel.onNameChanged(it) },
@@ -89,6 +98,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
                 onEndRegistration = {
+                    onEndRegistration()
                     navController.navigate(HomeScreen.route) {
                         popUpTo(OnboardingScreen.route) { inclusive = true }
                     }
@@ -98,7 +108,12 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         }
         // включает в себя все основные компоненты
         composable(route = HomeScreen.route) {
-            HomeScreen()
+            HomeScreen(
+                morningReminder = morningReminder,
+                eveningReminder = eveningReminder,
+                saveMorningReminder = { saveMorningReminder(it) },
+                saveEveningReminder = { saveEveningReminder(it) }
+            )
         }
     }
 }

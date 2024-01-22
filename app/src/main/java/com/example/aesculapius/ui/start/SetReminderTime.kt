@@ -52,6 +52,7 @@ object SetReminderTime : NavigationDestination {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SetReminderTime(
+    textTopBar: String,
     title: String,
     textHours: String,
     textMinutes: String,
@@ -65,7 +66,7 @@ fun SetReminderTime(
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = onNavigateBack,
-            text = "Время напомнинаний"
+            text = textTopBar
         )
     }) { paddingValue ->
         Column(
