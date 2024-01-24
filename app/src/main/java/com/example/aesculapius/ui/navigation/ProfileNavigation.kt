@@ -1,9 +1,11 @@
 package com.example.aesculapius.ui.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,19 +19,23 @@ import com.example.aesculapius.ui.profile.SetReminderTimeProfile
 import com.example.aesculapius.ui.start.OnboardingScreen
 import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
+import java.time.Duration
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProfileNavigation(
-    morningReminder: LocalTime,
-    eveningReminder: LocalTime,
+    morningReminder: LocalDateTime,
+    eveningReminder: LocalDateTime,
     turnOffBars: () -> Unit,
     turnOnBars: () -> Unit,
-    saveMorningReminder: (LocalTime) -> Unit,
-    saveEveningReminder: (LocalTime) -> Unit,
+    saveMorningReminder: (LocalDateTime) -> Unit,
+    saveEveningReminder: (LocalDateTime) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = ProfileScreen.route,
@@ -66,8 +72,12 @@ fun ProfileNavigation(
                     textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        saveMorningReminder(it)
-                        navController.navigateUp()
+                        if (Duration.between(it, eveningReminder).toHours() < 8)
+                            Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                        else {
+                            saveMorningReminder(it)
+                            navController.navigateUp()
+                        }
                     },
                     onNavigateBack = { navController.navigateUp() },
                     textTopBar = "Настройка напоминаний"
@@ -78,8 +88,12 @@ fun ProfileNavigation(
                     textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        saveEveningReminder(it)
-                        navController.navigateUp()
+                        if (Duration.between(morningReminder, it).toHours() < 8)
+                            Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                        else {
+                            saveEveningReminder(it)
+                            navController.navigateUp()
+                        }
                     },
                     onNavigateBack = { navController.navigateUp() },
                     textTopBar = "Настройка напоминаний"

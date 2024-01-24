@@ -55,10 +55,12 @@ import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.ListItemPicker
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.data.days
+import com.example.aesculapius.data.daysSpecial
 import com.example.aesculapius.data.months
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -75,8 +77,8 @@ fun SignUpScreen(
     weight: String,
     currentPage: Int,
     onChangeCurrentPage: () -> Unit,
-    morningTime: LocalTime,
-    eveningTime: LocalTime,
+    morningTime: LocalDateTime,
+    eveningTime: LocalDateTime,
     onNameChanged: (String) -> Unit,
     onSurnameChanged: (String) -> Unit,
     onChangedPatronymic: (String) -> Unit,
@@ -118,7 +120,8 @@ fun SignUpScreen(
             3 -> ReminderFields(
                 onClickSetReminder = { onClickSetReminder(it) },
                 eveningTime = eveningTime,
-                morningTime = morningTime
+                morningTime = morningTime,
+                modifier = Modifier.align(Alignment.Start)
             )
         }
         Spacer(Modifier.weight(1f))
@@ -138,8 +141,9 @@ fun SignUpScreen(
 @Composable
 fun ReminderFields(
     onClickSetReminder: (Hours) -> Unit,
-    eveningTime: LocalTime,
-    morningTime: LocalTime
+    eveningTime: LocalDateTime,
+    morningTime: LocalDateTime,
+    modifier: Modifier = Modifier
 ) {
     val textPlanFirst = buildAnnotatedString {
         append("Выберите время для напоминаний, которое ")
@@ -242,7 +246,7 @@ fun ReminderFields(
     Text(
         text = "Планирование Вашего дня",
         style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(top = 40.dp, bottom = 8.dp),
+        modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
         color = MaterialTheme.colorScheme.primary,
     )
     Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
@@ -303,7 +307,7 @@ fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
             ListItemPicker(
                 modifier = Modifier.fillMaxWidth(),
                 value = day,
-                list = (1..days[month]!!).toList(),
+                list = if (year % 4 != 0) (1..days[month]!!).toList() else (1..daysSpecial[month]!!).toList(),
                 onValueChange = {
                     day = it
                     onDateChanged(LocalDate.of(year, months.indexOf(month) + 1, day))

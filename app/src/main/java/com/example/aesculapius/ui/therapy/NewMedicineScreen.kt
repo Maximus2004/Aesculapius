@@ -266,16 +266,127 @@ fun NewMedicineScreen(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    Log.i("TAGTAG", currentMedicineItem.name)
-                    onClickFinishButton(
-                    currentMedicineItem.image,
-                    currentMedicineItem.name,
-                    currentMedicineItem.undername,
-                    currentMedicineItem.doses[selectedDosesIndex],
-                    currentMedicineItem.frequency[selectedFrequencyIndex],
-                    currentDate,
-                    currentDate.plusMonths(1),
-                ) },
+                    if (currentMedicineType == CurrentMedicineType.Tablets)
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 таблетка вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    else if (currentMedicineType == CurrentMedicineType.Powder && "1 раз в сутки" in currentMedicineItem.frequency[selectedFrequencyIndex])
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    else if (currentMedicineType == CurrentMedicineType.Powder && "2 раза в сутки" in currentMedicineItem.frequency[selectedFrequencyIndex]) {
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    }
+                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 1 дозе 2 раза в сутки" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    }
+                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 2 дозы 2 раза в сутки" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "2 дозы утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "2 дозы вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    }
+                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 1 дозе утром и 2 дозы вечером" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "2 дозы вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    }
+                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 2 дозы утром и 1 дозе вечером" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "2 дозы утром",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                        onClickFinishButton(
+                            currentMedicineItem.image,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            "1 доза вечером",
+                            currentDate,
+                            currentDate.plusMonths(1),
+                        )
+                    }
+                },
                 modifier = Modifier
                     .padding(bottom = 30.dp)
                     .height(56.dp)

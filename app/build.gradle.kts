@@ -69,6 +69,9 @@ dependencies {
     implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.1.1")
     implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.1.1")
 
+    // Swipe Refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.24.13-rc")
+
     // For Jetpack Compose.
     implementation("com.patrykandpatrick.vico:compose:1.13.1")
 

@@ -26,9 +26,20 @@ import com.example.aesculapius.ui.tests.RecommendationsOnboardingScreen
 import com.example.aesculapius.ui.tests.TestScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Composable
 fun TestsNavigation(
+    saveMorningReminder: (LocalDateTime) -> Unit,
+    saveEveningReminder:  (LocalDateTime) -> Unit,
+    saveASTDate: (LocalDate) -> Unit,
+    saveRecommendationDate:  (LocalDate) -> Unit,
+    recommendationTestDate: String,
+    ASTTestDate: String,
+    morningReminder: LocalDateTime,
+    eveningReminder: LocalDateTime,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
@@ -48,7 +59,15 @@ fun TestsNavigation(
                 onClickMetricsTest = { navController.navigate(MetricsOnboardingScreen.route) },
                 onClickRecTest = { navController.navigate(RecommendationsOnboardingScreen.route) },
                 turnOnBars = { turnOnBars() },
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
+                morningReminder = morningReminder,
+                eveningReminder = eveningReminder,
+                recommendationTestDate = recommendationTestDate,
+                ASTTestDate = ASTTestDate,
+                saveEveningReminder = { saveEveningReminder(it) },
+                saveMorningReminder = { saveMorningReminder(it) },
+                saveASTDate = { saveASTDate(it) },
+                saveRecommendationDate = { saveRecommendationDate(it) }
             )
         }
         // не делаем несколько отдельных compopsables, так как экран для двух первых тестов один
@@ -65,6 +84,7 @@ fun TestsNavigation(
                     questionsList = astTest.listOfQuestion,
                     onNavigateBack = { navController.navigateUp() },
                     onClickSummary = {
+                        saveASTDate(LocalDate.now().plusMonths(1))
                         testsViewModel.updateSummaryScore(it)
                         navController.navigate(ASTTestResult.route) {
                             popUpTo(TestsScreen.route) { inclusive = false }
@@ -78,6 +98,7 @@ fun TestsNavigation(
                     questionsList = recTest.listOfQuestion,
                     onNavigateBack = { navController.navigateUp() },
                     onClickSummary = {
+                        saveRecommendationDate(LocalDate.now().plusMonths(1))
                         navController.navigate(ASTTestResult.route) {
                             popUpTo(TestsScreen.route) { inclusive = false }
                         }
@@ -88,7 +109,15 @@ fun TestsNavigation(
                 TestType.Metrics -> MetricsTestScreen(
                     onNavigateBack = { navController.navigateUp() },
                     onClickDoneButton = { first, second, third ->
-                        testsViewModel.insertNewMetrics(first, second, third)
+                        val now = LocalDateTime.now()
+                        if (now.isAfter(morningReminder) && now.isBefore(morningReminder.plusMinutes(6))) {
+                            saveMorningReminder(now.plusDays(1))
+                            testsViewModel.insertNewMetrics(first, second, third)
+                        }
+                        else {
+                            saveEveningReminder(now.plusDays(1))
+                            testsViewModel.updateNewMetrics(first, second, third)
+                        }
                         navController.navigate(TestsScreen.route) {
                             popUpTo(TestsScreen.route) { inclusive = false }
                         }

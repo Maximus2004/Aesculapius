@@ -42,6 +42,8 @@ import java.time.LocalTime
 import androidx.compose.ui.platform.LocalContext
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 object SetReminderTime : NavigationDestination {
     override val route = "SetReminderTime"
@@ -56,7 +58,7 @@ fun SetReminderTime(
     title: String,
     textHours: String,
     textMinutes: String,
-    onDoneButton: (LocalTime) -> Unit,
+    onDoneButton: (LocalDateTime) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -64,10 +66,7 @@ fun SetReminderTime(
     var hours by remember { mutableStateOf(textHours) }
     val context = LocalContext.current
     Scaffold(topBar = {
-        TopBar(
-            onNavigateBack = onNavigateBack,
-            text = textTopBar
-        )
+        TopBar(onNavigateBack = onNavigateBack, text = textTopBar)
     }) { paddingValue ->
         Column(
             Modifier.padding(top = paddingValue.calculateTopPadding() + 27.dp),
@@ -136,8 +135,15 @@ fun SetReminderTime(
                             val minutesFinal = minutes.toInt()
                             if (!(hoursFinal in 0..23 && minutesFinal in 0..59))
                                 throw IllegalArgumentException("Неверный формат времени")
-                            else
-                                onDoneButton(LocalTime.of(hoursFinal, minutesFinal))
+                            else {
+                                val now = LocalDateTime.now()
+                                val nowHours = now.hour
+                                val nowMinutes = now.minute
+                                if ((nowHours == hoursFinal && (nowMinutes - minutesFinal) >= 6) || nowHours > hoursFinal)
+                                    onDoneButton(LocalDateTime.of(now.year, now.monthValue, now.plusDays(1).dayOfMonth, hoursFinal, minutesFinal))
+                                else
+                                    onDoneButton(LocalDateTime.of(now.year, now.monthValue, now.dayOfMonth, hoursFinal, minutesFinal))
+                            }
                         } catch (e: NumberFormatException) {
                             Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
                                 .show()

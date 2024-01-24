@@ -23,18 +23,28 @@ class MainActivity : ComponentActivity() {
                 val isUserRegistered = profileViewModel.isUserRegistered.collectAsState().value
                 val morningReminder = profileViewModel.morningReminder.collectAsState().value
                 val eveningReminder = profileViewModel.eveningReminder.collectAsState().value
+                val ASTTestDate = profileViewModel.ASTTestDate.collectAsState().value
+                val recommendationTest = profileViewModel.recommendationTest.collectAsState().value
                 if (isUserRegistered) HomeScreen(
                     morningReminder = morningReminder,
                     eveningReminder = eveningReminder,
                     saveMorningReminder = { profileViewModel.saveMorningTime(it) },
-                    saveEveningReminder = { profileViewModel.saveEveningTime(it) }
+                    saveEveningReminder = { profileViewModel.saveEveningTime(it) },
+                    recommendationTestDate = recommendationTest,
+                    ASTTestDate = ASTTestDate,
+                    saveASTDate = { profileViewModel.saveASTTestDate(it) },
+                    saveRecommendationDate = { profileViewModel.saveRecommendationTestDate(it) }
                 )
                 else MainNavigation(
                     morningReminder = morningReminder,
                     eveningReminder = eveningReminder,
                     saveMorningReminder = { profileViewModel.saveMorningTime(it) },
                     saveEveningReminder = { profileViewModel.saveEveningTime(it) },
-                    onEndRegistration = { profileViewModel.changeUser(true) }
+                    onEndRegistration = { profileViewModel.changeUser(true) },
+                    recommendationTestDate = recommendationTest,
+                    ASTTestDate = ASTTestDate,
+                    saveASTDate = { profileViewModel.saveASTTestDate(it) },
+                    saveRecommendationDate = { profileViewModel.saveRecommendationTestDate(it) }
                 )
             }
         }

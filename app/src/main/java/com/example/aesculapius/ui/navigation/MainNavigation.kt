@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -8,6 +9,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -21,21 +23,29 @@ import com.example.aesculapius.ui.start.OnboardingScreen
 import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
 import com.example.aesculapius.ui.start.SignUpViewModel
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainNavigation(
-    morningReminder: LocalTime,
-    eveningReminder: LocalTime,
-    saveMorningReminder: (LocalTime) -> Unit,
-    saveEveningReminder: (LocalTime) -> Unit,
+    saveASTDate: (LocalDate) -> Unit,
+    saveRecommendationDate: (LocalDate) -> Unit,
+    morningReminder: LocalDateTime,
+    eveningReminder: LocalDateTime,
+    recommendationTestDate: String,
+    ASTTestDate: String,
+    saveMorningReminder: (LocalDateTime) -> Unit,
+    saveEveningReminder: (LocalDateTime) -> Unit,
     onEndRegistration: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
@@ -98,9 +108,13 @@ fun MainNavigation(
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
                 onEndRegistration = {
-                    onEndRegistration()
-                    navController.navigate(HomeScreen.route) {
-                        popUpTo(OnboardingScreen.route) { inclusive = true }
+                    if (Duration.between(morningReminder, eveningReminder).toHours() < 8)
+                        Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                    else {
+                        onEndRegistration()
+                        navController.navigate(HomeScreen.route) {
+                            popUpTo(OnboardingScreen.route) { inclusive = true }
+                        }
                     }
                 },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
@@ -112,7 +126,11 @@ fun MainNavigation(
                 morningReminder = morningReminder,
                 eveningReminder = eveningReminder,
                 saveMorningReminder = { saveMorningReminder(it) },
-                saveEveningReminder = { saveEveningReminder(it) }
+                saveEveningReminder = { saveEveningReminder(it) },
+                recommendationTestDate = recommendationTestDate,
+                ASTTestDate = ASTTestDate,
+                saveASTDate = { saveASTDate(it) },
+                saveRecommendationDate = { saveRecommendationDate(it) },
             )
         }
     }

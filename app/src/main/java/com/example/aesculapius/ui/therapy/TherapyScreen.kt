@@ -297,21 +297,23 @@ fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem) {
                 Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
                 Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
                 Row(modifier = Modifier.padding(top = 16.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.sun_icon),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                        tint = Color.Black
-                    )
+                    if ("вечером" in medicine.frequency)
+                        Icon(
+                            painter = painterResource(id = R.drawable.moon_icon),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                            tint = Color.Black
+                        )
+                    else
+                        Icon(
+                            painter = painterResource(id = R.drawable.sun_icon),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                            tint = Color.Black
+                        )
                     Text(
-                        text = "1 доза утром",
+                        text = medicine.frequency,
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = "30 дней",
-                        style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }

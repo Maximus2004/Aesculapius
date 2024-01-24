@@ -32,6 +32,7 @@ import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.Roboto
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -42,8 +43,8 @@ object SetReminderTimeProfile : NavigationDestination {
 @Composable
 fun SetReminderTimeProfile(
     onClickSetReminder: (Hours) -> Unit,
-    eveningTime: LocalTime,
-    morningTime: LocalTime,
+    eveningTime: LocalDateTime,
+    morningTime: LocalDateTime,
     turnOffBars: () -> Unit,
     onNavigateBack: () -> Unit
 ) {

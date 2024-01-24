@@ -23,6 +23,13 @@ class TestsViewModel @Inject constructor(private val aesculapiusRepository: Aesc
     }
 
     fun insertNewMetrics(first: Float, second: Float, third: Float) = viewModelScope.launch {
-        aesculapiusRepository.insertMetrics(String.format("%.1f", (first + second + third) / 3).replace(",", ".").toFloat(), LocalDate.now())
+        aesculapiusRepository.insertMetrics(first + second + third / 3, LocalDate.now())
+    }
+
+    fun updateNewMetrics(first: Float, second: Float, third: Float) = viewModelScope.launch {
+        if (aesculapiusRepository.getAllMetricsWithDate(LocalDate.now()).isEmpty())
+            aesculapiusRepository.insertMetrics(first + second + third / 3, LocalDate.now())
+        else
+            aesculapiusRepository.updateMetrics((first + second + third) / 3, LocalDate.now())
     }
 }

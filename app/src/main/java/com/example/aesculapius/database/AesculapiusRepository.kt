@@ -47,4 +47,12 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
     suspend fun insertMetrics(metrics: Float, date: LocalDate) {
         return itemDAO.insertMetrics(metrics, date)
     }
+
+    suspend fun updateMetrics(metrics: Float, date: LocalDate) {
+        return itemDAO.updateMetrics(metrics, date)
+    }
+
+    suspend fun getAllMetricsWithDate(date: LocalDate): List<MetricsItem> {
+        return itemDAO.getAllMetricsWithDate(date)
+    }
 }

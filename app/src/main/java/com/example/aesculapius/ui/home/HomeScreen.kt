@@ -44,6 +44,8 @@ import com.example.aesculapius.ui.statistics.StatisticsScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.TherapyScreen
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 object HomeScreen : NavigationDestination {
@@ -52,10 +54,14 @@ object HomeScreen : NavigationDestination {
 
 @Composable
 fun HomeScreen(
-    morningReminder: LocalTime,
-    eveningReminder: LocalTime,
-    saveMorningReminder: (LocalTime) -> Unit,
-    saveEveningReminder: (LocalTime) -> Unit,
+    saveASTDate: (LocalDate) -> Unit,
+    saveRecommendationDate:  (LocalDate) -> Unit,
+    recommendationTestDate: String,
+    ASTTestDate: String,
+    morningReminder: LocalDateTime,
+    eveningReminder: LocalDateTime,
+    saveMorningReminder: (LocalDateTime) -> Unit,
+    saveEveningReminder: (LocalDateTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val homeViewModel: HomeViewModel = viewModel()
@@ -105,6 +111,14 @@ fun HomeScreen(
                 )
 
                 PageType.Tests -> TestsNavigation(
+                    saveMorningReminder = { saveMorningReminder(it) },
+                    saveEveningReminder = { saveEveningReminder(it) },
+                    saveASTDate = { saveASTDate(it) },
+                    saveRecommendationDate = { saveRecommendationDate(it) },
+                    ASTTestDate = ASTTestDate,
+                    recommendationTestDate = recommendationTestDate,
+                    morningReminder = morningReminder,
+                    eveningReminder = eveningReminder,
                     turnOffBars = { isBarsDisplayed = false },
                     turnOnBars = { isBarsDisplayed = true })
             }
