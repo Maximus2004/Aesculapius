@@ -22,6 +22,7 @@ import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.start.OnboardingScreen
 import com.example.aesculapius.ui.start.SetReminderTime
 import com.example.aesculapius.ui.start.SignUpScreen
+import com.example.aesculapius.ui.start.SignUpUiState
 import com.example.aesculapius.ui.start.SignUpViewModel
 import java.time.Duration
 import java.time.LocalDate
@@ -39,7 +40,7 @@ fun MainNavigation(
     ASTTestDate: String,
     saveMorningReminder: (LocalDateTime) -> Unit,
     saveEveningReminder: (LocalDateTime) -> Unit,
-    onEndRegistration: () -> Unit,
+    onEndRegistration: (SignUpUiState) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val signUpViewModel: SignUpViewModel = viewModel()
@@ -111,7 +112,7 @@ fun MainNavigation(
                     if (Duration.between(morningReminder, eveningReminder).toHours() < 8)
                         Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
                     else {
-                        onEndRegistration()
+                        onEndRegistration(signUpUiState)
                         navController.navigate(HomeScreen.route) {
                             popUpTo(OnboardingScreen.route) { inclusive = true }
                         }

@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.statistics
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aesculapius.database.AesculapiusRepository
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.random.Random
@@ -35,7 +33,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     val datesForLineChart = _listLocalDate
 
     // отслеживаем, когда приходят новые изменения и разбиваем данные на точки и даты для каждой точки
-    val datesForColumnChart = aesculapiusRepository.getAllASTResults().map {
+    val datesForColumnChart = aesculapiusRepository.getAllASTResultsInRange().map {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
         val tempDates: MutableList<LocalDate> = mutableListOf()
         it.forEachIndexed { index, item ->
@@ -54,7 +52,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     fun setMetricsOnDatesShort(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
         _listLocalDate.value = mutableListOf()
-        aesculapiusRepository.getAllMetrics(startDate, endDate).forEachIndexed { index, item ->
+        aesculapiusRepository.getAllMetricsInRange(startDate, endDate).forEachIndexed { index, item ->
             tempEntries.add(FloatEntry(index.toFloat(), item.metrics))
             _listLocalDate.value.add(item.date)
         }
@@ -72,7 +70,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
         _listLocalDate.value = mutableListOf()
         var tempCount = 0f
-        aesculapiusRepository.getAllMetrics(startDate, endDate)
+        aesculapiusRepository.getAllMetricsInRange(startDate, endDate)
             .forEachIndexed { index, item ->
                 tempCount += item.metrics
                 if (index % 7 == 6) {
@@ -82,7 +80,6 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
                             String.format("%.1f", tempCount / 7).replace(",", ".").toFloat()
                         )
                     )
-                    Log.i("TAGTAG", item.metrics.toString())
                     _listLocalDate.value.add(item.date.minusDays(6))
                     tempCount = 0f
                 }

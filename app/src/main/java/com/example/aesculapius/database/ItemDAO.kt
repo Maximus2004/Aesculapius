@@ -25,11 +25,17 @@ interface ItemDAO {
     @Query("SELECT * from medicines_items WHERE (startDate <= :currentDate) AND (endDate > :currentDate)")
     suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineItem>
 
+    @Query("SELECT * from medicines_items")
+    suspend fun getAllMedicines(): List<MedicineItem>
+
     @Query("INSERT INTO score_items VALUES(NULL, :score, :date)")
     suspend fun insertASTTestScore(date: LocalDate, score: Int)
 
     @Query("SELECT * from score_items")
-    fun getAllASTResults(): Flow<List<ScoreItem>>
+    fun getAllASTResultsInRange(): Flow<List<ScoreItem>>
+
+    @Query("SELECT * from score_items")
+    suspend fun getAllASTResults(): List<ScoreItem>
 
     @Query("INSERT INTO metrics_items VALUES(NULL, ROUND(:metrics, 1), :date)")
     suspend fun insertMetrics(metrics: Float, date: LocalDate)
@@ -38,7 +44,10 @@ interface ItemDAO {
     suspend fun updateMetrics(metrics: Float, date: LocalDate)
 
     @Query("SELECT * from metrics_items WHERE (date <= :endDate) AND (date >= :startDate)")
-    suspend fun getAllMetrics(startDate: LocalDate, endDate: LocalDate): List<MetricsItem>
+    suspend fun getAllMetricsInRange(startDate: LocalDate, endDate: LocalDate): List<MetricsItem>
+
+    @Query("SELECT * from metrics_items")
+    suspend fun getAllMetrics(): List<MetricsItem>
 
     @Query("SELECT * from metrics_items WHERE date = :date")
     suspend fun getAllMetricsWithDate(date: LocalDate): List<MetricsItem>

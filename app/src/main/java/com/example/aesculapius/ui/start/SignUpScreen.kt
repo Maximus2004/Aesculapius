@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.start
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -89,6 +91,8 @@ fun SignUpScreen(
     onEndRegistration: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -126,7 +130,28 @@ fun SignUpScreen(
         }
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = { if (currentPage == 3) onEndRegistration() else onChangeCurrentPage() },
+            onClick = {
+                when (currentPage) {
+                    3 -> onEndRegistration()
+                    2 -> {
+                        try {
+                            val heightFinal = height.toFloat()
+                            val weightFinal = weight.toFloat()
+                            if (!(heightFinal in 20f..300f && weightFinal in 0f..1000f))
+                                throw IllegalArgumentException("Неверный формат веса или роста")
+                            else {
+                                onChangeCurrentPage()
+                            }
+                        } catch (e: NumberFormatException) {
+                            Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
+                                .show()
+                        } catch (e: IllegalArgumentException) {
+                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else -> onChangeCurrentPage()
+                }
+            },
             enabled = if (currentPage == 0) name != "" && surname != "" && patronymic != "" else if (currentPage == 2) height != "" && weight != "" else true,
             modifier = Modifier
                 .padding(bottom = 24.dp)

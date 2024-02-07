@@ -22,11 +22,12 @@ import javax.inject.Singleton
 
 private val Context.dataStore by preferencesDataStore("user_preferences")
 
+/** [UserPreferencesRepository] репозиторий для DatastorePreferences */
 @Singleton
 class UserPreferencesRepository @Inject constructor(@ApplicationContext appContext: Context) {
     private val settingDataStore = appContext.dataStore
 
-    val isUserRegistered: Flow<Boolean> = settingDataStore.data
+    val userId: Flow<String> = settingDataStore.data
         .catch {
             if (it is IOException) {
                 emit(emptyPreferences())
@@ -34,7 +35,7 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
                 throw it
             }
         }
-        .map { preferences -> preferences[IS_USER_REGISTERED] ?: false }
+        .map { preferences -> preferences[IS_USER_REGISTERED] ?: "" }
 
     val morningReminder: Flow<LocalDateTime> = settingDataStore.data
         .catch {
@@ -77,7 +78,7 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         .map { preferences -> preferences[RECOMMENDATION_TEST] ?: "" }
 
     private companion object {
-        val IS_USER_REGISTERED = booleanPreferencesKey("is_user_registered")
+        val IS_USER_REGISTERED = stringPreferencesKey("is_user_registered")
         val MORNING_REMINDER_TIME = stringPreferencesKey("morning_reminder_time")
         val EVENING_REMINDER_TIME = stringPreferencesKey("evening_reminder_time")
         val AST_TEST = stringPreferencesKey("ast_test")
@@ -96,9 +97,9 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         }
     }
 
-    suspend fun saveUserPreferences(isUserRegistered: Boolean) {
+    suspend fun saveUserPreferences(userId: String) {
         settingDataStore.edit { preferences ->
-            preferences[IS_USER_REGISTERED] = isUserRegistered
+            preferences[IS_USER_REGISTERED] = userId
         }
     }
 

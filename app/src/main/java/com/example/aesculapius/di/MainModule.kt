@@ -5,9 +5,12 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import androidx.work.WorkerFactory
 import com.example.aesculapius.database.AesculapiusDatabase
 import com.example.aesculapius.database.AesculapiusRepository
 import com.example.aesculapius.database.ItemDAO
+import com.example.aesculapius.database.UserRemoteDataRepository
+import com.example.aesculapius.worker.DaggerWorkerFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,5 +30,11 @@ object MainModule {
     // в Dagger по умолчанию есть функция, возвращающая Application, поэтому не возникет проблем
     fun provideAesculapiusDB(application: Application): ItemDAO {
         return AesculapiusDatabase.getDatabase(application.applicationContext).itemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun workerFactory(userRemoteDataRepository: UserRemoteDataRepository): WorkerFactory {
+        return DaggerWorkerFactory(userRemoteDataRepository)
     }
 }

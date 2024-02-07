@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -66,6 +67,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.21.5-rc")
     implementation("com.chargemap.compose:numberpicker:1.0.3")
     implementation("androidx.navigation:navigation-compose:2.7.5")
+
+    // Calendar
     implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.1.1")
     implementation("io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.1.1")
 
@@ -86,6 +89,13 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
 
+    // Firebase
+    implementation("com.google.firebase:firebase-firestore:24.10.1")
+    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
     // Type Converter for Room
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.0")
 
@@ -93,6 +103,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-work:1.0.0")
 
     // DataStore Preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")

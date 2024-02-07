@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "700403481856",
+    "project_id": "aesculapius-27a19",
+    "storage_bucket": "aesculapius-27a19.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:700403481856:android:69c49224bdb0b9f4cd07e5",
+        "android_client_info": {
+          "package_name": "com.example.aesculapius"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY8bYDl32eY3CN8Y5oRj1hI_GCqqG54jE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

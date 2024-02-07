@@ -6,7 +6,10 @@ import com.example.aesculapius.ui.therapy.MedicineItem
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
+import javax.inject.Singleton
 
+/** [AesculapiusRepository] репозиторий для Room */
+@Singleton
 class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
     suspend fun insertMedicineItem(
         image: Int,
@@ -18,6 +21,10 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         endDate: LocalDate
     ) {
         itemDAO.insertMedicineItem(image, name, undername, dose, frequency, startDate, endDate)
+    }
+
+    suspend fun getAllMedicines(): List<MedicineItem> {
+        return itemDAO.getAllMedicines()
     }
 
     suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineItem> {
@@ -32,12 +39,20 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         itemDAO.insertASTTestScore(date, score)
     }
 
-    fun getAllASTResults(): Flow<List<ScoreItem>> {
+    fun getAllASTResultsInRange(): Flow<List<ScoreItem>> {
+        return itemDAO.getAllASTResultsInRange()
+    }
+
+    suspend fun getAllASTResults(): List<ScoreItem> {
         return itemDAO.getAllASTResults()
     }
 
-    suspend fun getAllMetrics(startDate: LocalDate, endDate: LocalDate): List<MetricsItem> {
-        return itemDAO.getAllMetrics(startDate, endDate)
+    suspend fun getAllMetrics(): List<MetricsItem> {
+        return itemDAO.getAllMetrics()
+    }
+
+    suspend fun getAllMetricsInRange(startDate: LocalDate, endDate: LocalDate): List<MetricsItem> {
+        return itemDAO.getAllMetricsInRange(startDate, endDate)
     }
 
     suspend fun deleteAllMetrics() {

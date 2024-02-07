@@ -9,6 +9,8 @@ import java.util.prefs.Preferences
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.example.aesculapius.database.Converters
+import com.example.aesculapius.database.UserRemoteDataRepository
+import com.example.aesculapius.ui.start.SignUpUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -17,12 +19,15 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val prefRepository: UserPreferencesRepository): ViewModel() {
-    val isUserRegistered: StateFlow<Boolean> = prefRepository.isUserRegistered
+class ProfileViewModel @Inject constructor(
+    private val prefRepository: UserPreferencesRepository,
+    private val userRemoteDataRepository: UserRemoteDataRepository
+) : ViewModel() {
+    val userId: StateFlow<String> = prefRepository.userId
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
+            initialValue = ""
         )
 
     val morningReminder: StateFlow<LocalDateTime> = prefRepository.morningReminder
@@ -61,7 +66,11 @@ class ProfileViewModel @Inject constructor(private val prefRepository: UserPrefe
 
     fun saveRecommendationTestDate(recommendationTestDate: LocalDate) {
         viewModelScope.launch {
-            prefRepository.saveRecommendationTest(Converters.dateToStringWithFormat(recommendationTestDate))
+            prefRepository.saveRecommendationTest(
+                Converters.dateToStringWithFormat(
+                    recommendationTestDate
+                )
+            )
         }
     }
 
@@ -77,9 +86,10 @@ class ProfileViewModel @Inject constructor(private val prefRepository: UserPrefe
         }
     }
 
-    fun changeUser(isUserRegistered: Boolean) {
+    fun changeUserAtFirst(userId: String, signUpUiState: SignUpUiState) {
         viewModelScope.launch {
-            prefRepository.saveUserPreferences(isUserRegistered)
+            prefRepository.saveUserPreferences(userId)
+            userRemoteDataRepository.addUserAtFirst(userId, signUpUiState)
         }
     }
 }
