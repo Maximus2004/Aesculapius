@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class TestsViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository): ViewModel() {
@@ -19,7 +18,7 @@ class TestsViewModel @Inject constructor(private val aesculapiusRepository: Aesc
     /** [updateSummaryScore] - вызывается при завершении теста и отправляет результаты в Room */
     fun updateSummaryScore(score: Int) = viewModelScope.launch {
         _summaryScore.value = score
-        aesculapiusRepository.insertASTTestScore(LocalDate.now(), score)
+        aesculapiusRepository.insertAstTestScore(LocalDate.now(), score)
     }
 
     fun insertNewMetrics(first: Float, second: Float, third: Float) = viewModelScope.launch {

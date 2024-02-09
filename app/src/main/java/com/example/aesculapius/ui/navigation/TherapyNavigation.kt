@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
+import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.NewMedicineScreen
 import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.example.aesculapius.ui.therapy.TherapyViewModel
@@ -24,6 +25,7 @@ fun TherapyNavigation(
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
+    onClickMedicine: (MedicineItem) -> Unit,
     therapyViewModel: TherapyViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
@@ -49,7 +51,8 @@ fun TherapyNavigation(
                 currentDate = therapyViewModel.getCurrentDate(),
                 updateCurrentDate = { therapyViewModel.updateCurrentDate(it) },
                 isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now()),
-                onClickChangeWeek = { therapyViewModel.changeIsWeek(it) }
+                onClickChangeWeek = { therapyViewModel.changeIsWeek(it) },
+                onClickMedicine = { onClickMedicine(it) }
             )
         }
         composable(route = NewMedicineScreen.route) {

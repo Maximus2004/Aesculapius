@@ -31,11 +31,11 @@ interface ItemDAO {
     @Query("INSERT INTO score_items VALUES(NULL, :score, :date)")
     suspend fun insertASTTestScore(date: LocalDate, score: Int)
 
-    @Query("SELECT * from score_items")
-    fun getAllASTResultsInRange(): Flow<List<ScoreItem>>
+    @Query("SELECT * from score_items WHERE (date <= :endDate) AND (date >= :startDate)")
+    fun getAllAstResultsInRange(startDate: LocalDate, endDate: LocalDate): Flow<List<ScoreItem>>
 
     @Query("SELECT * from score_items")
-    suspend fun getAllASTResults(): List<ScoreItem>
+    suspend fun getAllAstResults(): List<ScoreItem>
 
     @Query("INSERT INTO metrics_items VALUES(NULL, ROUND(:metrics, 1), :date)")
     suspend fun insertMetrics(metrics: Float, date: LocalDate)

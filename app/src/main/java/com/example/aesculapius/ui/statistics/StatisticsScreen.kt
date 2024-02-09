@@ -257,7 +257,7 @@ fun StatisticsScreen(modifier: Modifier = Modifier) {
                     text = "Отслеживание тенденций и изменений",
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 32.dp, start = 23.dp, end = 23.dp)
+                    modifier = Modifier.padding(top = 20.dp, start = 23.dp, end = 23.dp)
                 )
                 Text(
                     text = "Следите за динамикой Вашего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.",

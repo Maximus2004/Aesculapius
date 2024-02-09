@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,11 +36,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +66,7 @@ import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarS
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import io.github.boguszpawlowski.composecalendar.week.Week
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -87,6 +91,7 @@ fun TherapyScreen(
     turnOnBars: () -> Unit,
     isWeek: Boolean,
     onClickChangeWeek: (Boolean) -> Unit,
+    onClickMedicine: (MedicineItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isActiveMedicines by remember { mutableStateOf(true) }
@@ -217,21 +222,24 @@ fun TherapyScreen(
                         items(currentMedicines.currentActiveMedicines + currentMedicines.currentEndedMedicines) { medicine ->
                             MedicineCard(
                                 medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp)
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                onClick = { onClickMedicine(medicine) }
                             )
                         }
                     } else if (isActiveMedicines)
                         items(currentMedicines.currentActiveMedicines) { medicine ->
                             MedicineCard(
                                 medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp)
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                onClick =  { onClickMedicine(medicine) }
                             )
                         }
                     else
                         items(currentMedicines.currentEndedMedicines) { medicine ->
                             MedicineCard(
                                 medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp)
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                onClick = { onClickMedicine(medicine) }
                             )
                         }
                 }
@@ -265,12 +273,13 @@ fun FloatingButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem) {
+fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem, onClick: () -> Unit) {
     Card(
         elevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
-            .height(112.dp),
+            .height(112.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(

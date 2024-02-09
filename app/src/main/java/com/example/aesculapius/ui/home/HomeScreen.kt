@@ -2,15 +2,23 @@ package com.example.aesculapius.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -41,11 +49,27 @@ import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.statistics.StatisticsScreen
 import java.time.LocalDate
 import java.time.LocalDateTime
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.TextButton
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.aesculapius.R
+import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.therapy.MedicineItem
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     saveAstDate: (LocalDate) -> Unit,
-    saveRecommendationDate:  (LocalDate) -> Unit,
+    saveRecommendationDate: (LocalDate) -> Unit,
     recommendationTestDate: String,
     astTestDate: String,
     morningReminder: LocalDateTime,
@@ -59,62 +83,84 @@ fun HomeScreen(
     val homeViewModel: HomeViewModel = viewModel()
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
-    Scaffold(
-        topBar = {
-            if (isBarsDisplayed) TopBar(
-                screenName = homeUiState.currentPageName,
-                isHelpButton = homeUiState.isHelpButton
-            )
+    val currentMedicineItem: MutableState<MedicineItem?> = remember { mutableStateOf(null) }
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+
+    ModalBottomSheetLayout(
+        sheetContent = {
+            if (currentMedicineItem.value != null) EditMedicineSheet(currentMedicineItem.value!!)
         },
-        bottomBar = {
-            if (isBarsDisplayed) BottomNavigationBar(
-                currentTab = homeUiState.currentPage,
-                onTabPressed = { pageType, pageName, isHelpButton ->
-                    homeViewModel.updateCurrentPage(pageType, pageName, isHelpButton)
-                },
-                navigationItemContentList = navigationItemContentList
-            )
-        }) { contentPadding ->
-        Column(
-            modifier = modifier.padding(
-                top = contentPadding.calculateTopPadding(),
-                bottom = contentPadding.calculateBottomPadding()
-            )
-        ) {
-            when (homeUiState.currentPage) {
-                PageType.Therapy -> TherapyNavigation(
-                    turnOffBars = { isBarsDisplayed = false },
-                    turnOnBars = { isBarsDisplayed = true })
-
-                PageType.Profile -> ProfileNavigation(
-                    morningReminder = morningReminder,
-                    eveningReminder = eveningReminder,
-                    saveMorningReminder = { saveMorningReminder(it) },
-                    saveEveningReminder = { saveEveningReminder(it) },
-                    turnOffBars = { isBarsDisplayed = false },
-                    turnOnBars = { isBarsDisplayed = true },
-                    user = user,
-                    onSaveNewUser = onSaveNewUser
+        sheetShape = RoundedCornerShape(
+            topEnd = 8.dp,
+            topStart = 8.dp,
+            bottomEnd = 0.dp,
+            bottomStart = 0.dp
+        ),
+        sheetState = sheetState
+    ) {
+        Scaffold(
+            topBar = {
+                if (isBarsDisplayed) TopBar(
+                    screenName = homeUiState.currentPageName,
+                    isHelpButton = homeUiState.isHelpButton
                 )
-
-                PageType.Statistics -> StatisticsScreen(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .background(color = Color.White)
+            },
+            bottomBar = {
+                if (isBarsDisplayed) BottomNavigationBar(
+                    currentTab = homeUiState.currentPage,
+                    onTabPressed = { pageType, pageName, isHelpButton ->
+                        homeViewModel.updateCurrentPage(pageType, pageName, isHelpButton)
+                    },
+                    navigationItemContentList = navigationItemContentList
                 )
+            }) { contentPadding ->
+            Column(
+                modifier = modifier.padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding()
+                )
+            ) {
+                when (homeUiState.currentPage) {
+                    PageType.Therapy -> TherapyNavigation(
+                        turnOffBars = { isBarsDisplayed = false },
+                        turnOnBars = { isBarsDisplayed = true },
+                        onClickMedicine = {
+                            currentMedicineItem.value = it
+                            scope.launch { sheetState.show() }
+                        }
+                    )
 
-                PageType.Tests -> TestsNavigation(
-                    saveMorningReminder = { saveMorningReminder(it) },
-                    saveEveningReminder = { saveEveningReminder(it) },
-                    saveASTDate = { saveAstDate(it) },
-                    saveRecommendationDate = { saveRecommendationDate(it) },
-                    ASTTestDate = astTestDate,
-                    recommendationTestDate = recommendationTestDate,
-                    morningReminder = morningReminder,
-                    eveningReminder = eveningReminder,
-                    turnOffBars = { isBarsDisplayed = false },
-                    turnOnBars = { isBarsDisplayed = true })
+                    PageType.Profile -> ProfileNavigation(
+                        morningReminder = morningReminder,
+                        eveningReminder = eveningReminder,
+                        saveMorningReminder = { saveMorningReminder(it) },
+                        saveEveningReminder = { saveEveningReminder(it) },
+                        turnOffBars = { isBarsDisplayed = false },
+                        turnOnBars = { isBarsDisplayed = true },
+                        user = user,
+                        onSaveNewUser = onSaveNewUser
+                    )
+
+                    PageType.Statistics -> StatisticsScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .background(color = Color.White)
+                    )
+
+                    PageType.Tests -> TestsNavigation(
+                        saveMorningReminder = { saveMorningReminder(it) },
+                        saveEveningReminder = { saveEveningReminder(it) },
+                        saveASTDate = { saveAstDate(it) },
+                        saveRecommendationDate = { saveRecommendationDate(it) },
+                        ASTTestDate = astTestDate,
+                        recommendationTestDate = recommendationTestDate,
+                        morningReminder = morningReminder,
+                        eveningReminder = eveningReminder,
+                        turnOffBars = { isBarsDisplayed = false },
+                        turnOnBars = { isBarsDisplayed = true })
+                }
             }
         }
     }
@@ -122,7 +168,12 @@ fun HomeScreen(
 
 /** [TopBar] для главного экрана без навигации */
 @Composable
-fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Boolean, onClickHelpButton: () -> Unit = {}) {
+fun TopBar(
+    modifier: Modifier = Modifier,
+    screenName: String,
+    isHelpButton: Boolean,
+    onClickHelpButton: () -> Unit = {}
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -150,11 +201,6 @@ fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Bool
                 )
             }
     }
-}
-
-@Composable
-fun TempScreen() {
-    Text(text = "Находится в разработке")
 }
 
 @Composable
@@ -190,6 +236,82 @@ fun BottomNavigationBar(
                 },
                 alwaysShowLabel = false,
             )
+        }
+    }
+}
+
+@Composable
+fun EditMedicineSheet(medicine: MedicineItem, modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.padding(24.dp)) {
+        Row {
+            Column {
+                Text(
+                    text = medicine.name,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.Black
+                )
+                Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
+                Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = { /*TODO*/ } ) {
+                Icon(painterResource(id = R.drawable.edit_icon), contentDescription = null)
+            }
+        }
+        Row(modifier = Modifier.padding(top = 16.dp)) {
+            if ("вечером" in medicine.frequency)
+                Icon(
+                    painter = painterResource(id = R.drawable.moon_icon),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                    tint = Color.Black
+                )
+            else
+                Icon(
+                    painter = painterResource(id = R.drawable.sun_icon),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                    tint = Color.Black
+                )
+            Text(
+                text = medicine.frequency,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        Row(modifier = Modifier.align(Alignment.End)) {
+            TextButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .width(106.dp)
+                    .padding(end = 8.dp)
+            ) {
+                Text(
+                    text = "Пропустить",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.width(106.dp)
+            ) {
+                Text(
+                    text = "Принять",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
         }
     }
 }
