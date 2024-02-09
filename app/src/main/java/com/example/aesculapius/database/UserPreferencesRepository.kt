@@ -1,14 +1,12 @@
 package com.example.aesculapius.database
 
 import android.content.Context
-import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.aesculapius.ui.signup.SignUpUiState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,6 +23,17 @@ private val Context.dataStore by preferencesDataStore("user_preferences")
 @Singleton
 class UserPreferencesRepository @Inject constructor(@ApplicationContext appContext: Context) {
     private val settingDataStore = appContext.dataStore
+
+    val user: Flow<SignUpUiState> = settingDataStore.data.map { preferences ->
+        SignUpUiState(
+            name = preferences[NAME] ?: "",
+            surname = preferences[SURNAME] ?: "",
+            patronymic = preferences[PATRONYMIC] ?: "",
+            birthday = LocalDate.parse(preferences[BIRTHDAY] ?: LocalDate.now().toString()),
+            height = preferences[HEIGHT] ?: "",
+            weight = preferences[WEIGHT] ?: ""
+        )
+    }
 
     val userId: Flow<String> = settingDataStore.data
         .catch {
@@ -83,11 +91,29 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         val EVENING_REMINDER_TIME = stringPreferencesKey("evening_reminder_time")
         val AST_TEST = stringPreferencesKey("ast_test")
         val RECOMMENDATION_TEST = stringPreferencesKey("recommendation_test")
+
+        val SURNAME = stringPreferencesKey("surname")
+        val PATRONYMIC = stringPreferencesKey("patronymic")
+        val NAME = stringPreferencesKey("name")
+        val BIRTHDAY = stringPreferencesKey("birthday")
+        val HEIGHT = stringPreferencesKey("height")
+        val WEIGHT = stringPreferencesKey("weight")
     }
 
-    suspend fun saveASTTestDate(ASTTestDate: String) {
+    suspend fun saveUserData(userData: SignUpUiState) {
         settingDataStore.edit { preferences ->
-            preferences[AST_TEST] = ASTTestDate
+            preferences[SURNAME] = userData.surname
+            preferences[PATRONYMIC] = userData.patronymic
+            preferences[NAME] = userData.name
+            preferences[BIRTHDAY] = userData.birthday.toString()
+            preferences[HEIGHT] = userData.height
+            preferences[WEIGHT] = userData.weight
+        }
+    }
+
+    suspend fun saveAstTestDate(astTestDate: String) {
+        settingDataStore.edit { preferences ->
+            preferences[AST_TEST] = astTestDate
         }
     }
 

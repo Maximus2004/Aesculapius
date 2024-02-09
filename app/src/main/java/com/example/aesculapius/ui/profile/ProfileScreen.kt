@@ -33,6 +33,8 @@ object ProfileScreen : NavigationDestination {
 fun ProfileScreen(
     turnOnBars: () -> Unit,
     onClickSetReminder: () -> Unit,
+    onClickLearnBlock: () -> Unit,
+    onClickProfileBlock: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(key1 = Unit) { turnOnBars() }
@@ -41,26 +43,24 @@ fun ProfileScreen(
         Card(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
-                .clickable { /* TODO */ }
+                .clickable { onClickProfileBlock() }
                 .fillMaxWidth(),
             elevation = 0.dp
         ) {
-            SingleItem(image = R.drawable.profile_icon, name = "Профиль")
+            SingleItem(image = R.drawable.profile_icon, name = "Профиль", onClick = { onClickProfileBlock() })
         }
         Card(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
-                .clickable { /* TODO */ }
                 .fillMaxWidth()
                 .padding(vertical = 24.dp),
             elevation = 0.dp
         ) {
-            SingleItem(image = R.drawable.book_icon, name = "Обучающий блок")
+            SingleItem(image = R.drawable.book_icon, name = "Обучающий блок", onClick = onClickLearnBlock)
         }
         Card(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
-                .clickable { /* TODO */ }
                 .fillMaxWidth(),
             elevation = 0.dp
         ) {

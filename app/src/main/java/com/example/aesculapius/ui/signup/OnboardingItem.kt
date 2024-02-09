@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui.start
+package com.example.aesculapius.ui.signup
 
 data class OnboardingItem(
     val title: String,

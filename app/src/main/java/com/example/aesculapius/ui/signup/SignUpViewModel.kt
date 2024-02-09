@@ -1,11 +1,10 @@
-package com.example.aesculapius.ui.start
+package com.example.aesculapius.ui.signup
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
-import java.time.LocalTime
 
 class SignUpViewModel : ViewModel() {
     // backing property

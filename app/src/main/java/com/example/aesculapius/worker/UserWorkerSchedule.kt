@@ -14,16 +14,13 @@ import java.util.concurrent.TimeUnit
 class UserWorkerSchedule (context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-//        Log.i("TAGTAG", "message33")
-        Log.i("TAGTAG", inputData.getString("userId") ?: "")
+        // вызов периодического бэкапа результатов тестов и метрик
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val yourWorkRequest = PeriodicWorkRequestBuilder<UserWorker>(30, TimeUnit.MINUTES).setInputData(inputData).setConstraints(constraints).build()
-
         WorkManager.getInstance(applicationContext)
             .enqueueUniquePeriodicWork("userWork", ExistingPeriodicWorkPolicy.KEEP, yourWorkRequest)
-
         return Result.success()
     }
 }

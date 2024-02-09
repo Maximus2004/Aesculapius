@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <uses-permission android:name="android.permission.INTERNET" />-->
-
     <application
         android:name=".AesculapiusApp"
         android:allowBackup="true"
@@ -21,11 +19,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
 
-<!--        <provider-->
-<!--            android:name="androidx.work.impl.WorkManagerInitializer"-->
-<!--            android:authorities="${applicationId}.workmanager-init"-->
-<!--            tools:node="remove" />-->
-
         <service
             android:name=".worker.UserWorker"
             android:exported="false"
@@ -39,7 +32,6 @@
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Aesculapius">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

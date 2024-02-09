@@ -1,7 +1,7 @@
 package com.example.aesculapius.database
 
 import android.util.Log
-import com.example.aesculapius.ui.start.SignUpUiState
+import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.worker.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
@@ -34,6 +34,17 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
         usersRef.document(userId).set(user)
     }
 
+    fun updateUserProfile(user: SignUpUiState, userId: String) {
+        usersRef.document(userId).update(
+            "birthDate", user.birthday.toString(),
+            "name", user.name,
+            "surname", user.surname,
+            "patronymic", user.patronymic,
+            "height", user.height.toFloat(),
+            "weight", user.weight.toFloat()
+        )
+    }
+
     suspend fun updateUser(userId: String) {
         val metricsList = aesculapiusRepository.getAllMetrics().map { metricsItem ->
             hashMapOf(
@@ -57,7 +68,6 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
                 "frequency" to medicineItem.frequency
             )
         }
-        Log.i("TAGTAG", userId + medicinesList.size.toString())
         usersRef.document(userId)
             .update("medicines", medicinesList, "metrics", metricsList, "astTests", astTestsList)
     }

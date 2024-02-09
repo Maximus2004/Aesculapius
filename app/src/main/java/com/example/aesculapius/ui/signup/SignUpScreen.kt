@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui.start
+package com.example.aesculapius.ui.signup
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -25,7 +25,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,7 +62,6 @@ import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object SignUpScreen : NavigationDestination {

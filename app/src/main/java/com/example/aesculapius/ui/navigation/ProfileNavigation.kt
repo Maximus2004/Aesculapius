@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.navigation
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,15 +14,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.example.aesculapius.data.Hours
+import com.example.aesculapius.ui.profile.EditProfileScreen
+import com.example.aesculapius.ui.profile.LearnItemScreen
+import com.example.aesculapius.ui.profile.LearnScreen
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.profile.SetReminderTimeProfile
-import com.example.aesculapius.ui.start.OnboardingScreen
-import com.example.aesculapius.ui.start.SetReminderTime
-import com.example.aesculapius.ui.start.SignUpScreen
+import com.example.aesculapius.ui.signup.SetReminderTime
+import com.example.aesculapius.ui.signup.SignUpUiState
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -32,6 +35,8 @@ fun ProfileNavigation(
     turnOnBars: () -> Unit,
     saveMorningReminder: (LocalDateTime) -> Unit,
     saveEveningReminder: (LocalDateTime) -> Unit,
+    user: SignUpUiState,
+    onSaveNewUser: (SignUpUiState) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
@@ -45,7 +50,9 @@ fun ProfileNavigation(
             ProfileScreen(
                 modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp),
                 turnOnBars = turnOnBars,
-                onClickSetReminder = { navController.navigate(SetReminderTimeProfile.route) }
+                onClickSetReminder = { navController.navigate(SetReminderTimeProfile.route) },
+                onClickLearnBlock = { navController.navigate(LearnScreen.route) },
+                onClickProfileBlock = { navController.navigate(EditProfileScreen.route) }
             )
         }
         composable(route = SetReminderTimeProfile.route) {
@@ -56,6 +63,9 @@ fun ProfileNavigation(
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") },
                 turnOffBars = turnOffBars
             )
+        }
+        composable(route = EditProfileScreen.route) {
+            EditProfileScreen(turnOffBars = turnOffBars, onNavigateBack = { navController.navigateUp() }, user = user, onSaveNewUser = onSaveNewUser)
         }
         composable(
             route = SetReminderTime.routeWithArgs,
@@ -73,7 +83,11 @@ fun ProfileNavigation(
                     textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
                         if (Duration.between(it, eveningReminder).toHours() < 8)
-                            Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Между измерениями должно быть минимум 8 часов",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         else {
                             saveMorningReminder(it)
                             navController.navigateUp()
@@ -89,7 +103,11 @@ fun ProfileNavigation(
                     textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
                         if (Duration.between(morningReminder, it).toHours() < 8)
-                            Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Между измерениями должно быть минимум 8 часов",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         else {
                             saveEveningReminder(it)
                             navController.navigateUp()
@@ -99,6 +117,22 @@ fun ProfileNavigation(
                     textTopBar = "Настройка напоминаний"
                 )
             }
+        }
+        composable(route = LearnScreen.route) {
+            LearnScreen(
+                turnOffBars = turnOffBars,
+                onNavigateBack = { navController.navigateUp() },
+                onClickItem = { name, text -> navController.navigate("${LearnItemScreen.route}/$name^$text") }
+            )
+        }
+        composable(
+            route = LearnItemScreen.routeWithArgs,
+            arguments = listOf(navArgument(name = LearnItemScreen.depart) {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val arg = backStackEntry.arguments?.getString(LearnItemScreen.depart)?.split('^') ?: listOf()
+            LearnItemScreen(onNavigateBack = { navController.navigateUp() }, name = arg[0], text = arg[1])
         }
     }
 }

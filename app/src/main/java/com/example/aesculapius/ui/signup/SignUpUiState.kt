@@ -1,7 +1,6 @@
-package com.example.aesculapius.ui.start
+package com.example.aesculapius.ui.signup
 
 import java.time.LocalDate
-import java.time.LocalTime
 
 data class SignUpUiState(
     val name: String = "",

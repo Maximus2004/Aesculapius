@@ -1,4 +1,4 @@
-package com.example.aesculapius.ui.start
+package com.example.aesculapius.ui.signup
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -18,7 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.ui.home.TopBar
 
+/** [TopBar] для второстепенных экранов с обработкой нажатия на кнопку "назад" */
 @Composable
 fun TopBar(
     onNavigateBack: () -> Unit,

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -31,38 +30,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.navigation.ProfileNavigation
 import com.example.aesculapius.ui.navigation.TestsNavigation
 import com.example.aesculapius.ui.navigation.TherapyNavigation
-import com.example.aesculapius.ui.profile.ProfileScreen
+import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.statistics.StatisticsScreen
-import com.example.aesculapius.ui.tests.TestsScreen
-import com.example.aesculapius.ui.theme.AesculapiusTheme
-import com.example.aesculapius.ui.therapy.TherapyScreen
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-
-object HomeScreen : NavigationDestination {
-    override val route = "HomeScreen"
-}
 
 @Composable
 fun HomeScreen(
-    saveASTDate: (LocalDate) -> Unit,
+    saveAstDate: (LocalDate) -> Unit,
     saveRecommendationDate:  (LocalDate) -> Unit,
     recommendationTestDate: String,
-    ASTTestDate: String,
+    astTestDate: String,
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
     saveMorningReminder: (LocalDateTime) -> Unit,
     saveEveningReminder: (LocalDateTime) -> Unit,
+    user: SignUpUiState,
+    onSaveNewUser: (SignUpUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val homeViewModel: HomeViewModel = viewModel()
@@ -101,7 +92,9 @@ fun HomeScreen(
                     saveMorningReminder = { saveMorningReminder(it) },
                     saveEveningReminder = { saveEveningReminder(it) },
                     turnOffBars = { isBarsDisplayed = false },
-                    turnOnBars = { isBarsDisplayed = true }
+                    turnOnBars = { isBarsDisplayed = true },
+                    user = user,
+                    onSaveNewUser = onSaveNewUser
                 )
 
                 PageType.Statistics -> StatisticsScreen(
@@ -114,9 +107,9 @@ fun HomeScreen(
                 PageType.Tests -> TestsNavigation(
                     saveMorningReminder = { saveMorningReminder(it) },
                     saveEveningReminder = { saveEveningReminder(it) },
-                    saveASTDate = { saveASTDate(it) },
+                    saveASTDate = { saveAstDate(it) },
                     saveRecommendationDate = { saveRecommendationDate(it) },
-                    ASTTestDate = ASTTestDate,
+                    ASTTestDate = astTestDate,
                     recommendationTestDate = recommendationTestDate,
                     morningReminder = morningReminder,
                     eveningReminder = eveningReminder,
@@ -127,8 +120,9 @@ fun HomeScreen(
     }
 }
 
+/** [TopBar] для главного экрана без навигации */
 @Composable
-fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Boolean) {
+fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Boolean, onClickHelpButton: () -> Unit = {}) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -144,7 +138,7 @@ fun TopBar(modifier: Modifier = Modifier, screenName: String, isHelpButton: Bool
         Spacer(Modifier.weight(1f))
         if (isHelpButton)
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onClickHelpButton() },
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .size(24.dp)

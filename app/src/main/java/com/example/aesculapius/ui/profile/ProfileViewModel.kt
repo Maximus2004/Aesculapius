@@ -1,28 +1,34 @@
 package com.example.aesculapius.ui.profile
 
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import com.example.aesculapius.database.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
-import java.util.prefs.Preferences
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.database.UserRemoteDataRepository
-import com.example.aesculapius.ui.start.SignUpUiState
+import com.example.aesculapius.ui.signup.SignUpUiState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val prefRepository: UserPreferencesRepository,
     private val userRemoteDataRepository: UserRemoteDataRepository
 ) : ViewModel() {
+    val user: StateFlow<SignUpUiState> = prefRepository.user
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = SignUpUiState()
+        )
+
     val userId: StateFlow<String> = prefRepository.userId
         .stateIn(
             scope = viewModelScope,
@@ -51,7 +57,7 @@ class ProfileViewModel @Inject constructor(
             initialValue = ""
         )
 
-    val recommendationTest: StateFlow<String> = prefRepository.recommendationTest
+    val recommendationTestDate: StateFlow<String> = prefRepository.recommendationTest
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -60,7 +66,7 @@ class ProfileViewModel @Inject constructor(
 
     fun saveASTTestDate(astTestDate: LocalDate) {
         viewModelScope.launch {
-            prefRepository.saveASTTestDate(Converters.dateToStringWithFormat(astTestDate))
+            prefRepository.saveAstTestDate(Converters.dateToStringWithFormat(astTestDate))
         }
     }
 
@@ -71,6 +77,13 @@ class ProfileViewModel @Inject constructor(
                     recommendationTestDate
                 )
             )
+        }
+    }
+
+    fun updateUserProfile(user: SignUpUiState, userId: String) {
+        viewModelScope.launch {
+            prefRepository.saveUserData(user)
+            userRemoteDataRepository.updateUserProfile(user, userId)
         }
     }
 
@@ -89,6 +102,7 @@ class ProfileViewModel @Inject constructor(
     fun changeUserAtFirst(userId: String, signUpUiState: SignUpUiState) {
         viewModelScope.launch {
             prefRepository.saveUserPreferences(userId)
+            prefRepository.saveUserData(signUpUiState)
             userRemoteDataRepository.addUserAtFirst(userId, signUpUiState)
         }
     }

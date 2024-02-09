@@ -18,26 +18,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
-import com.example.aesculapius.ui.home.HomeScreen
-import com.example.aesculapius.ui.start.OnboardingScreen
-import com.example.aesculapius.ui.start.SetReminderTime
-import com.example.aesculapius.ui.start.SignUpScreen
-import com.example.aesculapius.ui.start.SignUpUiState
-import com.example.aesculapius.ui.start.SignUpViewModel
+import com.example.aesculapius.ui.signup.OnboardingScreen
+import com.example.aesculapius.ui.signup.SetReminderTime
+import com.example.aesculapius.ui.signup.SignUpScreen
+import com.example.aesculapius.ui.signup.SignUpUiState
+import com.example.aesculapius.ui.signup.SignUpViewModel
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MainNavigation(
-    saveASTDate: (LocalDate) -> Unit,
-    saveRecommendationDate: (LocalDate) -> Unit,
+fun SignUpNavigation(
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
-    recommendationTestDate: String,
-    ASTTestDate: String,
     saveMorningReminder: (LocalDateTime) -> Unit,
     saveEveningReminder: (LocalDateTime) -> Unit,
     onEndRegistration: (SignUpUiState) -> Unit,
@@ -111,27 +104,10 @@ fun MainNavigation(
                 onEndRegistration = {
                     if (Duration.between(morningReminder, eveningReminder).toHours() < 8)
                         Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
-                    else {
+                    else
                         onEndRegistration(signUpUiState)
-                        navController.navigate(HomeScreen.route) {
-                            popUpTo(OnboardingScreen.route) { inclusive = true }
-                        }
-                    }
                 },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") }
-            )
-        }
-        // включает в себя все основные компоненты
-        composable(route = HomeScreen.route) {
-            HomeScreen(
-                morningReminder = morningReminder,
-                eveningReminder = eveningReminder,
-                saveMorningReminder = { saveMorningReminder(it) },
-                saveEveningReminder = { saveEveningReminder(it) },
-                recommendationTestDate = recommendationTestDate,
-                ASTTestDate = ASTTestDate,
-                saveASTDate = { saveASTDate(it) },
-                saveRecommendationDate = { saveRecommendationDate(it) },
             )
         }
     }
