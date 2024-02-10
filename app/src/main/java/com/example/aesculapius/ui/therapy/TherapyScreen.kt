@@ -46,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -94,33 +96,33 @@ fun TherapyScreen(
     onClickMedicine: (MedicineItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isActiveMedicines by remember { mutableStateOf(true) }
+    var isMorningMedicines by remember { mutableStateOf(true) }
     LaunchedEffect(key1 = Unit) { turnOnBars() }
 
     Box() {
         LazyColumn(modifier = modifier.fillMaxSize()) {
             item {
-                CalendarItem(
-                    therapyViewModel = therapyViewModel,
+                CalendarItem(therapyViewModel = therapyViewModel,
                     currentDate = currentDate,
                     onDateChanged = { updateCurrentDate(it) },
                     weekDates = currentWeekDates,
                     getWeekDates = { getWeekDates(it) },
                     isWeek = isWeek,
-                    onClickChangeWeek = { onClickChangeWeek(it) }
-                )
+                    onClickChangeWeek = { onClickChangeWeek(it) })
             }
             when (currentLoadingState) {
-                is CurrentLoadingState.Loading ->
-                    item {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).padding(top = 100.dp))
-                        }
+                is CurrentLoadingState.Loading -> item {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 100.dp)
+                        )
                     }
+                }
 
                 is CurrentLoadingState.Success -> {
 
-                    // не так важно, чтобы отдельно выносить во viewModel (в каком виде выводятся лекарства)
                     val currentMedicines = currentLoadingState.therapyuiState
 
                     item {
@@ -133,8 +135,7 @@ fun TherapyScreen(
                         ) {
                             Column(
                                 modifier = Modifier.padding(
-                                    horizontal = 24.dp,
-                                    vertical = 16.dp
+                                    horizontal = 24.dp, vertical = 16.dp
                                 )
                             ) {
                                 Text(
@@ -187,31 +188,31 @@ fun TherapyScreen(
                         } else {
                             Row(modifier = Modifier.padding(bottom = 24.dp)) {
                                 Button(
-                                    onClick = { isActiveMedicines = true },
+                                    onClick = { isMorningMedicines = true },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text(
-                                        text = "Активные",
+                                        text = "Утро",
                                         style = MaterialTheme.typography.headlineSmall
                                     )
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 Button(
-                                    onClick = { isActiveMedicines = false },
+                                    onClick = { isMorningMedicines = false },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isActiveMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (!isActiveMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Text(
-                                        text = "Завершённые",
+                                        text = "Вечер",
                                         style = MaterialTheme.typography.headlineSmall
                                     )
                                 }
@@ -219,35 +220,53 @@ fun TherapyScreen(
                         }
                     }
                     if (isAfterCurrentDate) {
-                        items(currentMedicines.currentActiveMedicines + currentMedicines.currentEndedMedicines) { medicine ->
+                        items(currentMedicines.currentMorningMedicines) { medicine ->
                             MedicineCard(
                                 medicine = medicine,
                                 modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) }
+                                onClick = { onClickMedicine(medicine) },
+                                isSkipped = false,
+                                isAccepted = false,
+                                isMorning = true
                             )
                         }
-                    } else if (isActiveMedicines)
-                        items(currentMedicines.currentActiveMedicines) { medicine ->
+                        items(currentMedicines.currentEveningMedicines) { medicine ->
                             MedicineCard(
                                 medicine = medicine,
                                 modifier = Modifier.padding(bottom = 16.dp),
-                                onClick =  { onClickMedicine(medicine) }
+                                onClick = { onClickMedicine(medicine) },
+                                isSkipped = false,
+                                isAccepted = false,
+                                isMorning = false
                             )
                         }
-                    else
-                        items(currentMedicines.currentEndedMedicines) { medicine ->
-                            MedicineCard(
-                                medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) }
-                            )
-                        }
+                    } else if (isMorningMedicines) items(currentMedicines.currentMorningMedicines) { medicine ->
+                        MedicineCard(
+                            medicine = medicine,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            onClick = { onClickMedicine(medicine) },
+                            isSkipped = medicine.isSkipped || LocalDate.now().isAfter(medicine.startDate) || LocalTime.now()
+                                .isAfter(LocalTime.of(14, 0)),
+                            isAccepted = medicine.isAccepted,
+                            isMorning = true
+                        )
+                    }
+                    else items(currentMedicines.currentEveningMedicines) { medicine ->
+                        MedicineCard(
+                            medicine = medicine,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            onClick = { onClickMedicine(medicine) },
+                            isSkipped = medicine.isSkipped || LocalDate.now().isAfter(medicine.startDate) || LocalTime.now()
+                                .isAfter(LocalTime.of(23, 0)),
+                            isAccepted = medicine.isAccepted,
+                            isMorning = false
+                        )
+                    }
                 }
             }
         }
         FloatingButton(
-            onClick = { onCreateNewMedicine() },
-            modifier = Modifier.align(Alignment.BottomEnd)
+            onClick = { onCreateNewMedicine() }, modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
 }
@@ -273,22 +292,32 @@ fun FloatingButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem, onClick: () -> Unit) {
-    Card(
-        elevation = 0.dp,
+fun MedicineCard(
+    modifier: Modifier = Modifier,
+    medicine: MedicineItem,
+    onClick: () -> Unit,
+    isSkipped: Boolean,
+    isAccepted: Boolean,
+    isMorning: Boolean
+) {
+    Card(elevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
             .height(112.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp)
-    ) {
+            .clickable { if (!isSkipped && !isAccepted) onClick() }
+            .alpha(if (isSkipped || isAccepted) 0.3f else 1f),
+        shape = RoundedCornerShape(16.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(end = 10.dp)
         ) {
             Image(
-                painter = painterResource(id = medicine.image),
+                painter = painterResource(id =
+                    if (isSkipped) R.drawable.medicines_example_skipped
+                    else if (isAccepted) R.drawable.medicines_example_accepted
+                    else R.drawable.medicines_example
+                ),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.weight(0.30f)
@@ -306,22 +335,28 @@ fun MedicineCard(modifier: Modifier = Modifier, medicine: MedicineItem, onClick:
                 Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
                 Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
                 Row(modifier = Modifier.padding(top = 16.dp)) {
-                    if ("вечером" in medicine.frequency)
-                        Icon(
-                            painter = painterResource(id = R.drawable.moon_icon),
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = Color.Black
-                        )
-                    else
-                        Icon(
-                            painter = painterResource(id = R.drawable.sun_icon),
-                            contentDescription = null,
-                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = Color.Black
-                        )
+                    if (!isMorning) Icon(
+                        painter = painterResource(id = R.drawable.moon_icon),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                        tint = Color.Black
+                    )
+                    else Icon(
+                        painter = painterResource(id = R.drawable.sun_icon),
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                        tint = Color.Black
+                    )
                     Text(
-                        text = medicine.frequency,
+                        text =
+                        if ("По 1 дозе 2 раза в сутки" == medicine.frequency) "1 доза"
+                        else if ("По 2 дозы 2 раза в сутки" == medicine.frequency) "2 дозы"
+                        else if ("По 1 дозе утром" in medicine.frequency && isMorning) "1 доза"
+                        else if ("1 дозе вечером" in medicine.frequency && !isMorning) "1 доза"
+                        else if ("По 2 дозы утром" in medicine.frequency && isMorning) "2 дозы"
+                        else if ("2 дозы вечером" in medicine.frequency && !isMorning) "2 дозы"
+                        else if ("По 1 таблетке" in medicine.frequency) "1 таблетка"
+                        else "1 доза",
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
@@ -366,10 +401,8 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
             )
         }
         Text(
-            text = (weekState.currentWeek.yearMonth.month
-                .getDisplayName(
-                    TextStyle.FULL_STANDALONE,
-                    Locale.getDefault()
+            text = (weekState.currentWeek.yearMonth.month.getDisplayName(
+                    TextStyle.FULL_STANDALONE, Locale.getDefault()
                 ) + " " + weekState.currentWeek.yearMonth.year).replaceFirstChar { it.titlecase() },
             modifier = Modifier.padding(start = 8.dp),
             style = MaterialTheme.typography.bodyLarge
@@ -382,14 +415,12 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
                 .size(width = 90.dp, height = 24.dp)
                 .clickable { onClickWeek(false) },
             border = BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface
+                width = 2.dp, color = MaterialTheme.colorScheme.onSurface
             ),
             backgroundColor = MaterialTheme.colorScheme.background
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "неделя",
@@ -413,8 +444,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
 
 @Composable
 fun DayContent(
-    state: DayState<DynamicSelectionState>,
-    therapyViewModel: TherapyViewModel
+    state: DayState<DynamicSelectionState>, therapyViewModel: TherapyViewModel
 ) {
     var currentColorCircle by remember { mutableStateOf(Color(0xFFB0A3D1)) }
 
@@ -436,29 +466,23 @@ fun DayContent(
             .padding(5.dp)
             .aspectRatio(0.9f)
     ) {
-        Card(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .clickable { selectionState.onDateSelected(date) }
-                .align(Alignment.TopCenter),
+        Card(modifier = Modifier
+            .aspectRatio(1f)
+            .clickable { selectionState.onDateSelected(date) }
+            .align(Alignment.TopCenter),
             shape = MaterialTheme.shapes.small,
             border = null,
             backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color(
                 0xFFE3E0EA
-            )
-        ) {
+            )) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = date.dayOfMonth.toString(),
-                    color =
-                    if (isSelected) Color.White
+                    text = date.dayOfMonth.toString(), color = if (isSelected) Color.White
                     else if (state.isCurrentDay) Color(0xFF6750A4)
                     else if (state.isFromCurrentMonth) Color.Black
-                    else Color(0xFF86818B),
-                    style = MaterialTheme.typography.headlineLarge
+                    else Color(0xFF86818B), style = MaterialTheme.typography.headlineLarge
                 )
             }
         }
@@ -468,8 +492,7 @@ fun DayContent(
                 .align(Alignment.BottomCenter)
         ) {
             drawCircle(
-                color = currentColorCircle,
-                center = center
+                color = currentColorCircle, center = center
             )
         }
     }
@@ -485,8 +508,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
         IconButton(
             onClick = {
                 monthState.currentMonth = monthState.currentMonth.minusMonths(1)
-            },
-            modifier = Modifier.size(26.dp)
+            }, modifier = Modifier.size(26.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -496,8 +518,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
         }
         Text(
             text = (monthState.currentMonth.month.getDisplayName(
-                TextStyle.FULL_STANDALONE,
-                Locale.getDefault()
+                TextStyle.FULL_STANDALONE, Locale.getDefault()
             ) + " " + monthState.currentMonth.year).replaceFirstChar { it.titlecase() },
             modifier = Modifier.padding(start = 8.dp),
             style = MaterialTheme.typography.bodyLarge
@@ -510,14 +531,12 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
                 .size(width = 90.dp, height = 24.dp)
                 .clickable { onClickMonth(true) },
             border = BorderStroke(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface
+                width = 2.dp, color = MaterialTheme.colorScheme.onSurface
             ),
             backgroundColor = MaterialTheme.colorScheme.background
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "месяц",
@@ -529,8 +548,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
         IconButton(
             onClick = {
                 monthState.currentMonth = monthState.currentMonth.plusMonths(1)
-            },
-            modifier = Modifier.size(26.dp)
+            }, modifier = Modifier.size(26.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
@@ -562,44 +580,34 @@ fun CalendarItem(
 //        )
 //    ) {
     // внутри ViewModel currentDate обновляется так, чтобы не триггерить recomposition календаря снова
-    if (isWeek)
-        SelectableWeekCalendar(
-            modifier = modifier,
-            calendarState = rememberSelectableWeekCalendarState(
-                initialSelection = listOf(currentDate),
-                initialWeek = weekDates,
-                confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
-            ),
-            dayContent = { state ->
-                DayContent(state = state, therapyViewModel = therapyViewModel)
-            },
-            daysOfWeekHeader = { daysOfWeek ->
-                DaysOfWeekHeader(daysOfWeek = daysOfWeek)
-            },
-            weekHeader = { weekState ->
-                WeekHeader(weekState = weekState, onClickWeek = { onClickChangeWeek(it) })
-            }
-        )
-    else
-        SelectableCalendar(
-            modifier = modifier,
-            calendarState = rememberSelectableCalendarState(
-                initialSelection = listOf(currentDate),
-                initialMonth = YearMonth.from(currentDate),
-                confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }
-            ),
-            dayContent = { state ->
-                DayContent(state = state, therapyViewModel = therapyViewModel)
-            },
-            monthHeader = { monthState ->
-                MonthHeader(monthState = monthState, onClickMonth = {
-                    onClickChangeWeek(it)
-                    getWeekDates(currentDate)
-                })
-            },
-            daysOfWeekHeader = { daysOfWeek ->
-                DaysOfWeekHeader(daysOfWeek = daysOfWeek)
-            }
-        )
+    if (isWeek) SelectableWeekCalendar(modifier = modifier,
+        calendarState = rememberSelectableWeekCalendarState(initialSelection = listOf(currentDate),
+            initialWeek = weekDates,
+            confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }),
+        dayContent = { state ->
+            DayContent(state = state, therapyViewModel = therapyViewModel)
+        },
+        daysOfWeekHeader = { daysOfWeek ->
+            DaysOfWeekHeader(daysOfWeek = daysOfWeek)
+        },
+        weekHeader = { weekState ->
+            WeekHeader(weekState = weekState, onClickWeek = { onClickChangeWeek(it) })
+        })
+    else SelectableCalendar(modifier = modifier,
+        calendarState = rememberSelectableCalendarState(initialSelection = listOf(currentDate),
+            initialMonth = YearMonth.from(currentDate),
+            confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }),
+        dayContent = { state ->
+            DayContent(state = state, therapyViewModel = therapyViewModel)
+        },
+        monthHeader = { monthState ->
+            MonthHeader(monthState = monthState, onClickMonth = {
+                onClickChangeWeek(it)
+                getWeekDates(currentDate)
+            })
+        },
+        daysOfWeekHeader = { daysOfWeek ->
+            DaysOfWeekHeader(daysOfWeek = daysOfWeek)
+        })
 //    }
 }

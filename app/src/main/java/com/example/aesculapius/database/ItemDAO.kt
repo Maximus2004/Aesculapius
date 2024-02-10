@@ -11,16 +11,31 @@ import java.time.LocalDate
 // data access object
 @Dao
 interface ItemDAO {
-    @Query("INSERT INTO medicines_items VALUES(NULL, :image, :name, :undername, :dose, :frequency, :startDate, :endDate)")
+    @Query("INSERT INTO medicines_items VALUES(NULL, :image, :medicineType, :name, :undername, :dose, :frequency, :startDate, :endDate, :isAccepted, :isSkipped)")
     suspend fun insertMedicineItem(
         image: Int,
+        medicineType: String,
         name: String,
         undername: String,
         dose: String,
         frequency: String,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        isAccepted: Boolean,
+        isSkipped: Boolean
     )
+
+    @Query("UPDATE medicines_items SET isAccepted = :isAccepted WHERE id = :medicineId")
+    suspend fun acceptMedicine(medicineId: Int, isAccepted: Boolean)
+
+    @Query("UPDATE medicines_items SET isSkipped = :isSkipped WHERE id = :medicineId")
+    suspend fun skipMedicine(medicineId: Int, isSkipped: Boolean)
+
+    @Query("UPDATE medicines_items SET frequency = :frequency, dose = :dose WHERE id = :medicineId")
+    suspend fun updateMedicineItem(medicineId: Int, frequency: String, dose: String)
+
+    @Query("DELETE from medicines_items WHERE id = :medicineId")
+    suspend fun deleteMedicineItem(medicineId: Int)
 
     @Query("SELECT * from medicines_items WHERE (startDate <= :currentDate) AND (endDate > :currentDate)")
     suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineItem>

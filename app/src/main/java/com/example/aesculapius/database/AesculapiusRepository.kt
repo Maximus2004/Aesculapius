@@ -13,6 +13,7 @@ import javax.inject.Singleton
 class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
     suspend fun insertMedicineItem(
         image: Int,
+        medicineType: String,
         name: String,
         undername: String,
         dose: String,
@@ -20,7 +21,23 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         startDate: LocalDate,
         endDate: LocalDate
     ) {
-        itemDAO.insertMedicineItem(image, name, undername, dose, frequency, startDate, endDate)
+        itemDAO.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, false, false)
+    }
+
+    suspend fun acceptMedicine(medicineId: Int) {
+        itemDAO.acceptMedicine(medicineId, true)
+    }
+
+    suspend fun skipMedicine(medicineId: Int) {
+        itemDAO.skipMedicine(medicineId, true)
+    }
+
+    suspend fun updateMedicineItem(medicineId: Int, frequency: String, dose: String) {
+        itemDAO.updateMedicineItem(medicineId, frequency, dose)
+    }
+
+    suspend fun deleteMedicineItem(medicineId: Int) {
+        itemDAO.deleteMedicineItem(medicineId)
     }
 
     suspend fun getAllMedicines(): List<MedicineItem> {

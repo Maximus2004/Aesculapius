@@ -1,6 +1,7 @@
 package com.example.aesculapius.ui.therapy
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +67,7 @@ fun NewMedicineScreen(
     onNavigateBack: () -> Unit,
     onClickFinishButton: (
         image: Int,
+        medicineType: String,
         name: String,
         undername: String,
         dose: String,
@@ -77,6 +80,11 @@ fun NewMedicineScreen(
     modifier: Modifier = Modifier
 ) {
     var currentMedicineType by remember { mutableStateOf(CurrentMedicineType.Aerosol) }
+    lateinit var currentMedicineItem: Medicine
+    var selectedItemIndex by remember { mutableIntStateOf(0) }
+    var selectedDosesIndex by remember { mutableIntStateOf(0) }
+    var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) { turnOffBars() }
 
@@ -192,10 +200,7 @@ fun NewMedicineScreen(
                     }
                 }
             }
-            lateinit var currentMedicineItem: Medicine
-            var selectedItemIndex by remember { mutableIntStateOf(0) }
-            var selectedDosesIndex by remember { mutableIntStateOf(0) }
-            var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
+
             when (currentMedicineType) {
                 CurrentMedicineType.Aerosol -> {
                     DropdownMenu(
@@ -266,126 +271,22 @@ fun NewMedicineScreen(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    if (currentMedicineType == CurrentMedicineType.Tablets)
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 таблетка вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    else if (currentMedicineType == CurrentMedicineType.Powder && "1 раз в сутки" in currentMedicineItem.frequency[selectedFrequencyIndex])
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    else if (currentMedicineType == CurrentMedicineType.Powder && "2 раза в сутки" in currentMedicineItem.frequency[selectedFrequencyIndex]) {
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    }
-                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 1 дозе 2 раза в сутки" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    }
-                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 2 дозы 2 раза в сутки" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "2 дозы утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "2 дозы вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    }
-                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 1 дозе утром и 2 дозы вечером" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "2 дозы вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    }
-                    else if (currentMedicineType == CurrentMedicineType.Aerosol && "По 2 дозы утром и 1 дозе вечером" == currentMedicineItem.frequency[selectedFrequencyIndex]) {
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "2 дозы утром",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                        onClickFinishButton(
-                            currentMedicineItem.image,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            "1 доза вечером",
-                            currentDate,
-                            currentDate.plusMonths(1),
-                        )
-                    }
+                    val medicineType =
+                        when (currentMedicineType) {
+                            CurrentMedicineType.Tablets -> "таблетки"
+                            CurrentMedicineType.Powder -> "порошок"
+                            CurrentMedicineType.Aerosol -> "аэрозоль"
+                        }
+                    onClickFinishButton(
+                        currentMedicineItem.image,
+                        medicineType,
+                        currentMedicineItem.name,
+                        currentMedicineItem.undername,
+                        currentMedicineItem.doses[selectedDosesIndex],
+                        currentMedicineItem.frequency[selectedFrequencyIndex],
+                        currentDate,
+                        currentDate.plusMonths(1),
+                    )
                 },
                 modifier = Modifier
                     .padding(bottom = 30.dp)
@@ -410,10 +311,11 @@ fun DropdownMenu(
     menuName: String,
     menuList: List<String>,
     onCloseAction: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    initialIndex: Int = 0
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(menuList[0]) }
+    var selectedItem by remember { mutableStateOf(menuList[initialIndex]) }
     val scrollState = rememberScrollState()
 
     ExposedDropdownMenuBox(

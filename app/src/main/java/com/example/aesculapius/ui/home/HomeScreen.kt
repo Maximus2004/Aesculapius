@@ -60,8 +60,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineItem
 import kotlinx.coroutines.launch
 
@@ -80,16 +83,32 @@ fun HomeScreen(
     onSaveNewUser: (SignUpUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val homeViewModel: HomeViewModel = viewModel()
+    val homeViewModel: HomeViewModel = hiltViewModel()
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
     val currentMedicineItem: MutableState<MedicineItem?> = remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val navController = rememberNavController()
 
     ModalBottomSheetLayout(
         sheetContent = {
-            if (currentMedicineItem.value != null) EditMedicineSheet(currentMedicineItem.value!!)
+            if (currentMedicineItem.value != null)
+                EditMedicineSheet(
+                    medicine = currentMedicineItem.value!!,
+                    navigateToEditMedicineScreen = {
+                        scope.launch { sheetState.hide() }
+                        navController.navigate(EditMedicineScreen.route)
+                    },
+                    skipMedicine = {
+                        scope.launch { sheetState.hide() }
+                        homeViewModel.skipMedicine(it)
+                    },
+                    acceptMedicine = {
+                        scope.launch { sheetState.hide() }
+                        homeViewModel.acceptMedicine(it)
+                    }
+                )
         },
         sheetShape = RoundedCornerShape(
             topEnd = 8.dp,
@@ -128,7 +147,9 @@ fun HomeScreen(
                         onClickMedicine = {
                             currentMedicineItem.value = it
                             scope.launch { sheetState.show() }
-                        }
+                        },
+                        medicine = currentMedicineItem.value,
+                        navController = navController
                     )
 
                     PageType.Profile -> ProfileNavigation(
@@ -139,7 +160,8 @@ fun HomeScreen(
                         turnOffBars = { isBarsDisplayed = false },
                         turnOnBars = { isBarsDisplayed = true },
                         user = user,
-                        onSaveNewUser = onSaveNewUser
+                        onSaveNewUser = onSaveNewUser,
+                        navController = navController
                     )
 
                     PageType.Statistics -> StatisticsScreen(
@@ -159,7 +181,9 @@ fun HomeScreen(
                         morningReminder = morningReminder,
                         eveningReminder = eveningReminder,
                         turnOffBars = { isBarsDisplayed = false },
-                        turnOnBars = { isBarsDisplayed = true })
+                        turnOnBars = { isBarsDisplayed = true },
+                        navController = navController
+                    )
                 }
             }
         }
@@ -241,8 +265,14 @@ fun BottomNavigationBar(
 }
 
 @Composable
-fun EditMedicineSheet(medicine: MedicineItem, modifier: Modifier = Modifier) {
-    Column(modifier = Modifier.padding(24.dp)) {
+fun EditMedicineSheet(
+    acceptMedicine: (Int) -> Unit,
+    skipMedicine: (Int) -> Unit,
+    navigateToEditMedicineScreen: () -> Unit,
+    medicine: MedicineItem,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(24.dp)) {
         Row {
             Column {
                 Text(
@@ -254,7 +284,7 @@ fun EditMedicineSheet(medicine: MedicineItem, modifier: Modifier = Modifier) {
                 Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
             }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { /*TODO*/ } ) {
+            IconButton(onClick = navigateToEditMedicineScreen) {
                 Icon(painterResource(id = R.drawable.edit_icon), contentDescription = null)
             }
         }
@@ -287,7 +317,7 @@ fun EditMedicineSheet(medicine: MedicineItem, modifier: Modifier = Modifier) {
         )
         Row(modifier = Modifier.align(Alignment.End)) {
             TextButton(
-                onClick = { /*TODO*/ },
+                onClick = { skipMedicine(medicine.id) },
                 modifier = Modifier
                     .width(106.dp)
                     .padding(end = 8.dp)
@@ -299,7 +329,7 @@ fun EditMedicineSheet(medicine: MedicineItem, modifier: Modifier = Modifier) {
                 )
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { acceptMedicine(medicine.id) },
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

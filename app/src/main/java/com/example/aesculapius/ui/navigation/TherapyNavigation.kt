@@ -12,8 +12,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.aesculapius.ui.profile.EditProfileScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
+import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.NewMedicineScreen
 import com.example.aesculapius.ui.therapy.TherapyScreen
@@ -26,8 +28,9 @@ fun TherapyNavigation(
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
     onClickMedicine: (MedicineItem) -> Unit,
+    medicine: MedicineItem?,
     therapyViewModel: TherapyViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController
 ) {
     val currentLoadingState = therapyViewModel.currentLoadingState
     val currentWeekDates = therapyViewModel.currentWeekDates.collectAsState().value
@@ -55,11 +58,39 @@ fun TherapyNavigation(
                 onClickMedicine = { onClickMedicine(it) }
             )
         }
+        composable(route = EditMedicineScreen.route) {
+            EditMedicineScreen(
+                turnOffBars = turnOffBars,
+                medicine = medicine!!,
+                onNavigateBack = { navController.navigateUp() },
+                onClickDeleteMedicine = { medicineId ->
+                    therapyViewModel.deleteMedicineItem(medicineId)
+                    navController.navigate(TherapyScreen.route) {
+                        popUpTo(TherapyScreen.route) { inclusive = false }
+                    }
+                },
+                onClickUpdateMedicineItem = { medicineId, frequency, dose ->
+                    therapyViewModel.updateMedicineItem(medicineId, frequency, dose)
+                    navController.navigate(TherapyScreen.route) {
+                        popUpTo(TherapyScreen.route) { inclusive = false }
+                    }
+                }
+            )
+        }
         composable(route = NewMedicineScreen.route) {
             NewMedicineScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onClickFinishButton = { image, name, undername, dose, frequency, startDate, endDate ->
-                    therapyViewModel.addMedicineItem(image, name, undername, dose, frequency, startDate, endDate)
+                onClickFinishButton = { image, medicineType, name, undername, dose, frequency, startDate, endDate ->
+                    therapyViewModel.addMedicineItem(
+                        image,
+                        medicineType,
+                        name,
+                        undername,
+                        dose,
+                        frequency,
+                        startDate,
+                        endDate
+                    )
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }

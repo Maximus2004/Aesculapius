@@ -34,7 +34,7 @@ import javax.inject.Inject
 // пул потоков, на котором запускается данная каорутина, а также в конкретном контексте,
 // который определяет жизненный цикл корутины
 @HiltViewModel
-class TherapyViewModel @Inject constructor(val aesculapiusRepository: AesculapiusRepository) : ViewModel() {
+class TherapyViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository) : ViewModel() {
 
     /** [currentDate] - при изменении выбранного дня, меняется currentDate вместе с state, который отвечает за отображение
      * дня в календаре. При изменении currentDate внутри списка не происходит recomposition,
@@ -51,9 +51,7 @@ class TherapyViewModel @Inject constructor(val aesculapiusRepository: Aesculapiu
     private var _isWeek = MutableStateFlow(true)
     val isWeek: StateFlow<Boolean> = _isWeek
 
-    init {
-        updateCurrentDate(LocalDate.now())
-    }
+    init { updateCurrentDate(LocalDate.now()) }
 
     fun changeIsWeek(isWeek: Boolean) {
         _isWeek.value = isWeek
@@ -66,17 +64,28 @@ class TherapyViewModel @Inject constructor(val aesculapiusRepository: Aesculapiu
             currentLoadingState = CurrentLoadingState.Loading
             currentDate[0] = newDate
 
-            val activeTemp = aesculapiusRepository.getMedicinesOnCurrentDate(newDate).toMutableList()
+            val medicines = aesculapiusRepository.getMedicinesOnCurrentDate(newDate).toMutableList()
 
-            // пока пустой список, так как не добавлена система отметки о завершении приёма лекарства
-            val endedTemp = mutableListOf<MedicineItem>()
+            val morningMedicines = medicines.filter {
+                (it.medicineType == "порошок" && "1 раз в сутки" in it.frequency) ||
+                ("По 1 дозе 2 раза в сутки" == it.frequency) ||
+                ("По 2 дозы 2 раза в сутки" == it.frequency) ||
+                ("утром" in it.frequency)
+            }
+
+            val eveningMedicines = medicines.filter {
+                (it.medicineType == "таблетки" && "1 раз в сутки" in it.frequency) ||
+                        ("По 1 дозе 2 раза в сутки" == it.frequency) ||
+                        ("По 2 дозы 2 раза в сутки" == it.frequency) ||
+                        ("вечером" in it.frequency)
+            }
 
             val result = TherapyUiState(
-                currentActiveMedicines = activeTemp,
-                currentEndedMedicines = endedTemp,
-                done = endedTemp.size,
-                amount = endedTemp.size + activeTemp.size,
-                progress = endedTemp.size.toFloat() / (activeTemp.size + endedTemp.size)
+                currentMorningMedicines = morningMedicines,
+                currentEveningMedicines = eveningMedicines,
+                done = 0,
+                amount = 0,
+                progress = 0f
             )
             currentLoadingState = CurrentLoadingState.Success(result)
         }
@@ -85,6 +94,7 @@ class TherapyViewModel @Inject constructor(val aesculapiusRepository: Aesculapiu
 
     fun addMedicineItem(
         image: Int,
+        medicineType: String,
         name: String,
         undername: String,
         dose: String,
@@ -93,7 +103,19 @@ class TherapyViewModel @Inject constructor(val aesculapiusRepository: Aesculapiu
         endDate: LocalDate
     ) {
         viewModelScope.launch {
-            aesculapiusRepository.insertMedicineItem(image, name, undername, dose, frequency, startDate, endDate)
+            aesculapiusRepository.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate)
+        }
+    }
+
+    fun updateMedicineItem(medicineId: Int, frequency: String, dose: String) {
+        viewModelScope.launch {
+            aesculapiusRepository.updateMedicineItem(medicineId, frequency, dose)
+        }
+    }
+
+    fun deleteMedicineItem(medicineId: Int) {
+        viewModelScope.launch {
+            aesculapiusRepository.deleteMedicineItem(medicineId)
         }
     }
 

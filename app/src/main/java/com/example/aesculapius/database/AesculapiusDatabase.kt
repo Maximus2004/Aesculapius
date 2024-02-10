@@ -9,7 +9,7 @@ import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
 
-@Database(entities = [MedicineItem::class, ScoreItem::class, MetricsItem::class], version = 3, exportSchema = false)
+@Database(entities = [MedicineItem::class, ScoreItem::class, MetricsItem::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AesculapiusDatabase: RoomDatabase() {
     abstract fun itemDao(): ItemDAO

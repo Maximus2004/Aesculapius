@@ -11,10 +11,13 @@ data class MedicineItem(
     val id: Int,
     @DrawableRes
     val image: Int,
+    val medicineType: String,
     val name: String,
     val undername: String,
     val dose: String,
     val frequency: String,
     val startDate: LocalDate,
-    val endDate: LocalDate
+    val endDate: LocalDate,
+    val isAccepted: Boolean,
+    val isSkipped: Boolean
 )

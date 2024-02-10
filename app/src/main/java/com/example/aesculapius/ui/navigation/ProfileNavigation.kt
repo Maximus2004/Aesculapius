@@ -37,7 +37,7 @@ fun ProfileNavigation(
     saveEveningReminder: (LocalDateTime) -> Unit,
     user: SignUpUiState,
     onSaveNewUser: (SignUpUiState) -> Unit,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController
 ) {
     val context = LocalContext.current
 
