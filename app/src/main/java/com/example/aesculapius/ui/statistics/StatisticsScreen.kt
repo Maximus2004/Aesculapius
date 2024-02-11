@@ -68,8 +68,7 @@ import com.patrykandpatrick.vico.core.component.shape.Shapes
 import java.time.temporal.ChronoUnit
 
 @Composable
-fun StatisticsScreen(modifier: Modifier = Modifier) {
-    val statisticsViewModel: StatisticsViewModel = hiltViewModel()
+fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifier = Modifier) {
     val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
     val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
     val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
@@ -556,12 +555,4 @@ fun ShowLineChart(
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StatisticsScreenPreview() {
-    AesculapiusTheme {
-        StatisticsScreen()
-    }
 }

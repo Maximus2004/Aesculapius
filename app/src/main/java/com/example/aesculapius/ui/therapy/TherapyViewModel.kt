@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.Period
 import javax.inject.Inject
 
 // все корутины запускаются с помощью конкретного диспетчера, который указывает на поток или
@@ -75,21 +76,38 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
 
             val eveningMedicines = medicines.filter {
                 (it.medicineType == "таблетки" && "1 раз в сутки" in it.frequency) ||
-                        ("По 1 дозе 2 раза в сутки" == it.frequency) ||
-                        ("По 2 дозы 2 раза в сутки" == it.frequency) ||
-                        ("вечером" in it.frequency)
+                ("По 1 дозе 2 раза в сутки" == it.frequency) ||
+                ("По 2 дозы 2 раза в сутки" == it.frequency) ||
+                ("вечером" in it.frequency)
+            }
+
+            val acceptedMedicines = (morningMedicines + eveningMedicines).count { medicine ->
+                (!medicine.realStartDate.isAfter(newDate) &&
+                medicine.isAccepted[Period.between(medicine.realStartDate, newDate).days] != 0)
             }
 
             val result = TherapyUiState(
                 currentMorningMedicines = morningMedicines,
                 currentEveningMedicines = eveningMedicines,
-                done = 0,
-                amount = 0,
-                progress = 0f
+                done = acceptedMedicines,
+                amount = (morningMedicines + eveningMedicines).size,
+                progress = acceptedMedicines.toFloat() / (morningMedicines + eveningMedicines).size
             )
             currentLoadingState = CurrentLoadingState.Success(result)
         }
         return true
+    }
+
+    fun acceptMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+        viewModelScope.launch {
+            aesculapiusRepository.acceptMedicine(medicineId, isMorningMedicine)
+        }
+    }
+
+    fun skipMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+        viewModelScope.launch {
+            aesculapiusRepository.skipMedicine(medicineId, isMorningMedicine)
+        }
     }
 
     fun addMedicineItem(
@@ -100,10 +118,11 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         dose: String,
         frequency: String,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        realStartDate: LocalDate
     ) {
         viewModelScope.launch {
-            aesculapiusRepository.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate)
+            aesculapiusRepository.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, realStartDate)
         }
     }
 

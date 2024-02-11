@@ -3,18 +3,14 @@ package com.example.aesculapius.ui.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.aesculapius.ui.profile.EditProfileScreen
-import com.example.aesculapius.ui.tests.TestsScreen
-import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.NewMedicineScreen
@@ -24,12 +20,13 @@ import java.time.LocalDate
 
 @Composable
 fun TherapyNavigation(
+    isMorningMedicines: MutableState<Boolean>,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
     onClickMedicine: (MedicineItem) -> Unit,
     medicine: MedicineItem?,
-    therapyViewModel: TherapyViewModel = hiltViewModel(),
+    therapyViewModel: TherapyViewModel,
     navController: NavHostController
 ) {
     val currentLoadingState = therapyViewModel.currentLoadingState
@@ -55,7 +52,8 @@ fun TherapyNavigation(
                 updateCurrentDate = { therapyViewModel.updateCurrentDate(it) },
                 isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now()),
                 onClickChangeWeek = { therapyViewModel.changeIsWeek(it) },
-                onClickMedicine = { onClickMedicine(it) }
+                onClickMedicine = { onClickMedicine(it) },
+                isMorningMedicines = isMorningMedicines
             )
         }
         composable(route = EditMedicineScreen.route) {
@@ -68,12 +66,14 @@ fun TherapyNavigation(
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
+                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 },
                 onClickUpdateMedicineItem = { medicineId, frequency, dose ->
                     therapyViewModel.updateMedicineItem(medicineId, frequency, dose)
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
+                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 }
             )
         }
@@ -81,16 +81,7 @@ fun TherapyNavigation(
             NewMedicineScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onClickFinishButton = { image, medicineType, name, undername, dose, frequency, startDate, endDate ->
-                    therapyViewModel.addMedicineItem(
-                        image,
-                        medicineType,
-                        name,
-                        undername,
-                        dose,
-                        frequency,
-                        startDate,
-                        endDate
-                    )
+                    therapyViewModel.addMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, LocalDate.now())
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }

@@ -43,9 +43,9 @@ fun TestsNavigation(
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
+    testsViewModel: TestsViewModel,
     navController: NavHostController
 ) {
-    val testsViewModel: TestsViewModel = hiltViewModel()
     val summaryScore = testsViewModel.summaryScore.collectAsState().value
 
     NavHost(

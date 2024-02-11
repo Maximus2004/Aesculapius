@@ -1,5 +1,6 @@
 package com.example.aesculapius.database
 
+import android.util.Log
 import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
@@ -19,17 +20,28 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         dose: String,
         frequency: String,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        realStartDate: LocalDate
     ) {
-        itemDAO.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, false, false)
+        itemDAO.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, mutableListOf(0), mutableListOf(0), realStartDate)
     }
 
-    suspend fun acceptMedicine(medicineId: Int) {
-        itemDAO.acceptMedicine(medicineId, true)
+    suspend fun updateAllMedicines() {
+        itemDAO.updateAllMedicines(0)
     }
 
-    suspend fun skipMedicine(medicineId: Int) {
-        itemDAO.skipMedicine(medicineId, true)
+    suspend fun acceptMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+        val newIsAccepted = itemDAO.getMedicineWithId(medicineId).isAccepted
+        newIsAccepted[newIsAccepted.lastIndex] = (newIsAccepted.last().or(if (isMorningMedicine) 2 else 1))
+        Log.i("TAGTAG", newIsAccepted.toString())
+        itemDAO.acceptMedicine(medicineId, newIsAccepted)
+    }
+
+    suspend fun skipMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+        val newIsSkipped = itemDAO.getMedicineWithId(medicineId).isSkipped
+        newIsSkipped[newIsSkipped.lastIndex] = (newIsSkipped.last().or(if (isMorningMedicine) 2 else 1))
+        Log.i("TAGTAG", newIsSkipped.toString())
+        itemDAO.skipMedicine(medicineId, newIsSkipped)
     }
 
     suspend fun updateMedicineItem(medicineId: Int, frequency: String, dose: String) {
@@ -57,7 +69,10 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
     }
 
     fun getAllASTResultsInRange(): Flow<List<ScoreItem>> {
-        return itemDAO.getAllAstResultsInRange(startDate = LocalDate.now().minusYears(1), endDate = LocalDate.now())
+        return itemDAO.getAllAstResultsInRange(
+            startDate = LocalDate.now().minusYears(1),
+            endDate = LocalDate.now()
+        )
     }
 
     suspend fun getAllASTResults(): List<ScoreItem> {

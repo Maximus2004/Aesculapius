@@ -1,6 +1,7 @@
 package com.example.aesculapius
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
@@ -17,6 +18,7 @@ import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.worker.UserWorkerSchedule
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
             AesculapiusTheme {
                 val profileViewModel: ProfileViewModel = hiltViewModel()
                 val userId = profileViewModel.userId.collectAsState().value
+                val lastSeen = profileViewModel.lastSeen.collectAsState().value
                 val morningReminder = profileViewModel.morningReminder.collectAsState().value
                 val eveningReminder = profileViewModel.eveningReminder.collectAsState().value
                 val astTestDate = profileViewModel.ASTTestDate.collectAsState().value
@@ -35,6 +38,16 @@ class MainActivity : ComponentActivity() {
 
                 // если пользователь зарегистрирован, то мы должны попробовать сделать сохранение его данных
                 if (userId != "")  {
+                    Log.i("TAGTAG", "Тестовый")
+                    if (lastSeen == "") {
+                        Log.i("TAGTAG", "Впервые внесли дату")
+                        profileViewModel.updateLastSeen()
+                    }
+                    else if (LocalDate.parse(lastSeen).isBefore(LocalDate.now())) {
+                        Log.i("TAGTAG", "Обновляем все препараты")
+                        profileViewModel.updateAllMedicines()
+                    }
+
                     val inputData = Data.Builder().putString("userId", userId).build()
                     val workRequest = OneTimeWorkRequestBuilder<UserWorkerSchedule>().setInputData(inputData).build()
                     WorkManager.getInstance(this).enqueue(workRequest)

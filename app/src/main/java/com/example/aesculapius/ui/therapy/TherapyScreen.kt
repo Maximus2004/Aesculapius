@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,7 @@ import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Period
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -94,9 +96,9 @@ fun TherapyScreen(
     isWeek: Boolean,
     onClickChangeWeek: (Boolean) -> Unit,
     onClickMedicine: (MedicineItem) -> Unit,
+    isMorningMedicines: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
-    var isMorningMedicines by remember { mutableStateOf(true) }
     LaunchedEffect(key1 = Unit) { turnOnBars() }
 
     Box() {
@@ -188,11 +190,11 @@ fun TherapyScreen(
                         } else {
                             Row(modifier = Modifier.padding(bottom = 24.dp)) {
                                 Button(
-                                    onClick = { isMorningMedicines = true },
+                                    onClick = { isMorningMedicines.value = true },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (isMorningMedicines.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (isMorningMedicines.value) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
@@ -203,11 +205,11 @@ fun TherapyScreen(
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 Button(
-                                    onClick = { isMorningMedicines = false },
+                                    onClick = { isMorningMedicines.value = false },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (!isMorningMedicines.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (!isMorningMedicines.value) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
@@ -227,7 +229,8 @@ fun TherapyScreen(
                                 onClick = { onClickMedicine(medicine) },
                                 isSkipped = false,
                                 isAccepted = false,
-                                isMorning = true
+                                isMorning = true,
+                                isFuture = true
                             )
                         }
                         items(currentMedicines.currentEveningMedicines) { medicine ->
@@ -237,18 +240,25 @@ fun TherapyScreen(
                                 onClick = { onClickMedicine(medicine) },
                                 isSkipped = false,
                                 isAccepted = false,
-                                isMorning = false
+                                isMorning = false,
+                                isFuture = true
                             )
                         }
-                    } else if (isMorningMedicines) items(currentMedicines.currentMorningMedicines) { medicine ->
+                    } else if (isMorningMedicines.value) items(currentMedicines.currentMorningMedicines) { medicine ->
                         MedicineCard(
                             medicine = medicine,
                             modifier = Modifier.padding(bottom = 16.dp),
                             onClick = { onClickMedicine(medicine) },
-                            isSkipped = medicine.isSkipped || LocalDate.now().isAfter(medicine.startDate) || LocalTime.now()
-                                .isAfter(LocalTime.of(14, 0)),
-                            isAccepted = medicine.isAccepted,
-                            isMorning = true
+                            isSkipped = LocalDate.now().isAfter(currentDate) || medicine.realStartDate.isAfter(currentDate) ||
+                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 2 ||
+                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 3 ||
+                                    LocalTime.now().isAfter(LocalTime.of(14, 0)),
+                            isAccepted = (!medicine.realStartDate.isAfter(currentDate) &&
+                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 2) ||
+                                    (!medicine.realStartDate.isAfter(currentDate) &&
+                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 3),
+                            isMorning = true,
+                            isFuture = false
                         )
                     }
                     else items(currentMedicines.currentEveningMedicines) { medicine ->
@@ -256,10 +266,16 @@ fun TherapyScreen(
                             medicine = medicine,
                             modifier = Modifier.padding(bottom = 16.dp),
                             onClick = { onClickMedicine(medicine) },
-                            isSkipped = medicine.isSkipped || LocalDate.now().isAfter(medicine.startDate) || LocalTime.now()
-                                .isAfter(LocalTime.of(23, 0)),
-                            isAccepted = medicine.isAccepted,
-                            isMorning = false
+                            isSkipped = LocalDate.now().isAfter(currentDate) || medicine.realStartDate.isAfter(currentDate) ||
+                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 1 ||
+                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 3 ||
+                                    LocalTime.now().isAfter(LocalTime.of(23, 0)),
+                            isAccepted = (!medicine.realStartDate.isAfter(currentDate) &&
+                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 1) ||
+                                    (!medicine.realStartDate.isAfter(currentDate) &&
+                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 3),
+                            isMorning = false,
+                            isFuture = false
                         )
                     }
                 }
@@ -298,13 +314,14 @@ fun MedicineCard(
     onClick: () -> Unit,
     isSkipped: Boolean,
     isAccepted: Boolean,
-    isMorning: Boolean
+    isMorning: Boolean,
+    isFuture: Boolean
 ) {
     Card(elevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
             .height(112.dp)
-            .clickable { if (!isSkipped && !isAccepted) onClick() }
+            .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() }
             .alpha(if (isSkipped || isAccepted) 0.3f else 1f),
         shape = RoundedCornerShape(16.dp)) {
         Row(
@@ -313,9 +330,10 @@ fun MedicineCard(
                 .padding(end = 10.dp)
         ) {
             Image(
-                painter = painterResource(id =
-                    if (isSkipped) R.drawable.medicines_example_skipped
-                    else if (isAccepted) R.drawable.medicines_example_accepted
+                painter = painterResource(
+                    id =
+                    if (isAccepted) R.drawable.medicines_example_accepted
+                    else if (isSkipped) R.drawable.medicines_example_skipped
                     else R.drawable.medicines_example
                 ),
                 contentDescription = null,
@@ -402,8 +420,8 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
         }
         Text(
             text = (weekState.currentWeek.yearMonth.month.getDisplayName(
-                    TextStyle.FULL_STANDALONE, Locale.getDefault()
-                ) + " " + weekState.currentWeek.yearMonth.year).replaceFirstChar { it.titlecase() },
+                TextStyle.FULL_STANDALONE, Locale.getDefault()
+            ) + " " + weekState.currentWeek.yearMonth.year).replaceFirstChar { it.titlecase() },
             modifier = Modifier.padding(start = 8.dp),
             style = MaterialTheme.typography.bodyLarge
         )

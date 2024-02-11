@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository) : ViewModel() {
+class HomeViewModel : ViewModel() {
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
@@ -30,18 +29,6 @@ class HomeViewModel @Inject constructor(private val aesculapiusRepository: Aescu
                 currentPageName = currentPageName,
                 isHelpButton = isHelpButton
             )
-        }
-    }
-
-    fun acceptMedicine(medicineId: Int) {
-        viewModelScope.launch {
-            aesculapiusRepository.acceptMedicine(medicineId)
-        }
-    }
-
-    fun skipMedicine(medicineId: Int) {
-        viewModelScope.launch {
-            aesculapiusRepository.skipMedicine(medicineId)
         }
     }
 }

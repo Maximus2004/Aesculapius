@@ -19,6 +19,19 @@ class Converters {
         return date?.format(DateTimeFormatter.ISO_LOCAL_DATE)
     }
 
+    @TypeConverter
+    fun fromString(value: String?): MutableList<Int>? {
+        if (value == null) {
+            return null
+        }
+        return value.split(",").map { it.toInt() }.toMutableList()
+    }
+
+    @TypeConverter
+    fun fromList(list: MutableList<Int>?): String? {
+        return list?.joinToString(",")
+    }
+
     companion object {
         fun timeToString(time: LocalDateTime?): String {
             val formatter = DateTimeFormatter.ofPattern("HH:mm dd MM yyyy")

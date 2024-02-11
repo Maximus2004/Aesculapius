@@ -63,9 +63,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.aesculapius.R
+import com.example.aesculapius.ui.statistics.StatisticsViewModel
+import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineItem
+import com.example.aesculapius.ui.therapy.TherapyViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -83,13 +86,18 @@ fun HomeScreen(
     onSaveNewUser: (SignUpUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val homeViewModel: HomeViewModel = hiltViewModel()
+    val homeViewModel: HomeViewModel = viewModel()
+    val therapyViewModel: TherapyViewModel = hiltViewModel()
+    val testsViewModel: TestsViewModel = hiltViewModel()
+    val statisticsViewModel: StatisticsViewModel = hiltViewModel()
+
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
     val currentMedicineItem: MutableState<MedicineItem?> = remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val navController = rememberNavController()
+    val isMorningMedicines = remember { mutableStateOf(true) }
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -102,11 +110,13 @@ fun HomeScreen(
                     },
                     skipMedicine = {
                         scope.launch { sheetState.hide() }
-                        homeViewModel.skipMedicine(it)
+                        therapyViewModel.skipMedicine(it, isMorningMedicines.value)
+                        therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                     },
                     acceptMedicine = {
                         scope.launch { sheetState.hide() }
-                        homeViewModel.acceptMedicine(it)
+                        therapyViewModel.acceptMedicine(it, isMorningMedicines.value)
+                        therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                     }
                 )
         },
@@ -149,7 +159,9 @@ fun HomeScreen(
                             scope.launch { sheetState.show() }
                         },
                         medicine = currentMedicineItem.value,
-                        navController = navController
+                        navController = navController,
+                        isMorningMedicines = isMorningMedicines,
+                        therapyViewModel = therapyViewModel
                     )
 
                     PageType.Profile -> ProfileNavigation(
@@ -161,14 +173,15 @@ fun HomeScreen(
                         turnOnBars = { isBarsDisplayed = true },
                         user = user,
                         onSaveNewUser = onSaveNewUser,
-                        navController = navController
+                        navController = navController,
                     )
 
                     PageType.Statistics -> StatisticsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
-                            .background(color = Color.White)
+                            .background(color = Color.White),
+                        statisticsViewModel = statisticsViewModel
                     )
 
                     PageType.Tests -> TestsNavigation(
@@ -182,7 +195,8 @@ fun HomeScreen(
                         eveningReminder = eveningReminder,
                         turnOffBars = { isBarsDisplayed = false },
                         turnOnBars = { isBarsDisplayed = true },
-                        navController = navController
+                        navController = navController,
+                        testsViewModel = testsViewModel
                     )
                 }
             }

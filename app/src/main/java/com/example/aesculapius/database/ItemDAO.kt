@@ -11,7 +11,7 @@ import java.time.LocalDate
 // data access object
 @Dao
 interface ItemDAO {
-    @Query("INSERT INTO medicines_items VALUES(NULL, :image, :medicineType, :name, :undername, :dose, :frequency, :startDate, :endDate, :isAccepted, :isSkipped)")
+    @Query("INSERT INTO medicines_items VALUES(NULL, :image, :medicineType, :name, :undername, :dose, :frequency, :startDate, :endDate, :isAccepted, :isSkipped, :realStartDate)")
     suspend fun insertMedicineItem(
         image: Int,
         medicineType: String,
@@ -21,15 +21,22 @@ interface ItemDAO {
         frequency: String,
         startDate: LocalDate,
         endDate: LocalDate,
-        isAccepted: Boolean,
-        isSkipped: Boolean
+        isAccepted: MutableList<Int>,
+        isSkipped: MutableList<Int>,
+        realStartDate: LocalDate,
     )
 
+    @Query("UPDATE medicines_items SET isAccepted = isAccepted || ',' || :zero, isSkipped = isSkipped || ',' || :zero WHERE (isAccepted IS NOT NULL) AND (isSkipped IS NOT NULL)")
+    suspend fun updateAllMedicines(zero: Int)
+
+    @Query("SELECT * from medicines_items WHERE id = :medicineId")
+    suspend fun getMedicineWithId(medicineId: Int): MedicineItem
+
     @Query("UPDATE medicines_items SET isAccepted = :isAccepted WHERE id = :medicineId")
-    suspend fun acceptMedicine(medicineId: Int, isAccepted: Boolean)
+    suspend fun acceptMedicine(medicineId: Int, isAccepted: MutableList<Int>)
 
     @Query("UPDATE medicines_items SET isSkipped = :isSkipped WHERE id = :medicineId")
-    suspend fun skipMedicine(medicineId: Int, isSkipped: Boolean)
+    suspend fun skipMedicine(medicineId: Int, isSkipped: MutableList<Int>)
 
     @Query("UPDATE medicines_items SET frequency = :frequency, dose = :dose WHERE id = :medicineId")
     suspend fun updateMedicineItem(medicineId: Int, frequency: String, dose: String)

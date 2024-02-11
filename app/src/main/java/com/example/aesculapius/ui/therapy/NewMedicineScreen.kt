@@ -84,7 +84,6 @@ fun NewMedicineScreen(
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     var selectedDosesIndex by remember { mutableIntStateOf(0) }
     var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
-    val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) { turnOffBars() }
 

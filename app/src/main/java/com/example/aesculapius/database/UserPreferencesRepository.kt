@@ -45,6 +45,16 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         }
         .map { preferences -> preferences[IS_USER_REGISTERED] ?: "" }
 
+    val lastSeen: Flow<String> = settingDataStore.data
+        .catch {
+            if (it is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences -> preferences[LAST_SEEN] ?: "" }
+
     val morningReminder: Flow<LocalDateTime> = settingDataStore.data
         .catch {
             if (it is IOException) {
@@ -86,6 +96,8 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         .map { preferences -> preferences[RECOMMENDATION_TEST] ?: "" }
 
     private companion object {
+        val LAST_SEEN = stringPreferencesKey("last_seen")
+
         val IS_USER_REGISTERED = stringPreferencesKey("is_user_registered")
         val MORNING_REMINDER_TIME = stringPreferencesKey("morning_reminder_time")
         val EVENING_REMINDER_TIME = stringPreferencesKey("evening_reminder_time")
@@ -108,6 +120,12 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
             preferences[BIRTHDAY] = userData.birthday.toString()
             preferences[HEIGHT] = userData.height
             preferences[WEIGHT] = userData.weight
+        }
+    }
+
+    suspend fun updateLastSeen(newLastSeenDate: LocalDate) {
+        settingDataStore.edit { preferences ->
+            preferences[LAST_SEEN] = newLastSeenDate.toString()
         }
     }
 

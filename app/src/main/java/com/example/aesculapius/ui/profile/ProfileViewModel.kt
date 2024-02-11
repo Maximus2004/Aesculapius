@@ -1,11 +1,13 @@
 package com.example.aesculapius.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.aesculapius.database.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.example.aesculapius.database.AesculapiusRepository
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.database.UserRemoteDataRepository
 import com.example.aesculapius.ui.signup.SignUpUiState
@@ -20,7 +22,8 @@ import java.time.LocalDateTime
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val prefRepository: UserPreferencesRepository,
-    private val userRemoteDataRepository: UserRemoteDataRepository
+    private val userRemoteDataRepository: UserRemoteDataRepository,
+    private val aesculapiusRepository: AesculapiusRepository
 ) : ViewModel() {
     val user: StateFlow<SignUpUiState> = prefRepository.user
         .stateIn(
@@ -30,6 +33,13 @@ class ProfileViewModel @Inject constructor(
         )
 
     val userId: StateFlow<String> = prefRepository.userId
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ""
+        )
+
+    val lastSeen: StateFlow<String> = prefRepository.lastSeen
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -63,6 +73,18 @@ class ProfileViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ""
         )
+
+    fun updateLastSeen() {
+        viewModelScope.launch {
+            prefRepository.updateLastSeen(LocalDate.now())
+        }
+    }
+
+    fun updateAllMedicines() {
+        viewModelScope.launch {
+            aesculapiusRepository.updateAllMedicines()
+        }
+    }
 
     fun saveASTTestDate(astTestDate: LocalDate) {
         viewModelScope.launch {
