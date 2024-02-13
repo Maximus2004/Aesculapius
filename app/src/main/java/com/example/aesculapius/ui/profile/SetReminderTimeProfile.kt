@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,8 @@ fun SetReminderTimeProfile(
     turnOffBars: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    BackHandler { onNavigateBack() }
+
     val textPlanFirst = buildAnnotatedString {
         append("Выберите время для напоминаний, которое ")
         withStyle(
@@ -169,7 +172,9 @@ fun SetReminderTimeProfile(
             Text(
                 text = "Планирование Вашего дня",
                 style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(top = 40.dp, bottom = 8.dp).align(Alignment.Start),
+                modifier = Modifier
+                    .padding(top = 40.dp, bottom = 8.dp)
+                    .align(Alignment.Start),
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)

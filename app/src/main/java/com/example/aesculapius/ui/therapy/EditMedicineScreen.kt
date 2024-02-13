@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.data.medicinesAerosol
 import com.example.aesculapius.data.medicinesPowder
 import com.example.aesculapius.data.medicinesTablets
@@ -38,11 +39,11 @@ object EditMedicineScreen : NavigationDestination {
 
 @Composable
 fun EditMedicineScreen(
-    onClickDeleteMedicine: (Int) -> Unit,
+    onClickDeleteMedicine: () -> Unit,
     onNavigateBack: () -> Unit,
     turnOffBars: () -> Unit,
-    onClickUpdateMedicineItem: (Int, String, String) -> Unit,
-    medicine: MedicineItem,
+    onClickUpdateMedicineItem: (String, String) -> Unit,
+    medicine: MedicineCard,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -51,25 +52,27 @@ fun EditMedicineScreen(
         mutableIntStateOf(currentMedicine.value?.doses?.indexOf(medicine.dose) ?: 0)
     }
     var selectedFrequencyIndex by remember {
-        mutableIntStateOf(currentMedicine.value?.frequency?.indexOf(medicine.frequency) ?: 0)
+        mutableIntStateOf(currentMedicine.value?.frequency?.indexOf(medicine.fullFrequency) ?: 0)
     }
 
     LaunchedEffect(key1 = Unit) {
         turnOffBars()
         when (medicine.medicineType) {
-            "аэрозоль" -> {
+            CurrentMedicineType.Aerosol -> {
                 medicinesAerosol.forEach { medicineAerosol ->
                     if (medicineAerosol.name == medicine.name)
                         currentMedicine.value = medicineAerosol
                 }
             }
-            "порошок" -> {
+
+            CurrentMedicineType.Powder -> {
                 medicinesPowder.forEach { medicinePowder ->
                     if (medicinePowder.name == medicine.name)
                         currentMedicine.value = medicinePowder
                 }
             }
-            "таблетки" -> {
+
+            CurrentMedicineType.Tablets -> {
                 medicinesTablets.forEach { medicinesTablet ->
                     if (medicinesTablet.name == medicine.name)
                         currentMedicine.value = medicinesTablet
@@ -98,7 +101,7 @@ fun EditMedicineScreen(
                 color = Color.Black
             )
             Text(
-                text = "${medicine.medicineType}, ${medicine.undername}",
+                text = "${if (medicine.medicineType == CurrentMedicineType.Tablets) "таблетки" else if (medicine.medicineType == CurrentMedicineType.Powder) "порошок" else "аэрозоль"}, ${medicine.undername}",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color(0xFF79747E)
             )
@@ -107,23 +110,24 @@ fun EditMedicineScreen(
                 menuList = currentMedicine.value?.doses ?: listOf(medicine.dose),
                 onCloseAction = { index -> selectedDosesIndex = index },
                 initialIndex = selectedDosesIndex,
-                modifier = Modifier.padding(top = 32.dp, bottom = 34.dp)
+                modifier = Modifier.padding(top = 32.dp, bottom = 34.dp),
             )
             DropdownMenu(
                 menuName = "Кратность приёма",
-                menuList = currentMedicine.value?.frequency ?: listOf(medicine.frequency),
+                menuList = currentMedicine.value?.frequency ?: listOf(medicine.fullFrequency),
                 onCloseAction = { index -> selectedFrequencyIndex = index },
-                initialIndex = selectedFrequencyIndex
+                initialIndex = selectedFrequencyIndex,
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
                     onClickUpdateMedicineItem(
-                        medicine.id,
-                        currentMedicine.value?.frequency?.get(selectedFrequencyIndex) ?: medicine.frequency,
+                        currentMedicine.value?.frequency?.get(selectedFrequencyIndex)
+                            ?: medicine.frequency,
                         currentMedicine.value?.doses?.get(selectedDosesIndex) ?: medicine.dose
                     )
-                    Toast.makeText(context, "Лекарство успешно сохранено", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Лекарство успешно сохранено", Toast.LENGTH_SHORT)
+                        .show()
                 },
                 modifier = Modifier
                     .padding(bottom = 17.dp)
@@ -140,7 +144,7 @@ fun EditMedicineScreen(
             }
             TextButton(
                 onClick = {
-                    onClickDeleteMedicine(medicine.id)
+                    onClickDeleteMedicine()
                     Toast.makeText(context, "Лекарство успешно удалено", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.padding(bottom = 48.dp)

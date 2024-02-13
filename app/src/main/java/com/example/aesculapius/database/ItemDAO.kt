@@ -5,47 +5,51 @@ import androidx.room.Query
 import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
+import com.example.aesculapius.ui.therapy.MedicineWithDoses
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 // data access object
 @Dao
 interface ItemDAO {
-    @Query("INSERT INTO medicines_items VALUES(NULL, :image, :medicineType, :name, :undername, :dose, :frequency, :startDate, :endDate, :isAccepted, :isSkipped, :realStartDate)")
+    @Query("INSERT INTO medicines_items VALUES(:idMedicine, :medicineType, :name, :undername, :dose, :frequency, :startDate, :endDate)")
     suspend fun insertMedicineItem(
-        image: Int,
+        idMedicine: Int,
         medicineType: String,
         name: String,
         undername: String,
         dose: String,
         frequency: String,
         startDate: LocalDate,
-        endDate: LocalDate,
-        isAccepted: MutableList<Int>,
-        isSkipped: MutableList<Int>,
-        realStartDate: LocalDate,
+        endDate: LocalDate
     )
 
-    @Query("UPDATE medicines_items SET isAccepted = isAccepted || ',' || :zero, isSkipped = isSkipped || ',' || :zero WHERE (isAccepted IS NOT NULL) AND (isSkipped IS NOT NULL)")
-    suspend fun updateAllMedicines(zero: Int)
+    @Query("SELECT COUNT(*) FROM dose_items WHERE date = :date AND isAccepted = 0")
+    suspend fun getAmountNotAcceptedMedicines(date: LocalDate): Int
 
-    @Query("SELECT * from medicines_items WHERE id = :medicineId")
-    suspend fun getMedicineWithId(medicineId: Int): MedicineItem
+    @Query("UPDATE dose_items SET isAccepted = 1 WHERE idDose = :idDose")
+    suspend fun acceptMedicine(idDose: Int)
 
-    @Query("UPDATE medicines_items SET isAccepted = :isAccepted WHERE id = :medicineId")
-    suspend fun acceptMedicine(medicineId: Int, isAccepted: MutableList<Int>)
+    @Query("UPDATE dose_items SET isSkipped = 1 WHERE idDose = :idDose")
+    suspend fun skipMedicine(idDose: Int)
 
-    @Query("UPDATE medicines_items SET isSkipped = :isSkipped WHERE id = :medicineId")
-    suspend fun skipMedicine(medicineId: Int, isSkipped: MutableList<Int>)
+    @Query("SELECT COUNT(*) FROM medicines_items")
+    suspend fun getCurrentMedicineTableSize(): Int
 
-    @Query("UPDATE medicines_items SET frequency = :frequency, dose = :dose WHERE id = :medicineId")
-    suspend fun updateMedicineItem(medicineId: Int, frequency: String, dose: String)
+    @Query("INSERT INTO dose_items VALUES(NULL, :dosesAmount, :isMorning, :date, :isSkipped, :isAccepted, :medicineId)")
+    suspend fun insertNewDose(dosesAmount: String, isMorning: Boolean, date: LocalDate, isSkipped: Boolean, isAccepted: Boolean, medicineId: Int)
 
-    @Query("DELETE from medicines_items WHERE id = :medicineId")
+    @Query("UPDATE medicines_items SET dose = :dose WHERE idMedicine = :medicineId")
+    suspend fun updateMedicineItem(medicineId: Int, dose: String)
+
+    @Query("DELETE from dose_items WHERE medicineId = :medicineId")
+    suspend fun deleteAllDosesWithMedicineId(medicineId: Int)
+
+    @Query("DELETE from medicines_items WHERE idMedicine = :medicineId")
     suspend fun deleteMedicineItem(medicineId: Int)
 
     @Query("SELECT * from medicines_items WHERE (startDate <= :currentDate) AND (endDate > :currentDate)")
-    suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineItem>
+    suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineWithDoses>
 
     @Query("SELECT * from medicines_items")
     suspend fun getAllMedicines(): List<MedicineItem>

@@ -102,8 +102,8 @@ fun SignUpNavigation(
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
                 onEndRegistration = {
-                    if (Duration.between(morningReminder, eveningReminder).toHours() < 8)
-                        Toast.makeText(context, "Между измерениями должно быть минимум 8 часов", Toast.LENGTH_SHORT).show()
+                    if (!(morningReminder.hour in 5..12 && eveningReminder.hour in 18 .. 23))
+                        Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_LONG).show()
                     else
                         onEndRegistration(signUpUiState)
                 },

@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.therapy
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.aesculapius.AesculapiusApp
+import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.database.AesculapiusDatabase
 import com.example.aesculapius.database.AesculapiusRepository
 import com.example.aesculapius.database.ItemDAO
@@ -43,8 +45,7 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
      * текущую дату, когда это необходимо для отображения лекарств */
     private val currentDate = mutableStateListOf(LocalDate.now())
 
-    var currentLoadingState: CurrentLoadingState by mutableStateOf(CurrentLoadingState.Loading)
-        private set
+    var currentLoadingState: MutableStateFlow<CurrentLoadingState> = MutableStateFlow(CurrentLoadingState.Loading)
 
     private var _currentWeekDates = MutableStateFlow(Week.now())
     val currentWeekDates: StateFlow<Week> = _currentWeekDates
@@ -62,79 +63,110 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
      * в это время (связано с работой с данными, поэтому выполняется в фоне, чтобы не блокировать ui) */
     fun updateCurrentDate(newDate: LocalDate): Boolean {
         viewModelScope.launch {
-            currentLoadingState = CurrentLoadingState.Loading
+            currentLoadingState.value = CurrentLoadingState.Loading
             currentDate[0] = newDate
 
+            var amountDone = 0
             val medicines = aesculapiusRepository.getMedicinesOnCurrentDate(newDate).toMutableList()
-
-            val morningMedicines = medicines.filter {
-                (it.medicineType == "порошок" && "1 раз в сутки" in it.frequency) ||
-                ("По 1 дозе 2 раза в сутки" == it.frequency) ||
-                ("По 2 дозы 2 раза в сутки" == it.frequency) ||
-                ("утром" in it.frequency)
-            }
-
-            val eveningMedicines = medicines.filter {
-                (it.medicineType == "таблетки" && "1 раз в сутки" in it.frequency) ||
-                ("По 1 дозе 2 раза в сутки" == it.frequency) ||
-                ("По 2 дозы 2 раза в сутки" == it.frequency) ||
-                ("вечером" in it.frequency)
-            }
-
-            val acceptedMedicines = (morningMedicines + eveningMedicines).count { medicine ->
-                (!medicine.realStartDate.isAfter(newDate) &&
-                medicine.isAccepted[Period.between(medicine.realStartDate, newDate).days] != 0)
+            val morningMedicines = mutableListOf<MedicineCard>()
+            val eveningMedicines = mutableListOf<MedicineCard>()
+            medicines.forEach { medicineWithDoses ->
+                medicineWithDoses.doses.forEach { dose ->
+                    if (dose.isAccepted && dose.date == newDate) amountDone++
+                    if (dose.isMorning && dose.date == newDate)
+                        morningMedicines.add(
+                            MedicineCard(
+                                id = medicineWithDoses.medicine.idMedicine,
+                                dose = medicineWithDoses.medicine.dose,
+                                frequency = dose.dosesAmount,
+                                isAccepted = dose.isAccepted,
+                                isSkipped = dose.isSkipped || dose.date.isBefore(LocalDate.now()),
+                                name = medicineWithDoses.medicine.name,
+                                undername = medicineWithDoses.medicine.undername,
+                                startDate = medicineWithDoses.medicine.startDate,
+                                endDate = medicineWithDoses.medicine.endDate,
+                                medicineType = medicineWithDoses.medicine.medicineType,
+                                doseId = dose.idDose,
+                                fullFrequency = medicineWithDoses.medicine.frequency
+                            )
+                        )
+                    else if (!dose.isMorning && dose.date == newDate)
+                        eveningMedicines.add(
+                            MedicineCard(
+                                id = medicineWithDoses.medicine.idMedicine,
+                                dose = medicineWithDoses.medicine.dose,
+                                frequency = dose.dosesAmount,
+                                isAccepted = dose.isAccepted,
+                                isSkipped = dose.isSkipped || dose.date.isBefore(LocalDate.now()),
+                                name = medicineWithDoses.medicine.name,
+                                undername = medicineWithDoses.medicine.undername,
+                                startDate = medicineWithDoses.medicine.startDate,
+                                endDate = medicineWithDoses.medicine.endDate,
+                                medicineType = medicineWithDoses.medicine.medicineType,
+                                doseId = dose.idDose,
+                                fullFrequency = medicineWithDoses.medicine.frequency
+                            )
+                        )
+                }
             }
 
             val result = TherapyUiState(
                 currentMorningMedicines = morningMedicines,
                 currentEveningMedicines = eveningMedicines,
-                done = acceptedMedicines,
-                amount = (morningMedicines + eveningMedicines).size,
-                progress = acceptedMedicines.toFloat() / (morningMedicines + eveningMedicines).size
+                done = amountDone,
+                amount = morningMedicines.size + eveningMedicines.size,
+                progress = amountDone.toFloat() / (morningMedicines.size + eveningMedicines.size)
             )
-            currentLoadingState = CurrentLoadingState.Success(result)
+            currentLoadingState.value = CurrentLoadingState.Success(result)
         }
         return true
     }
 
-    fun acceptMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+    fun acceptMedicine(idDose: Int) {
         viewModelScope.launch {
-            aesculapiusRepository.acceptMedicine(medicineId, isMorningMedicine)
+            aesculapiusRepository.acceptMedicine(idDose)
+            updateCurrentDate(LocalDate.now())
+            changeIsWeek(isWeek.value)
         }
     }
 
-    fun skipMedicine(medicineId: Int, isMorningMedicine: Boolean) {
+    fun skipMedicine(idDose: Int) {
         viewModelScope.launch {
-            aesculapiusRepository.skipMedicine(medicineId, isMorningMedicine)
+            aesculapiusRepository.skipMedicine(idDose)
+            updateCurrentDate(LocalDate.now())
+            changeIsWeek(isWeek.value)
         }
     }
 
     fun addMedicineItem(
-        image: Int,
-        medicineType: String,
+        medicineType: CurrentMedicineType,
         name: String,
         undername: String,
         dose: String,
         frequency: String,
         startDate: LocalDate,
         endDate: LocalDate,
-        realStartDate: LocalDate
     ) {
         viewModelScope.launch {
-            aesculapiusRepository.insertMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, realStartDate)
+            aesculapiusRepository.insertMedicineItem(medicineType, name, undername, dose, frequency, startDate, endDate)
+            if (!currentDate.first().isBefore(LocalDate.now())) updateCurrentDate(getCurrentDate())
+            changeIsWeek(isWeek.value)
         }
     }
 
-    fun updateMedicineItem(medicineId: Int, frequency: String, dose: String) {
+    fun updateMedicineItem(medicineId: Int, frequency: String, dose: String, medicineType: CurrentMedicineType, startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
-            aesculapiusRepository.updateMedicineItem(medicineId, frequency, dose)
+            aesculapiusRepository.updateMedicineItem(medicineId, frequency, dose, medicineType, startDate, endDate)
+            updateCurrentDate(LocalDate.now())
+            changeIsWeek(isWeek.value)
         }
     }
 
     fun deleteMedicineItem(medicineId: Int) {
         viewModelScope.launch {
             aesculapiusRepository.deleteMedicineItem(medicineId)
+            updateCurrentDate(LocalDate.now())
+            changeIsWeek(isWeek.value)
         }
     }
 
@@ -154,8 +186,8 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
 
     /** [getAmountActive] - служит для отображения индикторов под датами
      * (вызывается из LaunchedEffect) */
-    suspend fun getAmountActive(date: LocalDate): Int = viewModelScope.async {
-        aesculapiusRepository.getAmountActiveMedicines(date)
+    suspend fun getAmountNotAcceptedMedicines(date: LocalDate): Int = viewModelScope.async {
+        aesculapiusRepository.getAmountNotAcceptedMedicines(date)
     }.await()
 
     fun getCurrentDate(): LocalDate {

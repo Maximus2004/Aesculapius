@@ -1,6 +1,7 @@
 package com.example.aesculapius.ui.profile
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,7 @@ object EditProfileScreen : NavigationDestination {
 fun EditProfileScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, user: SignUpUiState, onSaveNewUser: (SignUpUiState) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
+    BackHandler { onNavigateBack() }
     LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     var tempUser by remember { mutableStateOf(user) }

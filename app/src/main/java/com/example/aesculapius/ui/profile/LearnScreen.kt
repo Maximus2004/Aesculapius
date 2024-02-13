@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +32,7 @@ fun LearnScreen(
     modifier: Modifier = Modifier,
     onClickItem: (String, String) -> Unit
 ) {
+    BackHandler { onNavigateBack() }
     LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {

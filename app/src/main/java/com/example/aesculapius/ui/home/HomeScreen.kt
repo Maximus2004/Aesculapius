@@ -67,6 +67,7 @@ import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
+import com.example.aesculapius.ui.therapy.MedicineCard
 import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.TherapyViewModel
 import kotlinx.coroutines.launch
@@ -93,11 +94,10 @@ fun HomeScreen(
 
     val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
-    val currentMedicineItem: MutableState<MedicineItem?> = remember { mutableStateOf(null) }
+    val currentMedicineItem: MutableState<MedicineCard?> = remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val navController = rememberNavController()
-    val isMorningMedicines = remember { mutableStateOf(true) }
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -110,13 +110,11 @@ fun HomeScreen(
                     },
                     skipMedicine = {
                         scope.launch { sheetState.hide() }
-                        therapyViewModel.skipMedicine(it, isMorningMedicines.value)
-                        therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
+                        therapyViewModel.skipMedicine(it)
                     },
                     acceptMedicine = {
                         scope.launch { sheetState.hide() }
-                        therapyViewModel.acceptMedicine(it, isMorningMedicines.value)
-                        therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
+                        therapyViewModel.acceptMedicine(it)
                     }
                 )
         },
@@ -160,8 +158,7 @@ fun HomeScreen(
                         },
                         medicine = currentMedicineItem.value,
                         navController = navController,
-                        isMorningMedicines = isMorningMedicines,
-                        therapyViewModel = therapyViewModel
+                        therapyViewModel = therapyViewModel,
                     )
 
                     PageType.Profile -> ProfileNavigation(
@@ -283,7 +280,7 @@ fun EditMedicineSheet(
     acceptMedicine: (Int) -> Unit,
     skipMedicine: (Int) -> Unit,
     navigateToEditMedicineScreen: () -> Unit,
-    medicine: MedicineItem,
+    medicine: MedicineCard,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(24.dp)) {
@@ -331,7 +328,7 @@ fun EditMedicineSheet(
         )
         Row(modifier = Modifier.align(Alignment.End)) {
             TextButton(
-                onClick = { skipMedicine(medicine.id) },
+                onClick = { skipMedicine(medicine.doseId) },
                 modifier = Modifier
                     .width(106.dp)
                     .padding(end = 8.dp)
@@ -343,7 +340,7 @@ fun EditMedicineSheet(
                 )
             }
             Button(
-                onClick = { acceptMedicine(medicine.id) },
+                onClick = { acceptMedicine(medicine.doseId) },
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

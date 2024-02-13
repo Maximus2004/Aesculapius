@@ -59,13 +59,24 @@ fun ProfileNavigation(
             SetReminderTimeProfile(
                 morningTime = morningReminder,
                 eveningTime = eveningReminder,
-                onNavigateBack = { navController.navigateUp() },
+                onNavigateBack = {
+                    navController.navigateUp()
+                    turnOnBars()
+                },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") },
                 turnOffBars = turnOffBars
             )
         }
         composable(route = EditProfileScreen.route) {
-            EditProfileScreen(turnOffBars = turnOffBars, onNavigateBack = { navController.navigateUp() }, user = user, onSaveNewUser = onSaveNewUser)
+            EditProfileScreen(
+                turnOffBars = turnOffBars,
+                onNavigateBack = {
+                    navController.navigateUp()
+                    turnOnBars()
+                },
+                user = user,
+                onSaveNewUser = onSaveNewUser
+            )
         }
         composable(
             route = SetReminderTime.routeWithArgs,
@@ -82,12 +93,9 @@ fun ProfileNavigation(
                     textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        if (Duration.between(it, eveningReminder).toHours() < 8)
-                            Toast.makeText(
-                                context,
-                                "Между измерениями должно быть минимум 8 часов",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        Log.i("TAGTAG", "${morningReminder.hour} ${it.hour}")
+                        if (!(it.hour in 5..12 && eveningReminder.hour in 18 .. 23))
+                            Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_SHORT).show()
                         else {
                             saveMorningReminder(it)
                             navController.navigateUp()
@@ -102,12 +110,9 @@ fun ProfileNavigation(
                     textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        if (Duration.between(morningReminder, it).toHours() < 8)
-                            Toast.makeText(
-                                context,
-                                "Между измерениями должно быть минимум 8 часов",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        Log.i("TAGTAG", "${morningReminder.hour} ${it.hour}")
+                        if (!(morningReminder.hour in 5..12 && it.hour in 18 .. 23))
+                            Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_SHORT).show()
                         else {
                             saveEveningReminder(it)
                             navController.navigateUp()
@@ -121,7 +126,10 @@ fun ProfileNavigation(
         composable(route = LearnScreen.route) {
             LearnScreen(
                 turnOffBars = turnOffBars,
-                onNavigateBack = { navController.navigateUp() },
+                onNavigateBack = {
+                    navController.navigateUp()
+                    turnOnBars()
+                },
                 onClickItem = { name, text -> navController.navigate("${LearnItemScreen.route}/$name^$text") }
             )
         }

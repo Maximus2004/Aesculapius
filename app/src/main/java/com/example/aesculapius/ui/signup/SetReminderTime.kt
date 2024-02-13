@@ -1,6 +1,7 @@
 package com.example.aesculapius.ui.signup
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,6 +59,9 @@ fun SetReminderTime(
     var minutes by remember { mutableStateOf(textMinutes) }
     var hours by remember { mutableStateOf(textHours) }
     val context = LocalContext.current
+
+    BackHandler { onNavigateBack() }
+
     Scaffold(topBar = {
         TopBar(onNavigateBack = onNavigateBack, text = textTopBar)
     }) { paddingValue ->

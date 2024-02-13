@@ -1,8 +1,6 @@
 package com.example.aesculapius.ui.therapy
 
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -66,8 +64,7 @@ object NewMedicineScreen : NavigationDestination {
 fun NewMedicineScreen(
     onNavigateBack: () -> Unit,
     onClickFinishButton: (
-        image: Int,
-        medicineType: String,
+        medicineType: CurrentMedicineType,
         name: String,
         undername: String,
         dose: String,
@@ -75,15 +72,18 @@ fun NewMedicineScreen(
         startDate: LocalDate,
         endDate: LocalDate
     ) -> Unit,
-    currentDate: LocalDate,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var currentMedicineType by remember { mutableStateOf(CurrentMedicineType.Aerosol) }
     lateinit var currentMedicineItem: Medicine
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     var selectedDosesIndex by remember { mutableIntStateOf(0) }
     var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
+    var isFrequencyChoosen by remember { mutableStateOf(true) }
+    var isDoseChoosen by remember { mutableStateOf(true) }
+
 
     LaunchedEffect(key1 = Unit) { turnOffBars() }
 
@@ -102,7 +102,13 @@ fun NewMedicineScreen(
                 Card(
                     modifier = Modifier
                         .size(96.dp)
-                        .clickable { currentMedicineType = CurrentMedicineType.Aerosol },
+                        .clickable {
+                            if (currentMedicineType != CurrentMedicineType.Aerosol) {
+                                currentMedicineType = CurrentMedicineType.Aerosol
+                                isDoseChoosen = true
+                                isFrequencyChoosen = true
+                            }
+                        },
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Aerosol) MaterialTheme.colorScheme.primary
@@ -114,7 +120,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.therapy_icon),
+                            painter = painterResource(id = R.drawable.aerosol_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Aerosol) Color.White else MaterialTheme.colorScheme.primary),
@@ -136,7 +142,13 @@ fun NewMedicineScreen(
                 Card(
                     modifier = Modifier
                         .size(96.dp)
-                        .clickable { currentMedicineType = CurrentMedicineType.Powder },
+                        .clickable {
+                            if (currentMedicineType != CurrentMedicineType.Powder) {
+                                currentMedicineType = CurrentMedicineType.Powder
+                                isDoseChoosen = true
+                                isFrequencyChoosen = true
+                            }
+                        },
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Powder) MaterialTheme.colorScheme.primary
@@ -148,7 +160,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.therapy_icon),
+                            painter = painterResource(id = R.drawable.powder_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Powder) Color.White else MaterialTheme.colorScheme.primary),
@@ -170,7 +182,13 @@ fun NewMedicineScreen(
                 Card(
                     modifier = Modifier
                         .size(96.dp)
-                        .clickable { currentMedicineType = CurrentMedicineType.Tablets },
+                        .clickable {
+                            if (currentMedicineType != CurrentMedicineType.Tablets) {
+                                currentMedicineType = CurrentMedicineType.Tablets
+                                isDoseChoosen = true
+                                isFrequencyChoosen = true
+                            }
+                        },
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Tablets) MaterialTheme.colorScheme.primary
@@ -182,7 +200,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.therapy_icon),
+                            painter = painterResource(id = R.drawable.tablets_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Tablets) Color.White else MaterialTheme.colorScheme.primary),
@@ -205,20 +223,32 @@ fun NewMedicineScreen(
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesAerosol.size) { index -> medicinesAerosol[index].name },
-                        onCloseAction = { index -> selectedItemIndex = index },
-                        modifier = Modifier.padding(top = 48.dp)
+                        onCloseAction = { index ->
+                            selectedItemIndex = index
+                            isDoseChoosen = false
+                            isFrequencyChoosen = false
+                        },
+                        modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
                         menuName = "Дозировка",
                         menuList = medicinesAerosol[selectedItemIndex].doses,
-                        onCloseAction = { index -> selectedDosesIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedDosesIndex = index
+                            isDoseChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
                         menuName = "Кратность приёма",
                         menuList = medicinesAerosol[selectedItemIndex].frequency,
-                        onCloseAction = { index -> selectedFrequencyIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedFrequencyIndex = index
+                            isFrequencyChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isFrequencyChoosen
                     )
                     currentMedicineItem = medicinesAerosol[selectedItemIndex]
                 }
@@ -227,20 +257,32 @@ fun NewMedicineScreen(
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesPowder.size) { index -> medicinesPowder[index].name },
-                        onCloseAction = { index -> selectedItemIndex = index },
-                        modifier = Modifier.padding(top = 48.dp)
+                        onCloseAction = { index ->
+                            selectedItemIndex = index
+                            isDoseChoosen = false
+                            isFrequencyChoosen = false
+                        },
+                        modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
                         menuName = "Дозировка",
                         menuList = medicinesPowder[selectedItemIndex].doses,
-                        onCloseAction = { index -> selectedDosesIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedDosesIndex = index
+                            isDoseChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
                         menuName = "Кратность приёма",
                         menuList = medicinesPowder[selectedItemIndex].frequency,
-                        onCloseAction = { index -> selectedFrequencyIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedFrequencyIndex = index
+                            isFrequencyChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isFrequencyChoosen
                     )
                     currentMedicineItem = medicinesPowder[selectedItemIndex]
                 }
@@ -249,20 +291,32 @@ fun NewMedicineScreen(
                     DropdownMenu(
                         menuName = "Название",
                         menuList = List(medicinesTablets.size) { index -> medicinesTablets[index].name },
-                        onCloseAction = { index -> selectedItemIndex = index },
-                        modifier = Modifier.padding(top = 48.dp)
+                        onCloseAction = { index ->
+                            selectedItemIndex = index
+                            isDoseChoosen = false
+                            isFrequencyChoosen = false
+                        },
+                        modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
                         menuName = "Дозировка",
                         menuList = medicinesTablets[selectedItemIndex].doses,
-                        onCloseAction = { index -> selectedDosesIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedDosesIndex = index
+                            isDoseChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
                         menuName = "Кратность приёма",
                         menuList = medicinesTablets[selectedItemIndex].frequency,
-                        onCloseAction = { index -> selectedFrequencyIndex = index },
-                        modifier = Modifier.padding(top = 40.dp)
+                        onCloseAction = { index ->
+                            selectedFrequencyIndex = index
+                            isFrequencyChoosen = true
+                        },
+                        modifier = Modifier.padding(top = 40.dp),
+                        isChoosen = isFrequencyChoosen
                     )
                     currentMedicineItem = medicinesTablets[selectedItemIndex]
                 }
@@ -270,22 +324,18 @@ fun NewMedicineScreen(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    val medicineType =
-                        when (currentMedicineType) {
-                            CurrentMedicineType.Tablets -> "таблетки"
-                            CurrentMedicineType.Powder -> "порошок"
-                            CurrentMedicineType.Aerosol -> "аэрозоль"
-                        }
-                    onClickFinishButton(
-                        currentMedicineItem.image,
-                        medicineType,
-                        currentMedicineItem.name,
-                        currentMedicineItem.undername,
-                        currentMedicineItem.doses[selectedDosesIndex],
-                        currentMedicineItem.frequency[selectedFrequencyIndex],
-                        currentDate,
-                        currentDate.plusMonths(1),
-                    )
+                    if (!isFrequencyChoosen || !isDoseChoosen)
+                        Toast.makeText(context, "Выберите дозировку и кратность для этого лекарства", Toast.LENGTH_SHORT).show()
+                    else
+                        onClickFinishButton(
+                            currentMedicineType,
+                            currentMedicineItem.name,
+                            currentMedicineItem.undername,
+                            currentMedicineItem.doses[selectedDosesIndex],
+                            currentMedicineItem.frequency[selectedFrequencyIndex],
+                            LocalDate.now(),
+                            LocalDate.now().plusMonths(1),
+                        )
                 },
                 modifier = Modifier
                     .padding(bottom = 30.dp)
@@ -311,7 +361,8 @@ fun DropdownMenu(
     menuList: List<String>,
     onCloseAction: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    initialIndex: Int = 0
+    initialIndex: Int = 0,
+    isChoosen: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(menuList[initialIndex]) }
@@ -323,7 +374,7 @@ fun DropdownMenu(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedItem,
+            value = if (isChoosen) selectedItem else "",
             label = { Text(text = menuName, color = MaterialTheme.colorScheme.primary) },
             onValueChange = {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },

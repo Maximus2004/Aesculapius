@@ -95,11 +95,12 @@ fun TherapyScreen(
     turnOnBars: () -> Unit,
     isWeek: Boolean,
     onClickChangeWeek: (Boolean) -> Unit,
-    onClickMedicine: (MedicineItem) -> Unit,
-    isMorningMedicines: MutableState<Boolean>,
+    onClickMedicine: (MedicineCard) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(key1 = Unit) { turnOnBars() }
+
+    var isMorningMedicines by remember { mutableStateOf(true) }
 
     Box() {
         LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -190,11 +191,11 @@ fun TherapyScreen(
                         } else {
                             Row(modifier = Modifier.padding(bottom = 24.dp)) {
                                 Button(
-                                    onClick = { isMorningMedicines.value = true },
+                                    onClick = { isMorningMedicines = true },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isMorningMedicines.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (isMorningMedicines.value) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
@@ -205,11 +206,11 @@ fun TherapyScreen(
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 Button(
-                                    onClick = { isMorningMedicines.value = false },
+                                    onClick = { isMorningMedicines = false },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isMorningMedicines.value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (!isMorningMedicines.value) Color.White else MaterialTheme.colorScheme.primary
+                                        containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
@@ -244,39 +245,29 @@ fun TherapyScreen(
                                 isFuture = true
                             )
                         }
-                    } else if (isMorningMedicines.value) items(currentMedicines.currentMorningMedicines) { medicine ->
-                        MedicineCard(
-                            medicine = medicine,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            onClick = { onClickMedicine(medicine) },
-                            isSkipped = LocalDate.now().isAfter(currentDate) || medicine.realStartDate.isAfter(currentDate) ||
-                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 2 ||
-                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 3 ||
-                                    LocalTime.now().isAfter(LocalTime.of(14, 0)),
-                            isAccepted = (!medicine.realStartDate.isAfter(currentDate) &&
-                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 2) ||
-                                    (!medicine.realStartDate.isAfter(currentDate) &&
-                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 3),
-                            isMorning = true,
-                            isFuture = false
-                        )
+                    } else if (isMorningMedicines)
+                        items(currentMedicines.currentMorningMedicines) { medicine ->
+                            MedicineCard(
+                                medicine = medicine,
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                onClick = { onClickMedicine(medicine) },
+                                isSkipped = medicine.isSkipped,
+                                isAccepted = medicine.isAccepted,
+                                isMorning = true,
+                                isFuture = false
+                            )
                     }
-                    else items(currentMedicines.currentEveningMedicines) { medicine ->
-                        MedicineCard(
-                            medicine = medicine,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                            onClick = { onClickMedicine(medicine) },
-                            isSkipped = LocalDate.now().isAfter(currentDate) || medicine.realStartDate.isAfter(currentDate) ||
-                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 1 ||
-                                    medicine.isSkipped[Period.between(medicine.realStartDate, currentDate).days] == 3 ||
-                                    LocalTime.now().isAfter(LocalTime.of(23, 0)),
-                            isAccepted = (!medicine.realStartDate.isAfter(currentDate) &&
-                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 1) ||
-                                    (!medicine.realStartDate.isAfter(currentDate) &&
-                                    medicine.isAccepted[Period.between(medicine.realStartDate, currentDate).days] == 3),
-                            isMorning = false,
-                            isFuture = false
-                        )
+                    else
+                        items(currentMedicines.currentEveningMedicines) { medicine ->
+                            MedicineCard(
+                                medicine = medicine,
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                onClick = { onClickMedicine(medicine) },
+                                isSkipped = medicine.isSkipped,
+                                isAccepted = medicine.isAccepted,
+                                isMorning = false,
+                                isFuture = false
+                            )
                     }
                 }
             }
@@ -310,7 +301,7 @@ fun FloatingButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun MedicineCard(
     modifier: Modifier = Modifier,
-    medicine: MedicineItem,
+    medicine: MedicineCard,
     onClick: () -> Unit,
     isSkipped: Boolean,
     isAccepted: Boolean,
@@ -366,15 +357,7 @@ fun MedicineCard(
                         tint = Color.Black
                     )
                     Text(
-                        text =
-                        if ("По 1 дозе 2 раза в сутки" == medicine.frequency) "1 доза"
-                        else if ("По 2 дозы 2 раза в сутки" == medicine.frequency) "2 дозы"
-                        else if ("По 1 дозе утром" in medicine.frequency && isMorning) "1 доза"
-                        else if ("1 дозе вечером" in medicine.frequency && !isMorning) "1 доза"
-                        else if ("По 2 дозы утром" in medicine.frequency && isMorning) "2 дозы"
-                        else if ("2 дозы вечером" in medicine.frequency && !isMorning) "2 дозы"
-                        else if ("По 1 таблетке" in medicine.frequency) "1 таблетка"
-                        else "1 доза",
+                        text = medicine.frequency,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
@@ -474,7 +457,7 @@ fun DayContent(
     LaunchedEffect(key1 = Unit) {
         currentColorCircle = withContext(Dispatchers.IO) {
             if (date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
-            else if (therapyViewModel.getAmountActive(date) > 0) Color(0xFFFC3B69)
+            else if (therapyViewModel.getAmountNotAcceptedMedicines(date) > 0) Color(0xFFFC3B69)
             else Color(0xFF9ED209)
         }
     }

@@ -1,6 +1,7 @@
 package com.example.aesculapius.database
 
 import androidx.room.TypeConverter
+import com.example.aesculapius.data.CurrentMedicineType
 import java.lang.Math.abs
 import java.time.Duration
 import java.time.LocalDate
@@ -20,7 +21,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromString(value: String?): MutableList<Int>? {
+    fun fromStringToList(value: String?): MutableList<Int>? {
         if (value == null) {
             return null
         }
@@ -30,6 +31,16 @@ class Converters {
     @TypeConverter
     fun fromList(list: MutableList<Int>?): String? {
         return list?.joinToString(",")
+    }
+
+    @TypeConverter
+    fun fromStringToMedicineType(value: String): CurrentMedicineType? {
+        return enumValueOf<CurrentMedicineType>(value)
+    }
+
+    @TypeConverter
+    fun enumToString(value: CurrentMedicineType): String {
+        return value.name
     }
 
     companion object {

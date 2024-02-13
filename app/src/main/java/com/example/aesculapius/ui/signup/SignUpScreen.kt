@@ -150,7 +150,7 @@ fun SignUpScreen(
                     else -> onChangeCurrentPage()
                 }
             },
-            enabled = if (currentPage == 0) name != "" && surname != "" && patronymic != "" else if (currentPage == 2) height != "" && weight != "" else true,
+            enabled = if (currentPage == 0) name != "" && surname != "" else if (currentPage == 2) height != "" && weight != "" else true,
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .size(height = 56.dp, width = 312.dp),

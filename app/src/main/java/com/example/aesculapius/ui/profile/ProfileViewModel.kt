@@ -39,13 +39,6 @@ class ProfileViewModel @Inject constructor(
             initialValue = ""
         )
 
-    val lastSeen: StateFlow<String> = prefRepository.lastSeen
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ""
-        )
-
     val morningReminder: StateFlow<LocalDateTime> = prefRepository.morningReminder
         .stateIn(
             scope = viewModelScope,
@@ -73,18 +66,6 @@ class ProfileViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ""
         )
-
-    fun updateLastSeen() {
-        viewModelScope.launch {
-            prefRepository.updateLastSeen(LocalDate.now())
-        }
-    }
-
-    fun updateAllMedicines() {
-        viewModelScope.launch {
-            aesculapiusRepository.updateAllMedicines()
-        }
-    }
 
     fun saveASTTestDate(astTestDate: LocalDate) {
         viewModelScope.launch {

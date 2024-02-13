@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
+import com.example.aesculapius.ui.therapy.MedicineCard
 import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.NewMedicineScreen
 import com.example.aesculapius.ui.therapy.TherapyScreen
@@ -20,16 +21,15 @@ import java.time.LocalDate
 
 @Composable
 fun TherapyNavigation(
-    isMorningMedicines: MutableState<Boolean>,
     turnOffBars: () -> Unit,
     modifier: Modifier = Modifier,
     turnOnBars: () -> Unit,
-    onClickMedicine: (MedicineItem) -> Unit,
-    medicine: MedicineItem?,
+    onClickMedicine: (MedicineCard) -> Unit,
+    medicine: MedicineCard?,
     therapyViewModel: TherapyViewModel,
     navController: NavHostController
 ) {
-    val currentLoadingState = therapyViewModel.currentLoadingState
+    val currentLoadingState = therapyViewModel.currentLoadingState.collectAsState().value
     val currentWeekDates = therapyViewModel.currentWeekDates.collectAsState().value
     val isWeek = therapyViewModel.isWeek.collectAsState().value
 
@@ -53,7 +53,6 @@ fun TherapyNavigation(
                 isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now()),
                 onClickChangeWeek = { therapyViewModel.changeIsWeek(it) },
                 onClickMedicine = { onClickMedicine(it) },
-                isMorningMedicines = isMorningMedicines
             )
         }
         composable(route = EditMedicineScreen.route) {
@@ -61,34 +60,30 @@ fun TherapyNavigation(
                 turnOffBars = turnOffBars,
                 medicine = medicine!!,
                 onNavigateBack = { navController.navigateUp() },
-                onClickDeleteMedicine = { medicineId ->
-                    therapyViewModel.deleteMedicineItem(medicineId)
+                onClickDeleteMedicine = {
+                    therapyViewModel.deleteMedicineItem(medicine.id)
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
-                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 },
-                onClickUpdateMedicineItem = { medicineId, frequency, dose ->
-                    therapyViewModel.updateMedicineItem(medicineId, frequency, dose)
+                onClickUpdateMedicineItem = { frequency, dose ->
+                    therapyViewModel.updateMedicineItem(medicine.id, frequency, dose, medicine.medicineType, medicine.startDate, medicine.endDate)
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
-                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 }
             )
         }
         composable(route = NewMedicineScreen.route) {
             NewMedicineScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onClickFinishButton = { image, medicineType, name, undername, dose, frequency, startDate, endDate ->
-                    therapyViewModel.addMedicineItem(image, medicineType, name, undername, dose, frequency, startDate, endDate, LocalDate.now())
+                onClickFinishButton = { medicineType, name, undername, dose, frequency, startDate, endDate ->
+                    therapyViewModel.addMedicineItem(medicineType, name, undername, dose, frequency, startDate, endDate)
                     navController.navigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
-                    therapyViewModel.updateCurrentDate(therapyViewModel.getCurrentDate())
                 },
                 turnOffBars = { turnOffBars() },
-                currentDate = therapyViewModel.getCurrentDate(),
             )
         }
     }

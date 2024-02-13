@@ -2,6 +2,7 @@ package com.example.aesculapius.database
 
 import android.util.Log
 import com.example.aesculapius.ui.signup.SignUpUiState
+import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.worker.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
@@ -58,17 +59,17 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
                 "date" to scoreItem.date.toString()
             )
         }
-        val medicinesList = aesculapiusRepository.getAllMedicines().map { medicineItem ->
-            hashMapOf(
-                "name" to medicineItem.name,
-                "undername" to medicineItem.undername,
-                "dose" to medicineItem.dose,
-                "startDate" to medicineItem.startDate.toString(),
-                "endDate" to medicineItem.endDate.toString(),
-                "frequency" to medicineItem.frequency
-            )
-        }
+//        val medicinesList = aesculapiusRepository.getAllMedicines().map { medicineItem ->
+//            hashMapOf(
+//                "name" to medicineItem.name,
+//                "undername" to medicineItem.undername,
+//                "dose" to medicineItem.dose,
+//                "startDate" to medicineItem.startDate.toString(),
+//                "endDate" to medicineItem.endDate.toString(),
+//                "frequency" to medicineItem.frequency
+//            )
+//        }
         usersRef.document(userId)
-            .update("medicines", medicinesList, "metrics", metricsList, "astTests", astTestsList)
+            .update("medicines", listOf<MedicineItem>(), "metrics", metricsList, "astTests", astTestsList)
     }
 }
