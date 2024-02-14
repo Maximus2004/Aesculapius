@@ -1,36 +1,19 @@
 package com.example.aesculapius.ui.therapy
 
-import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.aesculapius.AesculapiusApp
 import com.example.aesculapius.data.CurrentMedicineType
-import com.example.aesculapius.database.AesculapiusDatabase
 import com.example.aesculapius.database.AesculapiusRepository
-import com.example.aesculapius.database.ItemDAO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.boguszpawlowski.composecalendar.week.Week
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.Period
 import javax.inject.Inject
 
 // все корутины запускаются с помощью конкретного диспетчера, который указывает на поток или
@@ -46,6 +29,7 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
     private val currentDate = mutableStateListOf(LocalDate.now())
 
     var currentLoadingState: MutableStateFlow<CurrentLoadingState> = MutableStateFlow(CurrentLoadingState.Loading)
+    var generalLoadingState: MutableStateFlow<GeneralLoadingState> = MutableStateFlow(GeneralLoadingState.Success)
 
     private var _currentWeekDates = MutableStateFlow(Week.now())
     val currentWeekDates: StateFlow<Week> = _currentWeekDates
@@ -124,17 +108,19 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
 
     fun acceptMedicine(idDose: Int) {
         viewModelScope.launch {
+            generalLoadingState.value = GeneralLoadingState.Loading
             aesculapiusRepository.acceptMedicine(idDose)
             updateCurrentDate(LocalDate.now())
-            changeIsWeek(isWeek.value)
+            generalLoadingState.value = GeneralLoadingState.Success
         }
     }
 
     fun skipMedicine(idDose: Int) {
         viewModelScope.launch {
+            generalLoadingState.value = GeneralLoadingState.Loading
             aesculapiusRepository.skipMedicine(idDose)
             updateCurrentDate(LocalDate.now())
-            changeIsWeek(isWeek.value)
+            generalLoadingState.value = GeneralLoadingState.Success
         }
     }
 
@@ -148,25 +134,29 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         endDate: LocalDate,
     ) {
         viewModelScope.launch {
+            generalLoadingState.value = GeneralLoadingState.Loading
             aesculapiusRepository.insertMedicineItem(medicineType, name, undername, dose, frequency, startDate, endDate)
-            if (!currentDate.first().isBefore(LocalDate.now())) updateCurrentDate(getCurrentDate())
-            changeIsWeek(isWeek.value)
+            if (!currentDate.first().isBefore(LocalDate.now()))
+                updateCurrentDate(getCurrentDate())
+            generalLoadingState.value = GeneralLoadingState.Success
         }
     }
 
     fun updateMedicineItem(medicineId: Int, frequency: String, dose: String, medicineType: CurrentMedicineType, startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
+            generalLoadingState.value = GeneralLoadingState.Loading
             aesculapiusRepository.updateMedicineItem(medicineId, frequency, dose, medicineType, startDate, endDate)
             updateCurrentDate(LocalDate.now())
-            changeIsWeek(isWeek.value)
+            generalLoadingState.value = GeneralLoadingState.Success
         }
     }
 
     fun deleteMedicineItem(medicineId: Int) {
         viewModelScope.launch {
+            generalLoadingState.value = GeneralLoadingState.Loading
             aesculapiusRepository.deleteMedicineItem(medicineId)
             updateCurrentDate(LocalDate.now())
-            changeIsWeek(isWeek.value)
+            generalLoadingState.value = GeneralLoadingState.Success
         }
     }
 
@@ -184,18 +174,23 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         _currentWeekDates.update { Week(weekDates) }
     }
 
-    /** [getAmountActive] - служит для отображения индикторов под датами
+    /** [getAmountNotAcceptedMedicines] - служит для отображения индикторов под датами
      * (вызывается из LaunchedEffect) */
     suspend fun getAmountNotAcceptedMedicines(date: LocalDate): Int = viewModelScope.async {
         aesculapiusRepository.getAmountNotAcceptedMedicines(date)
     }.await()
 
     fun getCurrentDate(): LocalDate {
-        return currentDate.first();
+        return currentDate.first()
     }
 }
 
 sealed interface CurrentLoadingState {
     data class Success(val therapyuiState: TherapyUiState) : CurrentLoadingState
     object Loading : CurrentLoadingState
+}
+
+sealed interface GeneralLoadingState {
+    object Success : GeneralLoadingState
+    object Loading : GeneralLoadingState
 }

@@ -3,17 +3,14 @@ package com.example.aesculapius.ui.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
-import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.NewMedicineScreen
 import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.example.aesculapius.ui.therapy.TherapyViewModel
@@ -30,6 +27,7 @@ fun TherapyNavigation(
     navController: NavHostController
 ) {
     val currentLoadingState = therapyViewModel.currentLoadingState.collectAsState().value
+    val generalLoadingState = therapyViewModel.generalLoadingState.collectAsState().value
     val currentWeekDates = therapyViewModel.currentWeekDates.collectAsState().value
     val isWeek = therapyViewModel.isWeek.collectAsState().value
 
@@ -53,6 +51,7 @@ fun TherapyNavigation(
                 isAfterCurrentDate = therapyViewModel.getCurrentDate().isAfter(LocalDate.now()),
                 onClickChangeWeek = { therapyViewModel.changeIsWeek(it) },
                 onClickMedicine = { onClickMedicine(it) },
+                generalLoadingState = generalLoadingState
             )
         }
         composable(route = EditMedicineScreen.route) {

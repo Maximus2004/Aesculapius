@@ -2,7 +2,6 @@ package com.example.aesculapius.ui.profile
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +29,7 @@ import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.signup.TextInput
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.regex.Pattern
 
 object EditProfileScreen : NavigationDestination {
@@ -63,12 +63,14 @@ fun EditProfileScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, user:
                 Toast.makeText(context, "Введены некорректные числа", Toast.LENGTH_SHORT).show()
             } catch (e: IllegalArgumentException) {
                 Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            } catch (e: DateTimeParseException) {
+                Toast.makeText(context, "Введена некорректная дата", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     Scaffold(topBar = { TopBar(text = "Профиль", existHelpButton = true, onNavigateBack = onNavigateBack) }) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(top = paddingValues.calculateTopPadding(), start = 24.dp, end = 24.dp, bottom = 10.dp)) {
+        LazyColumn(modifier = modifier.padding(top = paddingValues.calculateTopPadding(), start = 24.dp, end = 24.dp, bottom = 10.dp)) {
             item {
                 val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -111,6 +113,7 @@ fun EditProfileScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, user:
                     onValueChanged = {
                         val matcher = pattern.matcher(it)
                         if (matcher.find()) tempBirthday = matcher.group()
+                        else if (it == "") tempBirthday = "//"
                     },
                     hint = "Дата рождения, дд/мм/гггг",
                     modifier = Modifier

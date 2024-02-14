@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -36,14 +35,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,11 +49,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.theme.AesculapiusTheme
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
@@ -68,12 +62,9 @@ import io.github.boguszpawlowski.composecalendar.rememberSelectableWeekCalendarS
 import io.github.boguszpawlowski.composecalendar.selection.DynamicSelectionState
 import io.github.boguszpawlowski.composecalendar.week.Week
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.Period
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -89,6 +80,7 @@ fun TherapyScreen(
     getWeekDates: (LocalDate) -> Unit,
     updateCurrentDate: (LocalDate) -> Boolean,
     currentLoadingState: CurrentLoadingState,
+    generalLoadingState: GeneralLoadingState,
     currentWeekDates: Week,
     onCreateNewMedicine: () -> Unit,
     isAfterCurrentDate: Boolean,
@@ -104,170 +96,187 @@ fun TherapyScreen(
 
     Box() {
         LazyColumn(modifier = modifier.fillMaxSize()) {
-            item {
-                CalendarItem(therapyViewModel = therapyViewModel,
-                    currentDate = currentDate,
-                    onDateChanged = { updateCurrentDate(it) },
-                    weekDates = currentWeekDates,
-                    getWeekDates = { getWeekDates(it) },
-                    isWeek = isWeek,
-                    onClickChangeWeek = { onClickChangeWeek(it) })
-            }
-            when (currentLoadingState) {
-                is CurrentLoadingState.Loading -> item {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(top = 100.dp)
-                        )
+            when (generalLoadingState) {
+                is GeneralLoadingState.Loading -> {
+                    item {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(top = 200.dp)
+                            )
+                        }
                     }
                 }
-
-                is CurrentLoadingState.Success -> {
-
-                    val currentMedicines = currentLoadingState.therapyuiState
-
+                is GeneralLoadingState.Success -> {
                     item {
-                        Card(
-                            elevation = 0.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(vertical = 29.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp, vertical = 16.dp
-                                )
-                            ) {
-                                Text(
-                                    text = "Ежедневный прогресс",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                LinearProgressIndicator(
-                                    progress = currentMedicines.progress,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    trackColor = MaterialTheme.colorScheme.onSurface,
+                        CalendarItem(
+                            therapyViewModel = therapyViewModel,
+                            currentDate = currentDate,
+                            onDateChanged = { updateCurrentDate(it) },
+                            weekDates = currentWeekDates,
+                            getWeekDates = { getWeekDates(it) },
+                            isWeek = isWeek,
+                            onClickChangeWeek = { onClickChangeWeek(it) },
+                        )
+                    }
+                    when (currentLoadingState) {
+                        is CurrentLoadingState.Loading -> item {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                CircularProgressIndicator(
                                     modifier = Modifier
-                                        .padding(top = 12.dp, bottom = 10.dp)
-                                        .height(6.dp)
-                                        .fillMaxWidth()
-                                        .clip(MaterialTheme.shapes.small)
+                                        .align(Alignment.Center)
+                                        .padding(top = 200.dp)
                                 )
-                                Row(modifier = Modifier.fillMaxWidth()) {
-                                    Text(
-                                        text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                    Spacer(Modifier.weight(1f))
-                                    Text(
-                                        text = "${(currentMedicines.progress * 100).toInt()}%",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
                             }
                         }
 
-                        if (isAfterCurrentDate) {
-                            Row(modifier = Modifier.padding(bottom = 24.dp)) {
-                                Button(
-                                    onClick = {},
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFB0A3D1),
-                                        contentColor = Color.White
-                                    ),
-                                    modifier = Modifier.weight(1f)
+                        is CurrentLoadingState.Success -> {
+
+                            val currentMedicines = currentLoadingState.therapyuiState
+
+                            item {
+                                Card(
+                                    elevation = 0.dp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .padding(vertical = 29.dp)
                                 ) {
-                                    Text(
-                                        text = "Предстоящие",
-                                        style = MaterialTheme.typography.headlineSmall
-                                    )
+                                    Column(
+                                        modifier = Modifier.padding(
+                                            horizontal = 24.dp, vertical = 16.dp
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Ежедневный прогресс",
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                        LinearProgressIndicator(
+                                            progress = currentMedicines.progress,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier
+                                                .padding(top = 12.dp, bottom = 10.dp)
+                                                .height(6.dp)
+                                                .fillMaxWidth()
+                                                .clip(MaterialTheme.shapes.small)
+                                        )
+                                        Row(modifier = Modifier.fillMaxWidth()) {
+                                            Text(
+                                                text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                            Spacer(Modifier.weight(1f))
+                                            Text(
+                                                text = "${(currentMedicines.progress * 100).toInt()}%",
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                        }
+                                    }
                                 }
-                                Spacer(Modifier.width(8.dp))
-                                Spacer(Modifier.weight(1f))
+
+                                if (isAfterCurrentDate) {
+                                    Row(modifier = Modifier.padding(bottom = 24.dp)) {
+                                        Button(
+                                            onClick = {},
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFFB0A3D1),
+                                                contentColor = Color.White
+                                            ),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Text(
+                                                text = "Предстоящие",
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                        }
+                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.weight(1f))
+                                    }
+                                } else {
+                                    Row(modifier = Modifier.padding(bottom = 24.dp)) {
+                                        Button(
+                                            onClick = { isMorningMedicines = true },
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                                contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                            ),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Text(
+                                                text = "Утро",
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                        }
+                                        Spacer(Modifier.width(8.dp))
+                                        Button(
+                                            onClick = { isMorningMedicines = false },
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                                contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                            ),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Text(
+                                                text = "Вечер",
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                        } else {
-                            Row(modifier = Modifier.padding(bottom = 24.dp)) {
-                                Button(
-                                    onClick = { isMorningMedicines = true },
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = "Утро",
-                                        style = MaterialTheme.typography.headlineSmall
+                            if (isAfterCurrentDate) {
+                                items(currentMedicines.currentMorningMedicines) { medicine ->
+                                    MedicineCard(
+                                        medicine = medicine,
+                                        modifier = Modifier.padding(bottom = 16.dp),
+                                        onClick = { onClickMedicine(medicine) },
+                                        isSkipped = false,
+                                        isAccepted = false,
+                                        isMorning = true,
+                                        isFuture = true
                                     )
                                 }
-                                Spacer(Modifier.width(8.dp))
-                                Button(
-                                    onClick = { isMorningMedicines = false },
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                        contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = "Вечер",
-                                        style = MaterialTheme.typography.headlineSmall
+                                items(currentMedicines.currentEveningMedicines) { medicine ->
+                                    MedicineCard(
+                                        medicine = medicine,
+                                        modifier = Modifier.padding(bottom = 16.dp),
+                                        onClick = { onClickMedicine(medicine) },
+                                        isSkipped = false,
+                                        isAccepted = false,
+                                        isMorning = false,
+                                        isFuture = true
                                     )
                                 }
-                            }
+                            } else if (isMorningMedicines)
+                                items(currentMedicines.currentMorningMedicines) { medicine ->
+                                    MedicineCard(
+                                        medicine = medicine,
+                                        modifier = Modifier.padding(bottom = 16.dp),
+                                        onClick = { onClickMedicine(medicine) },
+                                        isSkipped = medicine.isSkipped,
+                                        isAccepted = medicine.isAccepted,
+                                        isMorning = true,
+                                        isFuture = false
+                                    )
+                                }
+                            else
+                                items(currentMedicines.currentEveningMedicines) { medicine ->
+                                    MedicineCard(
+                                        medicine = medicine,
+                                        modifier = Modifier.padding(bottom = 16.dp),
+                                        onClick = { onClickMedicine(medicine) },
+                                        isSkipped = medicine.isSkipped,
+                                        isAccepted = medicine.isAccepted,
+                                        isMorning = false,
+                                        isFuture = false
+                                    )
+                                }
                         }
-                    }
-                    if (isAfterCurrentDate) {
-                        items(currentMedicines.currentMorningMedicines) { medicine ->
-                            MedicineCard(
-                                medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) },
-                                isSkipped = false,
-                                isAccepted = false,
-                                isMorning = true,
-                                isFuture = true
-                            )
-                        }
-                        items(currentMedicines.currentEveningMedicines) { medicine ->
-                            MedicineCard(
-                                medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) },
-                                isSkipped = false,
-                                isAccepted = false,
-                                isMorning = false,
-                                isFuture = true
-                            )
-                        }
-                    } else if (isMorningMedicines)
-                        items(currentMedicines.currentMorningMedicines) { medicine ->
-                            MedicineCard(
-                                medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) },
-                                isSkipped = medicine.isSkipped,
-                                isAccepted = medicine.isAccepted,
-                                isMorning = true,
-                                isFuture = false
-                            )
-                    }
-                    else
-                        items(currentMedicines.currentEveningMedicines) { medicine ->
-                            MedicineCard(
-                                medicine = medicine,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                onClick = { onClickMedicine(medicine) },
-                                isSkipped = medicine.isSkipped,
-                                isAccepted = medicine.isAccepted,
-                                isMorning = false,
-                                isFuture = false
-                            )
                     }
                 }
             }
@@ -569,7 +578,7 @@ fun CalendarItem(
     getWeekDates: (LocalDate) -> Unit,
     therapyViewModel: TherapyViewModel,
     isWeek: Boolean,
-    onClickChangeWeek: (Boolean) -> Unit
+    onClickChangeWeek: (Boolean) -> Unit,
 ) {
 //    анимасьон
 //    Column(
