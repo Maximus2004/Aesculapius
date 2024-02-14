@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
+import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.MedicineWithDoses
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -49,6 +50,9 @@ interface ItemDAO {
 
     @Query("SELECT * from medicines_items WHERE (startDate <= :currentDate) AND (endDate > :currentDate)")
     suspend fun getMedicinesOnCurrentDate(currentDate: LocalDate): List<MedicineWithDoses>
+
+    @Query("SELECT * from medicines_items")
+    suspend fun getAllMedicines(): List<MedicineItem>
 
     @Query("INSERT INTO score_items VALUES(NULL, :score, :date)")
     suspend fun insertASTTestScore(date: LocalDate, score: Int)
