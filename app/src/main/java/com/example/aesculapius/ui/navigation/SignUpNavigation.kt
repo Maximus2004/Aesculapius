@@ -36,10 +36,10 @@ fun SignUpNavigation(
     onEndRegistration: (SignUpUiState) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current
     val signUpViewModel: SignUpViewModel = viewModel()
     val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
     var currentPage by remember { mutableIntStateOf(0) }
-    val context = LocalContext.current
 
     NavHost(
         navController = navController,

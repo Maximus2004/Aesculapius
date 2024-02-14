@@ -93,7 +93,6 @@ fun ProfileNavigation(
                     textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        Log.i("TAGTAG", "${morningReminder.hour} ${it.hour}")
                         if (!(it.hour in 5..12 && eveningReminder.hour in 18 .. 23))
                             Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_SHORT).show()
                         else {
@@ -110,7 +109,6 @@ fun ProfileNavigation(
                     textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        Log.i("TAGTAG", "${morningReminder.hour} ${it.hour}")
                         if (!(morningReminder.hour in 5..12 && it.hour in 18 .. 23))
                             Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_SHORT).show()
                         else {

@@ -1,6 +1,13 @@
 package com.example.aesculapius.ui.profile
 
+import android.app.AlarmManager
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import com.example.aesculapius.database.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.aesculapius.database.AesculapiusRepository
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.database.UserRemoteDataRepository
+import com.example.aesculapius.notifications.MyAlarm
 import com.example.aesculapius.ui.signup.SignUpUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,13 +26,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val prefRepository: UserPreferencesRepository,
     private val userRemoteDataRepository: UserRemoteDataRepository,
-    private val aesculapiusRepository: AesculapiusRepository
+    application: Application
 ) : ViewModel() {
+    val morningAlarmManager = application.applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
+    val eveningAlarmManager = application.applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
+
     val user: StateFlow<SignUpUiState> = prefRepository.user
         .stateIn(
             scope = viewModelScope,
@@ -66,6 +78,24 @@ class ProfileViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = ""
         )
+
+    fun setMorningNotification(morningTimeMillis: Long, morningPendingIntent: PendingIntent) {
+        morningAlarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            morningTimeMillis,
+            AlarmManager.INTERVAL_DAY,
+            morningPendingIntent
+        )
+    }
+
+    fun setEveningNotification(eveningTimeMillis: Long, eveningPendingIntent: PendingIntent) {
+        eveningAlarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            eveningTimeMillis,
+            AlarmManager.INTERVAL_DAY,
+            eveningPendingIntent
+        )
+    }
 
     fun saveASTTestDate(astTestDate: LocalDate) {
         viewModelScope.launch {

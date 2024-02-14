@@ -1,7 +1,9 @@
 package com.example.aesculapius
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
@@ -10,6 +12,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.aesculapius.database.UserRemoteDataRepository
+import com.example.aesculapius.notifications.MyAlarm
 import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.navigation.SignUpNavigation
 import com.example.aesculapius.ui.profile.ProfileViewModel
@@ -19,6 +22,8 @@ import com.example.aesculapius.worker.UserWorkerSchedule
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -44,8 +49,26 @@ class MainActivity : ComponentActivity() {
                     HomeScreen(
                         morningReminder = morningReminder,
                         eveningReminder = eveningReminder,
-                        saveMorningReminder = { profileViewModel.saveMorningTime(it) },
-                        saveEveningReminder = { profileViewModel.saveEveningTime(it) },
+                        saveMorningReminder = {
+                            profileViewModel.saveMorningTime(it)
+                            val morningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                            val morningIntent = Intent(this, MyAlarm::class.java).apply {
+                                putExtra("title", "Утреннее напоминание")
+                                putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+                            }
+                            val morningPendingIntent = PendingIntent.getBroadcast(this, 0, morningIntent, PendingIntent.FLAG_IMMUTABLE)
+                            profileViewModel.setMorningNotification(morningTimeMillis, morningPendingIntent)
+                        },
+                        saveEveningReminder = {
+                            profileViewModel.saveEveningTime(it)
+                            val eveningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                            val eveningIntent = Intent(this, MyAlarm::class.java).apply {
+                                putExtra("title", "Вечернее напоминание")
+                                putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+                            }
+                            val eveningPendingIntent = PendingIntent.getBroadcast(this, 1, eveningIntent, PendingIntent.FLAG_IMMUTABLE)
+                            profileViewModel.setEveningNotification(eveningTimeMillis, eveningPendingIntent)
+                        },
                         recommendationTestDate = recommendationTestDate,
                         astTestDate = astTestDate,
                         saveAstDate = { profileViewModel.saveASTTestDate(it) },
@@ -59,7 +82,25 @@ class MainActivity : ComponentActivity() {
                     eveningReminder = eveningReminder,
                     saveMorningReminder = { profileViewModel.saveMorningTime(it) },
                     saveEveningReminder = { profileViewModel.saveEveningTime(it) },
-                    onEndRegistration = { profileViewModel.changeUserAtFirst(UserRemoteDataRepository.getUserId(), it) }
+                    onEndRegistration = {
+                        profileViewModel.changeUserAtFirst(UserRemoteDataRepository.getUserId(), it)
+
+                        val morningTimeMillis = morningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        val morningIntent = Intent(this, MyAlarm::class.java).apply {
+                            putExtra("title", "Утреннее напоминание")
+                            putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+                        }
+                        val morningPendingIntent = PendingIntent.getBroadcast(this, 0, morningIntent, PendingIntent.FLAG_IMMUTABLE)
+                        profileViewModel.setMorningNotification(morningTimeMillis, morningPendingIntent)
+
+                        val eveningTimeMillis = eveningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                        val eveningIntent = Intent(this, MyAlarm::class.java).apply {
+                            putExtra("title", "Вечернее напоминание")
+                            putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+                        }
+                        val eveningPendingIntent = PendingIntent.getBroadcast(this, 1, eveningIntent, PendingIntent.FLAG_IMMUTABLE)
+                        profileViewModel.setEveningNotification(eveningTimeMillis, eveningPendingIntent)
+                    }
                 )
             }
         }
