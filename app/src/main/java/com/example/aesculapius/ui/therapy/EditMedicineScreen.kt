@@ -41,7 +41,6 @@ object EditMedicineScreen : NavigationDestination {
 fun EditMedicineScreen(
     onClickDeleteMedicine: () -> Unit,
     onNavigateBack: () -> Unit,
-    turnOffBars: () -> Unit,
     onClickUpdateMedicineItem: (String, String) -> Unit,
     medicine: MedicineCard,
     modifier: Modifier = Modifier
@@ -56,7 +55,6 @@ fun EditMedicineScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        turnOffBars()
         when (medicine.medicineType) {
             CurrentMedicineType.Aerosol -> {
                 medicinesAerosol.forEach { medicineAerosol ->

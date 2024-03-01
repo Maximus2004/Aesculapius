@@ -33,8 +33,11 @@ interface ItemDAO {
     @Query("UPDATE dose_items SET isSkipped = 1 WHERE idDose = :idDose")
     suspend fun skipMedicine(idDose: Int)
 
+    @Query("SELECT MAX(idMedicine) FROM medicines_items")
+    suspend fun getMaxMedicineId(): Int
+
     @Query("SELECT COUNT(*) FROM medicines_items")
-    suspend fun getCurrentMedicineTableSize(): Int
+    suspend fun getRowAmount(): Int
 
     @Query("INSERT INTO dose_items VALUES(NULL, :dosesAmount, :isMorning, :date, :isSkipped, :isAccepted, :medicineId)")
     suspend fun insertNewDose(dosesAmount: String, isMorning: Boolean, date: LocalDate, isSkipped: Boolean, isAccepted: Boolean, medicineId: Int)

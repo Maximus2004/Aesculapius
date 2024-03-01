@@ -1,5 +1,8 @@
 package com.example.aesculapius.ui.home
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,10 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
-import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.navigation.ProfileNavigation
-import com.example.aesculapius.ui.navigation.TestsNavigation
-import com.example.aesculapius.ui.navigation.TherapyNavigation
 import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.statistics.StatisticsScreen
 import java.time.LocalDate
@@ -61,18 +60,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.aesculapius.R
+import com.example.aesculapius.data.topBarHomeScreen
+import com.example.aesculapius.ui.navigation.profileNavGraph
+import com.example.aesculapius.ui.navigation.statisticsNavGraph
+import com.example.aesculapius.ui.navigation.testsNavGraph
+import com.example.aesculapius.ui.navigation.therapyNavGraph
 import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
 import com.example.aesculapius.ui.therapy.MedicineItem
+import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.example.aesculapius.ui.therapy.TherapyViewModel
 import kotlinx.coroutines.launch
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     saveAstDate: (LocalDate) -> Unit,
@@ -85,19 +93,18 @@ fun HomeScreen(
     saveEveningReminder: (LocalDateTime) -> Unit,
     user: SignUpUiState,
     onSaveNewUser: (SignUpUiState) -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    val homeViewModel: HomeViewModel = viewModel()
     val therapyViewModel: TherapyViewModel = hiltViewModel()
     val testsViewModel: TestsViewModel = hiltViewModel()
     val statisticsViewModel: StatisticsViewModel = hiltViewModel()
 
-    val homeUiState = homeViewModel.homeUiState.collectAsState().value
     var isBarsDisplayed by remember { mutableStateOf(true) }
     val currentMedicineItem: MutableState<MedicineCard?> = remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute: String = navBackStackEntry?.destination?.route ?: TherapyScreen.route
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -129,29 +136,25 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 if (isBarsDisplayed) TopBar(
-                    screenName = homeUiState.currentPageName,
-                    isHelpButton = homeUiState.isHelpButton
+                    screenName = topBarHomeScreen[currentRoute]?.first ?: "Базисная терапия",
+                    isHelpButton = topBarHomeScreen[currentRoute]?.second ?: false
                 )
             },
             bottomBar = {
                 if (isBarsDisplayed) BottomNavigationBar(
-                    currentTab = homeUiState.currentPage,
-                    onTabPressed = { pageType, pageName, isHelpButton ->
-                        homeViewModel.updateCurrentPage(pageType, pageName, isHelpButton)
+                    currentTab = currentRoute,
+                    onTabPressed = { pageType ->
+                        navController.navigate(pageType)
                     },
                     navigationItemContentList = navigationItemContentList
                 )
             }) { contentPadding ->
-            Column(
-                modifier = modifier.padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                )
-            ) {
-                when (homeUiState.currentPage) {
-                    PageType.Therapy -> TherapyNavigation(
-                        turnOffBars = { isBarsDisplayed = false },
-                        turnOnBars = { isBarsDisplayed = true },
+            NavHost(
+                navController = navController,
+                startDestination = TherapyScreen.route,
+                modifier = Modifier.fillMaxSize().padding(paddingValues = contentPadding),
+                builder = {
+                    therapyNavGraph(
                         onClickMedicine = {
                             currentMedicineItem.value = it
                             scope.launch { sheetState.show() }
@@ -159,9 +162,11 @@ fun HomeScreen(
                         medicine = currentMedicineItem.value,
                         navController = navController,
                         therapyViewModel = therapyViewModel,
+                        turnOnBars = { isBarsDisplayed = true },
+                        turnOffBars = { isBarsDisplayed = false }
                     )
 
-                    PageType.Profile -> ProfileNavigation(
+                    profileNavGraph(
                         morningReminder = morningReminder,
                         eveningReminder = eveningReminder,
                         saveMorningReminder = { saveMorningReminder(it) },
@@ -170,10 +175,10 @@ fun HomeScreen(
                         turnOnBars = { isBarsDisplayed = true },
                         user = user,
                         onSaveNewUser = onSaveNewUser,
-                        navController = navController,
+                        navController = navController
                     )
 
-                    PageType.Statistics -> StatisticsScreen(
+                    statisticsNavGraph(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
@@ -181,7 +186,7 @@ fun HomeScreen(
                         statisticsViewModel = statisticsViewModel
                     )
 
-                    PageType.Tests -> TestsNavigation(
+                    testsNavGraph(
                         saveMorningReminder = { saveMorningReminder(it) },
                         saveEveningReminder = { saveEveningReminder(it) },
                         saveASTDate = { saveAstDate(it) },
@@ -196,7 +201,7 @@ fun HomeScreen(
                         testsViewModel = testsViewModel
                     )
                 }
-            }
+            )
         }
     }
 }
@@ -240,8 +245,8 @@ fun TopBar(
 
 @Composable
 fun BottomNavigationBar(
-    currentTab: PageType,
-    onTabPressed: ((PageType, String, Boolean) -> Unit),
+    currentTab: String,
+    onTabPressed: ((String) -> Unit),
     navigationItemContentList: List<NavigationItemContent>,
     modifier: Modifier = Modifier
 ) {
@@ -256,11 +261,7 @@ fun BottomNavigationBar(
             NavigationBarItem(
                 selected = currentTab == navItem.pageType,
                 onClick = {
-                    onTabPressed(
-                        navItem.pageType,
-                        navItem.pageName,
-                        navItem.isHelpButton
-                    )
+                    onTabPressed(navItem.pageType)
                 },
                 icon = {
                     Image(

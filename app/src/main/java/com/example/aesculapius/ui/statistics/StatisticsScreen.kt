@@ -39,9 +39,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import com.example.aesculapius.R
 import com.example.aesculapius.data.graphicsNavigationItemContentList
+import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -67,8 +70,12 @@ import java.util.Locale
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import java.time.temporal.ChronoUnit
 
+object StatisticsScreen : NavigationDestination {
+    override val route = "StatisticsScreen"
+}
+
 @Composable
-fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifier = Modifier) {
+fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifier) {
     val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
     val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
     val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value

@@ -38,7 +38,6 @@ import com.example.aesculapius.ui.signup.TextInput
 fun MetricsTestScreen(
     onClickDoneButton: (first: Float, second: Float, third: Float) -> Unit,
     onNavigateBack: () -> Unit,
-    turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -51,8 +50,6 @@ fun MetricsTestScreen(
     var thirdMetrics by remember { mutableStateOf("") }
 
     BackHandler { onNavigateBack() }
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
-
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = { onNavigateBack() },

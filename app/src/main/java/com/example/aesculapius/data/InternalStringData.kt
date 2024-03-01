@@ -3,13 +3,16 @@ package com.example.aesculapius.data
 import androidx.compose.ui.text.buildAnnotatedString
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.home.NavigationItemContent
-import com.example.aesculapius.ui.home.PageType
 import com.example.aesculapius.ui.profile.LearnItem
+import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.signup.OnboardingItem
 import com.example.aesculapius.ui.statistics.GraphicTypeContent
 import com.example.aesculapius.ui.statistics.GraphicTypes
+import com.example.aesculapius.ui.statistics.StatisticsScreen
 import com.example.aesculapius.ui.tests.Question
 import com.example.aesculapius.ui.tests.Test
+import com.example.aesculapius.ui.tests.TestsScreen
+import com.example.aesculapius.ui.therapy.TherapyScreen
 import java.time.LocalDate
 
 enum class Hours {
@@ -31,29 +34,28 @@ enum class CurrentMedicineType {
 
 val navigationItemContentList = listOf(
     NavigationItemContent(
-        pageType = PageType.Statistics,
-        icon = R.drawable.statistics_icon,
-        pageName = "Статистика",
-        isHelpButton = true
+        pageType = StatisticsScreen.route,
+        icon = R.drawable.statistics_icon
     ),
     NavigationItemContent(
-        pageType = PageType.Therapy,
-        icon = R.drawable.therapy_icon,
-        pageName = "Базисная терапия",
-        isHelpButton = false
+        pageType = TherapyScreen.route,
+        icon = R.drawable.therapy_icon
     ),
     NavigationItemContent(
-        pageType = PageType.Tests,
-        icon = R.drawable.tests_icon,
-        pageName = "Отчётность",
-        isHelpButton = true
+        pageType = TestsScreen.route,
+        icon = R.drawable.tests_icon
     ),
     NavigationItemContent(
-        pageType = PageType.Profile,
-        icon = R.drawable.profile_icon,
-        pageName = "Профиль и прочее",
-        isHelpButton = false
+        pageType = ProfileScreen.route,
+        icon = R.drawable.profile_icon
     )
+)
+
+val topBarHomeScreen = mapOf(
+    StatisticsScreen.route to Pair("Статистика", true),
+    TherapyScreen.route to Pair("Базисная терапия", false),
+    TestsScreen.route to Pair("Отчётность", true),
+    ProfileScreen.route to Pair("Профиль и прочее", false)
 )
 
 val graphicsNavigationItemContentList = listOf(

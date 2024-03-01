@@ -84,14 +84,11 @@ fun TherapyScreen(
     currentWeekDates: Week,
     onCreateNewMedicine: () -> Unit,
     isAfterCurrentDate: Boolean,
-    turnOnBars: () -> Unit,
     isWeek: Boolean,
     onClickChangeWeek: (Boolean) -> Unit,
     onClickMedicine: (MedicineCard) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(key1 = Unit) { turnOnBars() }
-
     var isMorningMedicines by remember { mutableStateOf(true) }
 
     Box() {

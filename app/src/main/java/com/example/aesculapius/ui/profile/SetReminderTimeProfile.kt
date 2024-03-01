@@ -46,7 +46,6 @@ fun SetReminderTimeProfile(
     onClickSetReminder: (Hours) -> Unit,
     eveningTime: LocalDateTime,
     morningTime: LocalDateTime,
-    turnOffBars: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     BackHandler { onNavigateBack() }
@@ -75,8 +74,6 @@ fun SetReminderTimeProfile(
         }
         append(" - два ключевых момента для мониторинга вашего состояния.")
     }
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(

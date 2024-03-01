@@ -61,7 +61,6 @@ fun TestScreen(
     questionsList: MutableList<Question>,
     onNavigateBack: () -> Unit,
     onClickSummary: (Int) -> Unit,
-    turnOffBars: () -> Unit,
 ) {
     var isAlertDialogShown by remember { mutableStateOf(false) }
     var currentPage by remember { mutableIntStateOf(0) }
@@ -69,8 +68,7 @@ fun TestScreen(
     var currentAnswer by remember { mutableIntStateOf(-1) }
     val context = LocalContext.current
 
-    BackHandler { onNavigateBack() }
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
+    BackHandler { isAlertDialogShown = true }
 
     Scaffold(topBar = {
         TopBar(

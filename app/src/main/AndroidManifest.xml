@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         
-        <receiver android:name=".notifications.MyAlarm"
+        <receiver android:name=".notifications.MetricsAlarm"
             android:enabled="true"
             android:exported="true"/>
     </application>

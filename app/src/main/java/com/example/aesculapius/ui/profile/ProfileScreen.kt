@@ -33,14 +33,11 @@ object ProfileScreen : NavigationDestination {
 
 @Composable
 fun ProfileScreen(
-    turnOnBars: () -> Unit,
     onClickSetReminder: () -> Unit,
     onClickLearnBlock: () -> Unit,
     onClickProfileBlock: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(key1 = Unit) { turnOnBars() }
-
     Column(modifier = modifier.fillMaxSize()) {
         Card(
             shape = RoundedCornerShape(16.dp),

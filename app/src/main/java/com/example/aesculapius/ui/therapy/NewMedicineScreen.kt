@@ -72,7 +72,6 @@ fun NewMedicineScreen(
         startDate: LocalDate,
         endDate: LocalDate
     ) -> Unit,
-    turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -83,9 +82,6 @@ fun NewMedicineScreen(
     var selectedFrequencyIndex by remember { mutableIntStateOf(0) }
     var isFrequencyChoosen by remember { mutableStateOf(true) }
     var isDoseChoosen by remember { mutableStateOf(true) }
-
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(onNavigateBack = { onNavigateBack() }, text = "Новый препарат")

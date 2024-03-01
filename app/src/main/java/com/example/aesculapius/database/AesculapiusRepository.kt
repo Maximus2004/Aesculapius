@@ -1,6 +1,5 @@
 package com.example.aesculapius.database
 
-import android.util.Log
 import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
@@ -23,9 +22,9 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         startDate: LocalDate,
         endDate: LocalDate,
     ) {
-        val currentMedicineTableSize = itemDAO.getCurrentMedicineTableSize()
+        val currentMaxMedicineId = if (itemDAO.getRowAmount() > 0) itemDAO.getMaxMedicineId() else 0
         itemDAO.insertMedicineItem(
-            idMedicine = currentMedicineTableSize + 1,
+            idMedicine = currentMaxMedicineId + 1,
             medicineType = medicineType.name,
             name = name,
             undername = undername,
@@ -44,7 +43,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                         date = currentDate,
                         isSkipped = false,
                         isAccepted = false,
-                        medicineId = currentMedicineTableSize + 1,
+                        medicineId = currentMaxMedicineId + 1,
                         isMorning = false
                     )
                     currentDate = currentDate.plusDays(1)
@@ -61,7 +60,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -69,7 +68,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -79,7 +78,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -87,7 +86,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -97,7 +96,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -105,7 +104,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -115,7 +114,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -123,7 +122,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -142,7 +141,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                         }
@@ -152,7 +151,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -160,7 +159,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -170,7 +169,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -178,7 +177,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -188,7 +187,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -196,7 +195,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }
@@ -206,7 +205,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = true
                             )
                             itemDAO.insertNewDose(
@@ -214,7 +213,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
                                 date = currentDate,
                                 isSkipped = false,
                                 isAccepted = false,
-                                medicineId = currentMedicineTableSize + 1,
+                                medicineId = currentMaxMedicineId + 1,
                                 isMorning = false
                             )
                         }

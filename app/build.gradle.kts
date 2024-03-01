@@ -67,6 +67,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.21.5-rc")
     implementation("com.chargemap.compose:numberpicker:1.0.3")
     implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
 
     // Calendar
     implementation("io.github.boguszpawlowski.composecalendar:composecalendar:1.1.1")

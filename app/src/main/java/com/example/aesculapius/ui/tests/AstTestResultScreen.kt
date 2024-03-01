@@ -31,7 +31,11 @@ object ASTTestResult : NavigationDestination {
 }
 
 @Composable
-fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onClickReturnButton: () -> Unit, summaryScore: Int) {
+fun ASTTestResultScreen(
+    onNavigateBack: () -> Unit,
+    onClickReturnButton: () -> Unit,
+    summaryScore: Int
+) {
     val textASTResultGood = buildAnnotatedString {
         append("Вы ")
         withStyle(
@@ -121,8 +125,6 @@ fun ASTTestResultScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, onC
         }
         append(" свидетельствует о неконтролируемой астме.")
     }
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(text = "АСТ тестирование", onNavigateBack = { onNavigateBack() }) }) { paddingValues ->

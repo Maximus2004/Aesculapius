@@ -38,11 +38,12 @@ object EditProfileScreen : NavigationDestination {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun EditProfileScreen(turnOffBars: () -> Unit, onNavigateBack: () -> Unit, user: SignUpUiState, onSaveNewUser: (SignUpUiState) -> Unit, modifier: Modifier = Modifier) {
+fun EditProfileScreen(
+    onNavigateBack: () -> Unit, user: SignUpUiState,
+    onSaveNewUser: (SignUpUiState) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
-
-    BackHandler { onNavigateBack() }
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     var tempUser by remember { mutableStateOf(user) }
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")

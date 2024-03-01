@@ -1,6 +1,5 @@
 package com.example.aesculapius
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +11,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.aesculapius.database.UserRemoteDataRepository
-import com.example.aesculapius.notifications.MyAlarm
+import com.example.aesculapius.notifications.MetricsAlarm
 import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.navigation.SignUpNavigation
 import com.example.aesculapius.ui.profile.ProfileViewModel
@@ -21,8 +20,6 @@ import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.worker.UserWorkerSchedule
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 
 @AndroidEntryPoint
@@ -52,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         saveMorningReminder = {
                             profileViewModel.saveMorningTime(it)
                             val morningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                            val morningIntent = Intent(this, MyAlarm::class.java).apply {
+                            val morningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                 putExtra("title", "Утреннее напоминание")
                                 putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                             }
@@ -62,7 +59,7 @@ class MainActivity : ComponentActivity() {
                         saveEveningReminder = {
                             profileViewModel.saveEveningTime(it)
                             val eveningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                            val eveningIntent = Intent(this, MyAlarm::class.java).apply {
+                            val eveningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                 putExtra("title", "Вечернее напоминание")
                                 putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                             }
@@ -86,7 +83,7 @@ class MainActivity : ComponentActivity() {
                         profileViewModel.changeUserAtFirst(UserRemoteDataRepository.getUserId(), it)
 
                         val morningTimeMillis = morningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                        val morningIntent = Intent(this, MyAlarm::class.java).apply {
+                        val morningIntent = Intent(this, MetricsAlarm::class.java).apply {
                             putExtra("title", "Утреннее напоминание")
                             putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                         }
@@ -94,7 +91,7 @@ class MainActivity : ComponentActivity() {
                         profileViewModel.setMorningNotification(morningTimeMillis, morningPendingIntent)
 
                         val eveningTimeMillis = eveningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                        val eveningIntent = Intent(this, MyAlarm::class.java).apply {
+                        val eveningIntent = Intent(this, MetricsAlarm::class.java).apply {
                             putExtra("title", "Вечернее напоминание")
                             putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                         }

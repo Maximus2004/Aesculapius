@@ -34,7 +34,6 @@ fun ASTTestOnboardingScreen(
     onNavigateBack: () -> Unit,
     onClickBeginButton: () -> Unit,
     modifier: Modifier = Modifier,
-    turnOffBars: () -> Unit
 ) {
     val textASTTest = buildAnnotatedString {
         append("Каждую неделю отвечайте на несколько вопросов в анкете. Это займет всего ")
@@ -56,8 +55,6 @@ fun ASTTestOnboardingScreen(
             append(" Вашего состояния")
         }
     }
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(

@@ -27,14 +27,10 @@ object LearnScreen : NavigationDestination {
 
 @Composable
 fun LearnScreen(
-    turnOffBars: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     onClickItem: (String, String) -> Unit
 ) {
-    BackHandler { onNavigateBack() }
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
-
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = onNavigateBack,

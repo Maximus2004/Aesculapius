@@ -1,21 +1,16 @@
 package com.example.aesculapius.notifications
 
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.core.app.NotificationCompat
 import com.example.aesculapius.R
-import java.time.LocalDateTime
-import java.time.ZoneId
 
-class MyAlarm : BroadcastReceiver() {
+class MetricsAlarm : BroadcastReceiver() {
     private var notificationsCount = 0
     override fun onReceive(context: Context, intent: Intent) {
         try {

@@ -36,7 +36,6 @@ object RecommendationsOnboardingScreen : NavigationDestination {
 fun RecommendationsOnboardingScreen(
     onClickBeginButton: () -> Unit,
     onNavigateBack: () -> Unit,
-    turnOffBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val textRecTest = buildAnnotatedString {
@@ -75,8 +74,6 @@ fun RecommendationsOnboardingScreen(
         }
         append(" для улучшения ухода о своем здоровье.")
     }
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(

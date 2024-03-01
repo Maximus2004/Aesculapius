@@ -34,7 +34,6 @@ object MetricsOnboardingScreen : NavigationDestination {
 fun MetricsOnboardingScreen(
     onNavigateBack: () -> Unit,
     onClickBeginButton: () -> Unit,
-    turnOffBars: () -> Unit
 ) {
     val textFirst = buildAnnotatedString {
         append("Ввод метрик с пикфлоуметра - ")
@@ -78,8 +77,6 @@ fun MetricsOnboardingScreen(
         }
         append(" измерений. Результаты будут автоматически сохранены в нашей базе данных для вашего удобства и последующего анализа.")
     }
-
-    LaunchedEffect(key1 = Unit) { turnOffBars() }
 
     Scaffold(topBar = {
         TopBar(onNavigateBack = { onNavigateBack() }, text = "Ввод метрик")
@@ -125,13 +122,5 @@ fun MetricsOnboardingScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MetricsPreview() {
-    AesculapiusTheme {
-        MetricsOnboardingScreen(onNavigateBack = {}, onClickBeginButton = {}, turnOffBars = {})
     }
 }

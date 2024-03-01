@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,18 +48,17 @@ object TestsScreen : NavigationDestination {
 
 @Composable
 fun TestsScreen(
-    ASTTestDate: String,
+    astTestDate: String,
     recommendationTestDate: String,
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
     saveMorningReminder: (LocalDateTime) -> Unit,
     saveEveningReminder: (LocalDateTime) -> Unit,
     saveRecommendationDate: (LocalDate) -> Unit,
-    saveASTDate: (LocalDate) -> Unit,
+    saveAstDate: (LocalDate) -> Unit,
     onClickRecTest: () -> Unit,
     onClickASTTest: () -> Unit,
     onClickMetricsTest: () -> Unit,
-    turnOnBars: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var now by remember { mutableStateOf(LocalDateTime.now()) }
@@ -68,30 +66,65 @@ fun TestsScreen(
 
     // каждый раз, заходя на экран с тестами будет чекать, не пропустил ли юзер измерение
     LaunchedEffect(key1 = Unit, key2 = refreshing) {
-        turnOnBars()
         now = LocalDateTime.now()
-        if (morningReminder.plusDays(Duration.between(morningReminder, LocalDateTime.now()).toDays()).plusMinutes(6).isBefore(LocalDateTime.now()))
+        if (morningReminder.plusMinutes(6).isBefore(now))
             saveMorningReminder(
                 morningReminder.plusDays(
-                    Duration.between(morningReminder, LocalDateTime.now()).toDays() + 1
+                    Duration.between(morningReminder, now).toDays() + 1
                 )
             )
-        if (eveningReminder.plusDays(Duration.between(eveningReminder, LocalDateTime.now()).toDays()).plusMinutes(6).isBefore(LocalDateTime.now()))
+        if (Duration.between(now, morningReminder).toHours() >= 24)
+            saveMorningReminder(
+                morningReminder.minusDays(
+                    Duration.between(now, morningReminder).toDays()
+                )
+            )
+        if (eveningReminder.plusMinutes(6).isBefore(now))
             saveEveningReminder(
                 eveningReminder.plusDays(
-                    Duration.between(eveningReminder, LocalDateTime.now()).toDays() + 1
+                    Duration.between(eveningReminder, now).toDays() + 1
                 )
             )
-        if (ASTTestDate != "" && Converters.stringToDate(ASTTestDate).isBefore(LocalDate.now()))
-            saveASTDate(
-                Converters.stringToDate(ASTTestDate).plusMonths(
-                    ChronoUnit.MONTHS.between(Converters.stringToDate(ASTTestDate), LocalDate.now()) + 1
+        if (Duration.between(now, eveningReminder).toHours() >= 24)
+            saveEveningReminder(
+                eveningReminder.minusDays(
+                    Duration.between(now, eveningReminder).toDays()
+                )
+            )
+        if (astTestDate != "" && Converters.stringToDate(astTestDate).isBefore(LocalDate.now()))
+            saveAstDate(
+                Converters.stringToDate(astTestDate).plusMonths(
+                    ChronoUnit.MONTHS.between(
+                        Converters.stringToDate(astTestDate),
+                        LocalDate.now()
+                    ) + 1
+                )
+            )
+        if (astTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(astTestDate)) >= 1)
+            saveAstDate(
+                Converters.stringToDate(astTestDate).minusMonths(
+                    ChronoUnit.MONTHS.between(
+                        LocalDate.now(),
+                        Converters.stringToDate(astTestDate)
+                    )
                 )
             )
         if (recommendationTestDate != "" && Converters.stringToDate(recommendationTestDate).isBefore(LocalDate.now()))
             saveRecommendationDate(
                 Converters.stringToDate(recommendationTestDate).plusMonths(
-                    ChronoUnit.MONTHS.between(Converters.stringToDate(ASTTestDate), LocalDate.now()) + 1
+                    ChronoUnit.MONTHS.between(
+                        Converters.stringToDate(astTestDate),
+                        LocalDate.now()
+                    ) + 1
+                )
+            )
+        if (astTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(recommendationTestDate)) >= 1)
+            saveRecommendationDate(
+                Converters.stringToDate(recommendationTestDate).minusMonths(
+                    ChronoUnit.MONTHS.between(
+                        LocalDate.now(),
+                        Converters.stringToDate(recommendationTestDate)
+                    )
                 )
             )
         refreshing = false
@@ -193,7 +226,11 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = Converters.countShortDuration(now, morningReminder, eveningReminder),
+                                        text = Converters.countShortDuration(
+                                            now,
+                                            morningReminder,
+                                            eveningReminder
+                                        ),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -303,7 +340,10 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = Converters.countLongDuration(now.toLocalDate(), recommendationTestDate),
+                                        text = Converters.countLongDuration(
+                                            now.toLocalDate(),
+                                            recommendationTestDate
+                                        ),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -371,7 +411,7 @@ fun TestsScreen(
                                     .padding(top = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (Converters.dateToStringWithFormat(LocalDate.now()) == ASTTestDate || ASTTestDate == "") {
+                                if (Converters.dateToStringWithFormat(LocalDate.now()) == astTestDate || astTestDate == "") {
                                     Icon(
                                         painter = painterResource(id = R.drawable.time_icon),
                                         contentDescription = null,
@@ -410,7 +450,10 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = Converters.countLongDuration(now.toLocalDate(), ASTTestDate),
+                                        text = Converters.countLongDuration(
+                                            now.toLocalDate(),
+                                            astTestDate
+                                        ),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -438,7 +481,7 @@ fun TestsScreen(
                             }
                         }
                     }
-                    if (Converters.dateToStringWithFormat(LocalDate.now()) == ASTTestDate || ASTTestDate == "")
+                    if (Converters.dateToStringWithFormat(LocalDate.now()) == astTestDate || astTestDate == "")
                         Canvas(
                             modifier = Modifier
                                 .padding(top = 13.dp, start = 9.dp)
