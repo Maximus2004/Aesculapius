@@ -87,6 +87,7 @@ dependencies {
 
     // Room
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation("com.android.volley:volley:1.2.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
 
@@ -116,6 +117,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("io.coil-kt:coil-gif:2.1.0")
 }
 
 kapt {

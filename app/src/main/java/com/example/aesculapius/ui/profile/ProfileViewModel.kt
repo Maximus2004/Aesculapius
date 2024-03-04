@@ -35,11 +35,11 @@ class ProfileViewModel @Inject constructor(
             initialValue = SignUpUiState()
         )
 
-    val userId: StateFlow<String> = prefRepository.userId
+    val userId: StateFlow<String?> = prefRepository.userId
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ""
+            initialValue = null
         )
 
     val morningReminder: StateFlow<LocalDateTime> = prefRepository.morningReminder

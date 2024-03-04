@@ -5,7 +5,6 @@ import com.example.aesculapius.R
 import com.example.aesculapius.ui.home.NavigationItemContent
 import com.example.aesculapius.ui.profile.LearnItem
 import com.example.aesculapius.ui.profile.ProfileScreen
-import com.example.aesculapius.ui.signup.OnboardingItem
 import com.example.aesculapius.ui.statistics.GraphicTypeContent
 import com.example.aesculapius.ui.statistics.GraphicTypes
 import com.example.aesculapius.ui.statistics.StatisticsScreen
@@ -129,33 +128,6 @@ val recTest = Test(
             questionText = "Меняете ли Вы препарат или количество доз самостоятельно (или с родителями) БЕЗ консультации с врачом?",
             answersList = mutableListOf("Да", "Нет")
         )
-    )
-)
-
-val onboardingList = listOf(
-    OnboardingItem(
-        title = "«Aesculapius»",
-        description = "Ваш надежный спутник для эффективного контроля астмы и поддержания здоровья легких."
-    ),
-    OnboardingItem(
-        title = "Настройка напоминаний",
-        description = "Создавайте напоминания для ввода метрик с пикфлоуметра. Утро, день, вечер - установите удобное время."
-    ),
-    OnboardingItem(
-        title = "Ввод показаний",
-        description = "Трижды в день вносите показания с вашего пикфлоуметра. Каждое измерение состоит из трех показаний."
-    ),
-    OnboardingItem(
-        title = "Медицинское тестирование",
-        description = "Проходите еженедельное тестирование в форме анкеты, которое поможет оценить ваше общее состояние. "
-    ),
-    OnboardingItem(
-        title = "Анализ метрик",
-        description = "Просматривайте свои метрики за выбранный период. Данные представлены в виде таблиц и графиков для удобного анализа."
-    ),
-    OnboardingItem(
-        title = "Готовы начать?",
-        description = "Контролируйте вашу астму и улучшайте здоровье вместе с «Aesculapius»"
     )
 )
 

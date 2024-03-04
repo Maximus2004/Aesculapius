@@ -18,7 +18,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
-import com.example.aesculapius.ui.signup.OnboardingScreen
 import com.example.aesculapius.ui.signup.SetReminderTime
 import com.example.aesculapius.ui.signup.SignUpScreen
 import com.example.aesculapius.ui.signup.SignUpUiState
@@ -43,12 +42,9 @@ fun SignUpNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = OnboardingScreen.route,
+        startDestination = SignUpScreen.route,
         modifier = Modifier.fillMaxSize()
     ) {
-        composable(route = OnboardingScreen.route) {
-            OnboardingScreen(onClickEnd = { navController.navigate(SignUpScreen.route) })
-        }
         composable(
             route = SetReminderTime.routeWithArgs,
             arguments = listOf(navArgument(name = SetReminderTime.depart) {
