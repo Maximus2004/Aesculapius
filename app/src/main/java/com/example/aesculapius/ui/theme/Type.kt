@@ -11,14 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.aesculapius.R
 
-val Inter = FontFamily(
-    Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_bold, FontWeight.Bold),
-    Font(R.font.inter_extra_bold, FontWeight.ExtraBold),
-    Font(R.font.inter_light, FontWeight.Light),
-    Font(R.font.inter_black, FontWeight.Black)
-)
-
 val Roboto = FontFamily(
     Font(R.font.roboto_regular, FontWeight.W400),
     Font(R.font.roboto_bold, FontWeight.W600),
@@ -35,21 +27,21 @@ val Typography = Typography(
         color = Color.Black
     ),
     labelLarge = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 27.sp,
         lineHeight = 30.26.sp,
         letterSpacing = 0.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 18.sp,
         lineHeight = 22.78.sp,
         letterSpacing = 0.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = Inter,
+        fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 18.sp,
         lineHeight = 21.78.sp,

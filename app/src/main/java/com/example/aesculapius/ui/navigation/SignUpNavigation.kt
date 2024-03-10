@@ -52,7 +52,7 @@ fun SignUpNavigation(
             })
         ) { backStackEntry ->
             val arg = Hours.valueOf(
-                backStackEntry.arguments?.getString(SetReminderTime.depart) ?: "Morning"
+                backStackEntry.arguments?.getString(SetReminderTime.depart) ?: Hours.Morning.name
             )
             when (arg) {
                 Hours.Morning -> SetReminderTime(
@@ -98,8 +98,8 @@ fun SignUpNavigation(
                 onHeightChanged = { signUpViewModel.onHeightChanged(it) },
                 onWeightChanged = { signUpViewModel.onWeightChanged(it) },
                 onEndRegistration = {
-                    if (!(morningReminder.hour in 5..12 && eveningReminder.hour in 18 .. 23))
-                        Toast.makeText(context, "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00", Toast.LENGTH_LONG).show()
+                    if (eveningReminder.hour - morningReminder.hour < 8)
+                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else
                         onEndRegistration(signUpUiState)
                 },

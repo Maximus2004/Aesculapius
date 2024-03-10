@@ -438,7 +438,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         itemDAO.insertASTTestScore(date, score)
     }
 
-    fun getAllASTResultsInRange(): Flow<List<ScoreItem>> {
+    fun getAllAstResultsInRange(): Flow<List<ScoreItem>> {
         return itemDAO.getAllAstResultsInRange(LocalDate.now().minusYears(1), LocalDate.now())
     }
 
@@ -456,6 +456,14 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
 
     suspend fun getAllMetricsInRange(startDate: LocalDate, endDate: LocalDate): List<MetricsItem> {
         return itemDAO.getAllMetricsInRange(startDate, endDate)
+    }
+
+    suspend fun getLinePointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int {
+        return itemDAO.getLinePointsAmountOnDates(startDate, endDate)
+    }
+
+    suspend fun getColumnPointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int {
+        return itemDAO.getColumnPointsAmountOnDates(startDate, endDate)
     }
 
     suspend fun deleteAllMetrics() {

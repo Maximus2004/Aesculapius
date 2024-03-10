@@ -1,13 +1,9 @@
 package com.example.aesculapius.ui.home
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -32,7 +27,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,10 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.signup.SignUpUiState
-import com.example.aesculapius.ui.statistics.StatisticsScreen
 import java.time.LocalDate
 import java.time.LocalDateTime
 import androidx.compose.material.ModalBottomSheetLayout
@@ -54,15 +46,11 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.aesculapius.R
 import com.example.aesculapius.data.topBarHomeScreen
 import com.example.aesculapius.ui.navigation.profileNavGraph
@@ -71,10 +59,8 @@ import com.example.aesculapius.ui.navigation.testsNavGraph
 import com.example.aesculapius.ui.navigation.therapyNavGraph
 import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
-import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
-import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.example.aesculapius.ui.therapy.TherapyViewModel
 import kotlinx.coroutines.launch
@@ -191,7 +177,7 @@ fun HomeScreen(
                         saveEveningReminder = { saveEveningReminder(it) },
                         saveASTDate = { saveAstDate(it) },
                         saveRecommendationDate = { saveRecommendationDate(it) },
-                        ASTTestDate = astTestDate,
+                        astTestDate = astTestDate,
                         recommendationTestDate = recommendationTestDate,
                         morningReminder = morningReminder,
                         eveningReminder = eveningReminder,

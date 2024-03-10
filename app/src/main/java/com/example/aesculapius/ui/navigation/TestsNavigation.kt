@@ -1,17 +1,13 @@
 package com.example.aesculapius.ui.navigation
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.TestType
 import com.example.aesculapius.data.astTest
@@ -25,9 +21,6 @@ import com.example.aesculapius.ui.tests.RecommendationsOnboardingScreen
 import com.example.aesculapius.ui.tests.TestScreen
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
-import com.example.aesculapius.ui.therapy.MedicineCard
-import com.example.aesculapius.ui.therapy.TherapyScreen
-import com.example.aesculapius.ui.therapy.TherapyViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -37,7 +30,7 @@ fun NavGraphBuilder.testsNavGraph(
     saveASTDate: (LocalDate) -> Unit,
     saveRecommendationDate: (LocalDate) -> Unit,
     recommendationTestDate: String,
-    ASTTestDate: String,
+    astTestDate: String,
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
     turnOffBars: () -> Unit,
@@ -47,14 +40,14 @@ fun NavGraphBuilder.testsNavGraph(
 ) {
     composable(route = TestsScreen.route) {
         TestsScreen(
-            onClickASTTest = { navController.navigate(ASTTestOnboardingScreen.route) },
+            onClickAstTest = { navController.navigate(ASTTestOnboardingScreen.route) },
             onClickMetricsTest = { navController.navigate(MetricsOnboardingScreen.route) },
             onClickRecTest = { navController.navigate(RecommendationsOnboardingScreen.route) },
             modifier = Modifier.padding(horizontal = 16.dp),
             morningReminder = morningReminder,
             eveningReminder = eveningReminder,
             recommendationTestDate = recommendationTestDate,
-            astTestDate = ASTTestDate,
+            astTestDate = astTestDate,
             saveEveningReminder = { saveEveningReminder(it) },
             saveMorningReminder = { saveMorningReminder(it) },
             saveAstDate = { saveASTDate(it) },

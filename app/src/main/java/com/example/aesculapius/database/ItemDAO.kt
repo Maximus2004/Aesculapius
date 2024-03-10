@@ -75,6 +75,12 @@ interface ItemDAO {
     @Query("SELECT * from metrics_items WHERE (date <= :endDate) AND (date >= :startDate)")
     suspend fun getAllMetricsInRange(startDate: LocalDate, endDate: LocalDate): List<MetricsItem>
 
+    @Query("SELECT COUNT(*) from metrics_items WHERE (date <= :endDate) AND (date >= :startDate)")
+    suspend fun getLinePointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int
+
+    @Query("SELECT COUNT(*) from score_items WHERE (date <= :endDate) AND (date >= :startDate)")
+    suspend fun getColumnPointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int
+
     @Query("SELECT * from metrics_items")
     suspend fun getAllMetrics(): List<MetricsItem>
 

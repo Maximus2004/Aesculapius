@@ -53,13 +53,14 @@ fun EditProfileScreen(
     DisposableEffect(Unit) {
         onDispose {
             try {
+                val regex = Regex("[а-яА-Яa-zA-Z]+")
                 val newUser = tempUser.copy(birthday = LocalDate.parse(tempBirthday, formatter))
                 if (!(tempUser.height.toFloat() in 1f..500f && tempUser.weight.toFloat() in 0f..999f))
                     throw IllegalArgumentException("Неверный формат веса или роста")
-                else {
-                    onSaveNewUser(newUser)
-                    Toast.makeText(context, "Данные успешно сохранены", Toast.LENGTH_SHORT).show()
-                }
+                if (!(regex.matches(tempUser.name) && regex.matches(tempUser.surname) && regex.matches(tempUser.patronymic)))
+                    throw IllegalArgumentException("Неверные ФИО")
+                onSaveNewUser(newUser)
+                Toast.makeText(context, "Данные успешно сохранены", Toast.LENGTH_SHORT).show()
             } catch (e: NumberFormatException) {
                 Toast.makeText(context, "Введены некорректные числа", Toast.LENGTH_SHORT).show()
             } catch (e: IllegalArgumentException) {

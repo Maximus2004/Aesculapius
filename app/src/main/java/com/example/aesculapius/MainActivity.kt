@@ -6,12 +6,13 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +25,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.size.Size
-import com.android.volley.toolbox.ImageRequest
 import com.example.aesculapius.database.UserRemoteDataRepository
 import com.example.aesculapius.notifications.MetricsAlarm
 import com.example.aesculapius.ui.home.HomeScreen
@@ -45,15 +45,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             AesculapiusTheme {
                 val profileViewModel: ProfileViewModel = hiltViewModel()
-                val userId = profileViewModel.userId.collectAsState().value
-                val morningReminder = profileViewModel.morningReminder.collectAsState().value
-                val eveningReminder = profileViewModel.eveningReminder.collectAsState().value
-                val astTestDate = profileViewModel.ASTTestDate.collectAsState().value
-                val recommendationTestDate =
-                    profileViewModel.recommendationTestDate.collectAsState().value
-                val user: SignUpUiState = profileViewModel.user.collectAsState().value
+                val userId by profileViewModel.userId.collectAsState()
+                val morningReminder by profileViewModel.morningReminder.collectAsState()
+                val eveningReminder by profileViewModel.eveningReminder.collectAsState()
+                val astTestDate by profileViewModel.ASTTestDate.collectAsState()
+                val recommendationTestDate by profileViewModel.recommendationTestDate.collectAsState()
+                val user: SignUpUiState by profileViewModel.user.collectAsState()
 
-                // если пользователь зарегистрирован, то мы должны попробовать сделать сохранение его данных
                 when (userId) {
                     "" -> {
                         SignUpNavigation(
@@ -62,20 +60,12 @@ class MainActivity : ComponentActivity() {
                             saveMorningReminder = { profileViewModel.saveMorningTime(it) },
                             saveEveningReminder = { profileViewModel.saveEveningTime(it) },
                             onEndRegistration = {
-                                profileViewModel.changeUserAtFirst(
-                                    UserRemoteDataRepository.getUserId(),
-                                    it
-                                )
+                                profileViewModel.changeUserAtFirst(UserRemoteDataRepository.getUserId(), it)
 
-                                val morningTimeMillis =
-                                    morningReminder.atZone(ZoneId.systemDefault()).toInstant()
-                                        .toEpochMilli()
+                                val morningTimeMillis = morningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 val morningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                     putExtra("title", "Утреннее напоминание")
-                                    putExtra(
-                                        "message",
-                                        "Не забудьте ввести метрики с пикфлоуметра!"
-                                    )
+                                    putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                                 }
                                 val morningPendingIntent = PendingIntent.getBroadcast(
                                     this,
@@ -88,15 +78,10 @@ class MainActivity : ComponentActivity() {
                                     morningPendingIntent
                                 )
 
-                                val eveningTimeMillis =
-                                    eveningReminder.atZone(ZoneId.systemDefault()).toInstant()
-                                        .toEpochMilli()
+                                val eveningTimeMillis = eveningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 val eveningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                     putExtra("title", "Вечернее напоминание")
-                                    putExtra(
-                                        "message",
-                                        "Не забудьте ввести метрики с пикфлоуметра!"
-                                    )
+                                    putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                                 }
                                 val eveningPendingIntent = PendingIntent.getBroadcast(
                                     this,
@@ -116,9 +101,7 @@ class MainActivity : ComponentActivity() {
 
                     else -> {
                         val inputData = Data.Builder().putString("userId", userId).build()
-                        val workRequest =
-                            OneTimeWorkRequestBuilder<UserWorkerSchedule>().setInputData(inputData)
-                                .build()
+                        val workRequest = OneTimeWorkRequestBuilder<UserWorkerSchedule>().setInputData(inputData).build()
                         WorkManager.getInstance(this).enqueue(workRequest)
 
                         HomeScreen(
@@ -126,14 +109,10 @@ class MainActivity : ComponentActivity() {
                             eveningReminder = eveningReminder,
                             saveMorningReminder = {
                                 profileViewModel.saveMorningTime(it)
-                                val morningTimeMillis =
-                                    it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                                val morningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 val morningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                     putExtra("title", "Утреннее напоминание")
-                                    putExtra(
-                                        "message",
-                                        "Не забудьте ввести метрики с пикфлоуметра!"
-                                    )
+                                    putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                                 }
                                 val morningPendingIntent = PendingIntent.getBroadcast(
                                     this,
@@ -148,14 +127,10 @@ class MainActivity : ComponentActivity() {
                             },
                             saveEveningReminder = {
                                 profileViewModel.saveEveningTime(it)
-                                val eveningTimeMillis =
-                                    it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                                val eveningTimeMillis = it.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                                 val eveningIntent = Intent(this, MetricsAlarm::class.java).apply {
                                     putExtra("title", "Вечернее напоминание")
-                                    putExtra(
-                                        "message",
-                                        "Не забудьте ввести метрики с пикфлоуметра!"
-                                    )
+                                    putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
                                 }
                                 val eveningPendingIntent = PendingIntent.getBroadcast(
                                     this,
@@ -170,14 +145,10 @@ class MainActivity : ComponentActivity() {
                             },
                             recommendationTestDate = recommendationTestDate,
                             astTestDate = astTestDate,
-                            saveAstDate = { profileViewModel.saveASTTestDate(it) },
-                            saveRecommendationDate = {
-                                profileViewModel.saveRecommendationTestDate(
-                                    it
-                                )
-                            },
+                            saveAstDate = { profileViewModel.saveAstTestDate(it) },
+                            saveRecommendationDate = { profileViewModel.saveRecommendationTestDate(it) },
                             user = user,
-                            onSaveNewUser = { profileViewModel.updateUserProfile(it, userId) }
+                            onSaveNewUser = { profileViewModel.updateUserProfile(it, userId!!) }
                         )
                     }
                 }

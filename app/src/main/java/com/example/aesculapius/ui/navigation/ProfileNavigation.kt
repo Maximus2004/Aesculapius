@@ -2,20 +2,15 @@ package com.example.aesculapius.ui.navigation
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.profile.EditProfileScreen
 import com.example.aesculapius.ui.profile.LearnItemScreen
@@ -81,12 +76,8 @@ fun NavGraphBuilder.profileNavGraph(
                 textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
-                    if (!(it.hour in 5..12 && eveningReminder.hour in 18..23))
-                        Toast.makeText(
-                            context,
-                            "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    if (eveningReminder.hour - it.hour < 8)
+                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else {
                         saveMorningReminder(it)
                         navController.navigateUp()
@@ -101,12 +92,8 @@ fun NavGraphBuilder.profileNavGraph(
                 textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
-                    if (!(morningReminder.hour in 5..12 && it.hour in 18..23))
-                        Toast.makeText(
-                            context,
-                            "Утреннее измерение не может проводиться позже 12:00, а вечернее недоступно раньше 18:00",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    if (it.hour - morningReminder.hour < 8)
+                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else {
                         saveEveningReminder(it)
                         navController.navigateUp()

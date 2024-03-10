@@ -147,6 +147,13 @@ fun SignUpScreen(
                             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                         }
                     }
+                    0 -> {
+                        val regex = Regex("[а-яА-Яa-zA-Z]+")
+                        if (regex.matches(name) && regex.matches(surname) && regex.matches(patronymic))
+                            onChangeCurrentPage()
+                        else
+                            Toast.makeText(context, "Введите корректные данные", Toast.LENGTH_SHORT).show()
+                    }
                     else -> onChangeCurrentPage()
                 }
             },
@@ -441,14 +448,15 @@ fun TextInput(
         label = { Text(text = hint, color = Color.Gray) },
         onValueChange = { onValueChanged(it) },
         trailingIcon = {
-            IconButton(onClick = { onValueChanged("") }) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = Color(0xFF49454F)
-                )
-            }
+            if (text != "")
+                IconButton(onClick = { onValueChanged("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = Color(0xFF49454F)
+                    )
+                }
         },
         singleLine = true,
         modifier = modifier.focusRequester(focusRequester),

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -35,16 +36,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
 import com.example.aesculapius.R
 import com.example.aesculapius.data.graphicsNavigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.theme.AesculapiusTheme
-import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -68,7 +64,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import com.patrykandpatrick.vico.core.component.shape.Shapes
-import java.time.temporal.ChronoUnit
+import com.patrykandpatrick.vico.core.context.DrawContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object StatisticsScreen : NavigationDestination {
     override val route = "StatisticsScreen"
@@ -81,6 +79,8 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
     val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
     val datesForLineChart = statisticsViewModel.datesForLineChart.collectAsState().value
     val modelProducerLine = statisticsViewModel.chartEntryModelLine.collectAsState().value
+    var currentLinePointsAmount by remember { mutableIntStateOf(0) }
+    var currentColumnPointsAmount by remember { mutableIntStateOf(0) }
 
     var isLineChart by remember { mutableStateOf(true) }
 
@@ -100,33 +100,41 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
     var pointsAmountText by remember { mutableIntStateOf(-1) }
     var dateBegin by remember { mutableStateOf(LocalDate.now().minusDays(6)) }
 
-    // CouroutineScope launches every time when key changes (imitation of fetching data)
     LaunchedEffect(key1 = statisticsUiState) {
-        // depending on different time periods, set dateBegin, dataPoints and datasetDates
-        when (statisticsUiState.graphicTypes) {
-            GraphicTypes.Week -> {
-                dateBegin = LocalDate.now().minusWeeks(1)
-                statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
-            }
+        currentColumnPointsAmount = withContext(Dispatchers.IO) {
+            statisticsViewModel.getColumnPointsAmountOnDates(LocalDate.now().minusYears(1), LocalDate.now())
+        }
+        currentLinePointsAmount = withContext(Dispatchers.IO) {
+            when (statisticsUiState.graphicTypes) {
+                GraphicTypes.Week -> {
+                    dateBegin = LocalDate.now().minusWeeks(1)
+                    statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
+                    statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
+                }
 
-            GraphicTypes.Month -> {
-                dateBegin = LocalDate.now().minusMonths(1)
-                statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
-            }
+                GraphicTypes.Month -> {
+                    dateBegin = LocalDate.now().minusMonths(1)
+                    statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
+                    statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
+                }
 
-            GraphicTypes.ThreeMonths -> {
-                dateBegin = LocalDate.now().minusMonths(3)
-                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
-            }
+                GraphicTypes.ThreeMonths -> {
+                    dateBegin = LocalDate.now().minusMonths(3)
+                    statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
+                    statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
+                }
 
-            GraphicTypes.HalfYear -> {
-                dateBegin = LocalDate.now().minusMonths(6)
-                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
-            }
+                GraphicTypes.HalfYear -> {
+                    dateBegin = LocalDate.now().minusMonths(6)
+                    statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
+                    statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
+                }
 
-            else -> {
-                dateBegin = LocalDate.now().minusYears(1)
-                statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
+                else -> {
+                    dateBegin = LocalDate.now().minusYears(1)
+                    statisticsViewModel.setMetricsOnDatesLong(dateBegin, LocalDate.now())
+                    statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
+                }
             }
         }
     }
@@ -208,7 +216,24 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
                         Typeface.createFromAsset(assets.assets, "inter_regular.ttf")
 
                     ProvideChartStyle {
-                        if (isLineChart)
+                        if ((currentLinePointsAmount < 1 && (statisticsUiState.graphicTypes == GraphicTypes.Week ||
+                                    statisticsUiState.graphicTypes == GraphicTypes.Month)) ||
+                            (currentLinePointsAmount < 7 && (statisticsUiState.graphicTypes == GraphicTypes.ThreeMonths ||
+                                    statisticsUiState.graphicTypes == GraphicTypes.HalfYear ||
+                                    statisticsUiState.graphicTypes == GraphicTypes.Year)) && isLineChart)
+                            Box(
+                                modifier = Modifier
+                                    .heightIn(min = 250.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Нет данных...",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = Color(0xFFb0afb2),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        else if (isLineChart)
                             ShowLineChart(
                                 datasetDates = datesForLineChart,
                                 modelProducer = modelProducerLine,
@@ -216,6 +241,19 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
                                 onChangeMarker = { dateTextLine = it },
                                 typeface = customTypeface
                             )
+                        else if (currentColumnPointsAmount < 1)
+                            Box(
+                                modifier = Modifier
+                                    .heightIn(min = 250.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Нет данных...",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    color = Color(0xFFb0afb2),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
                         else
                             ShowColumnChart(
                                 typeface = customTypeface,
@@ -226,7 +264,6 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
                                 modelProducerColumn = modelProducerColumn,
                                 amountPoints = datesForColumnChart.size
                             )
-
                     }
                 }
                 if (isLineChart) {
@@ -306,22 +343,40 @@ fun ShowColumnChart(
         chart = columnChart(
             columns = remember(defaultColumns) {
                 defaultColumns.map { _ ->
-                    LineComponent(
+                    object : LineComponent(
                         color = Color(0xFF6750A4).toArgb(),
-                        thicknessDp = 6f,
+                        thicknessDp = 8f,
                         shape = Shapes.roundedCornerShape(
                             topLeftPercent = 40,
                             topRightPercent = 40,
                             bottomLeftPercent = 0,
                             bottomRightPercent = 0
                         )
-                    )
+                    ) {
+                        override fun drawVertical(
+                            context: DrawContext,
+                            top: Float,
+                            bottom: Float,
+                            centerX: Float,
+                            thicknessScale: Float,
+                            opacity: Float,
+                        ) {
+                            super.drawVertical(
+                                context,
+                                top,
+                                bottom,
+                                centerX,
+                                1f,
+                                opacity
+                            )
+                        }
+                    }
                 }
             },
             decorations = remember(thresholdLineNullLevel) {
                 listOf(thresholdLineNullLevel)
             },
-            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 200.dp
+            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 500.dp
         ),
         chartModelProducer = modelProducerColumn,
         isZoomEnabled = false,
@@ -449,20 +504,11 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
             }", style = MaterialTheme.typography.bodyLarge
         )
     }
-    when (graphicTypes) {
-        GraphicTypes.Year -> Text(
-            text = "${dateBegin.format(formatterYearFull)} - ${
-                LocalDate.now().format(formatterYearFull)
-            }", style = MaterialTheme.typography.bodySmall
-        )
-
-        else -> Text(
-            text = "${dateBegin.format(formatterSide)} - ${
-                LocalDate.now().format(formatterSide)
-            }, ${LocalDate.now().year}",
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
+    Text(
+        text = "${dateBegin.format(formatterYearFull)} - ${
+            LocalDate.now().format(formatterYearFull)
+        }", style = MaterialTheme.typography.bodySmall
+    )
 }
 
 private fun convertToRussian(points: Int): String {

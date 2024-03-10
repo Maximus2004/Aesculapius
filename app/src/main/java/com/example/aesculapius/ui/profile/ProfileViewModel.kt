@@ -88,7 +88,7 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    fun saveASTTestDate(astTestDate: LocalDate) {
+    fun saveAstTestDate(astTestDate: LocalDate) {
         viewModelScope.launch {
             prefRepository.saveAstTestDate(Converters.dateToStringWithFormat(astTestDate))
         }

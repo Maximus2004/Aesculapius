@@ -57,74 +57,53 @@ fun TestsScreen(
     saveRecommendationDate: (LocalDate) -> Unit,
     saveAstDate: (LocalDate) -> Unit,
     onClickRecTest: () -> Unit,
-    onClickASTTest: () -> Unit,
+    onClickAstTest: () -> Unit,
     onClickMetricsTest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var now by remember { mutableStateOf(LocalDateTime.now()) }
     var refreshing by remember { mutableStateOf(false) }
 
-    // каждый раз, заходя на экран с тестами будет чекать, не пропустил ли юзер измерение
     LaunchedEffect(key1 = Unit, key2 = refreshing) {
         now = LocalDateTime.now()
         if (morningReminder.plusMinutes(6).isBefore(now))
             saveMorningReminder(
-                morningReminder.plusDays(
-                    Duration.between(morningReminder, now).toDays() + 1
-                )
+                morningReminder.plusDays(Duration.between(morningReminder, now).toDays() + 1)
             )
-        if (Duration.between(now, morningReminder).toHours() >= 24)
+        if (Duration.between(now, morningReminder).toMinutes() >= 1440)
             saveMorningReminder(
-                morningReminder.minusDays(
-                    Duration.between(now, morningReminder).toDays()
-                )
+                morningReminder.minusDays(Duration.between(now, morningReminder).toDays())
             )
         if (eveningReminder.plusMinutes(6).isBefore(now))
             saveEveningReminder(
-                eveningReminder.plusDays(
-                    Duration.between(eveningReminder, now).toDays() + 1
-                )
+                eveningReminder.plusDays(Duration.between(eveningReminder, now).toDays() + 1)
             )
-        if (Duration.between(now, eveningReminder).toHours() >= 24)
+        if (Duration.between(now, eveningReminder).toMinutes() >= 1440)
             saveEveningReminder(
-                eveningReminder.minusDays(
-                    Duration.between(now, eveningReminder).toDays()
-                )
+                eveningReminder.minusDays(Duration.between(now, eveningReminder).toDays())
             )
         if (astTestDate != "" && Converters.stringToDate(astTestDate).isBefore(LocalDate.now()))
             saveAstDate(
                 Converters.stringToDate(astTestDate).plusMonths(
-                    ChronoUnit.MONTHS.between(
-                        Converters.stringToDate(astTestDate),
-                        LocalDate.now()
-                    ) + 1
+                    ChronoUnit.MONTHS.between(Converters.stringToDate(astTestDate), LocalDate.now()) + 1
                 )
             )
         if (astTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(astTestDate)) >= 1)
             saveAstDate(
                 Converters.stringToDate(astTestDate).minusMonths(
-                    ChronoUnit.MONTHS.between(
-                        LocalDate.now(),
-                        Converters.stringToDate(astTestDate)
-                    )
+                    ChronoUnit.MONTHS.between(LocalDate.now(), Converters.stringToDate(astTestDate))
                 )
             )
         if (recommendationTestDate != "" && Converters.stringToDate(recommendationTestDate).isBefore(LocalDate.now()))
             saveRecommendationDate(
                 Converters.stringToDate(recommendationTestDate).plusMonths(
-                    ChronoUnit.MONTHS.between(
-                        Converters.stringToDate(astTestDate),
-                        LocalDate.now()
-                    ) + 1
+                    ChronoUnit.MONTHS.between(Converters.stringToDate(astTestDate), LocalDate.now()) + 1
                 )
             )
-        if (astTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(recommendationTestDate)) >= 1)
+        if (recommendationTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(recommendationTestDate)) >= 1)
             saveRecommendationDate(
                 Converters.stringToDate(recommendationTestDate).minusMonths(
-                    ChronoUnit.MONTHS.between(
-                        LocalDate.now(),
-                        Converters.stringToDate(recommendationTestDate)
-                    )
+                    ChronoUnit.MONTHS.between(LocalDate.now(), Converters.stringToDate(recommendationTestDate))
                 )
             )
         refreshing = false
@@ -427,7 +406,7 @@ fun TestsScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .width(81.dp)
-                                            .clickable { onClickASTTest() },
+                                            .clickable { onClickAstTest() },
                                         shape = RoundedCornerShape(12.dp),
                                         backgroundColor = MaterialTheme.colorScheme.primary
                                     ) {

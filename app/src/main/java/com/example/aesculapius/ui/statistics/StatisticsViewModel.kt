@@ -6,6 +6,7 @@ import com.example.aesculapius.database.AesculapiusRepository
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     val datesForLineChart = _listLocalDate
 
     // отслеживаем, когда приходят новые изменения и разбиваем данные на точки и даты для каждой точки
-    val datesForColumnChart = aesculapiusRepository.getAllASTResultsInRange().map {
+    val datesForColumnChart = aesculapiusRepository.getAllAstResultsInRange().map {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
         val tempDates: MutableList<LocalDate> = mutableListOf()
         it.forEachIndexed { index, item ->
@@ -48,6 +49,14 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
             SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             initialValue = listOf()
         )
+
+    suspend fun getLinePointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int = viewModelScope.async {
+        aesculapiusRepository.getLinePointsAmountOnDates(startDate, endDate)
+    }.await()
+
+    suspend fun getColumnPointsAmountOnDates(startDate: LocalDate, endDate: LocalDate): Int = viewModelScope.async {
+        aesculapiusRepository.getColumnPointsAmountOnDates(startDate, endDate)
+    }.await()
 
     fun setMetricsOnDatesShort(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()

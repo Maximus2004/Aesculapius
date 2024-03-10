@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -109,7 +110,7 @@ fun TestScreen(
                                 .align(Alignment.TopCenter),
                             shape = MaterialTheme.shapes.small,
                             backgroundColor =
-                            if (currentAnswers[index] != -1) MaterialTheme.colorScheme.primary
+                            if (currentAnswers[index] != -1 || index == currentPage) MaterialTheme.colorScheme.primary
                             else Color(0xFFE3E0EA)
                         ) {
                             Box(
@@ -149,7 +150,8 @@ fun TestScreen(
                     ) {
                         RadioButton(
                             selected = (index == currentAnswer),
-                            onClick = { currentAnswer = index }
+                            onClick = { currentAnswer = index },
+                            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
                         )
                         Text(
                             text = answer,

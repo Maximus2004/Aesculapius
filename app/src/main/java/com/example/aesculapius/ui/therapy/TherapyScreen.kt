@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.therapy
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,7 +47,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -105,6 +111,7 @@ fun TherapyScreen(
                         }
                     }
                 }
+
                 is GeneralLoadingState.Success -> {
                     item {
                         CalendarItem(
@@ -194,85 +201,157 @@ fun TherapyScreen(
                                     }
                                 } else {
                                     Row(modifier = Modifier.padding(bottom = 24.dp)) {
-                                        Button(
-                                            onClick = { isMorningMedicines = true },
-                                            shape = RoundedCornerShape(8.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                                contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
-                                            ),
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text(
-                                                text = "Утро",
-                                                style = MaterialTheme.typography.headlineSmall
-                                            )
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            Button(
+                                                onClick = { isMorningMedicines = true },
+                                                shape = RoundedCornerShape(8.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                                    contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                                ),
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = "Утро",
+                                                    style = MaterialTheme.typography.headlineSmall
+                                                )
+                                            }
+                                            if (currentDate == LocalDate.now() && currentMedicines.currentMorningMedicines.any { !it.isAccepted && !it.isSkipped })
+                                                Canvas(
+                                                    modifier = Modifier
+                                                        .padding(start = 9.dp)
+                                                        .size(12.dp)
+                                                        .align(Alignment.TopEnd)
+                                                ) {
+                                                    drawCircle(
+                                                        color = Color(0xFFFC3B69),
+                                                        center = center
+                                                    )
+                                                }
                                         }
                                         Spacer(Modifier.width(8.dp))
-                                        Button(
-                                            onClick = { isMorningMedicines = false },
-                                            shape = RoundedCornerShape(8.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                                contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
-                                            ),
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            Text(
-                                                text = "Вечер",
-                                                style = MaterialTheme.typography.headlineSmall
-                                            )
+                                        Box(modifier = Modifier.weight(1f)) {
+                                            Button(
+                                                onClick = { isMorningMedicines = false },
+                                                shape = RoundedCornerShape(8.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
+                                                    contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                                ),
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = "Вечер",
+                                                    style = MaterialTheme.typography.headlineSmall
+                                                )
+                                            }
+                                            if (currentDate == LocalDate.now() && currentMedicines.currentEveningMedicines.any { !it.isAccepted && !it.isSkipped })
+                                                Canvas(
+                                                    modifier = Modifier
+                                                        .padding(start = 9.dp)
+                                                        .size(12.dp)
+                                                        .align(Alignment.TopEnd)
+                                                ) {
+                                                    drawCircle(
+                                                        color = Color(0xFFFC3B69),
+                                                        center = center
+                                                    )
+                                                }
                                         }
                                     }
                                 }
                             }
                             if (isAfterCurrentDate) {
-                                items(currentMedicines.currentMorningMedicines) { medicine ->
-                                    MedicineCard(
-                                        medicine = medicine,
-                                        modifier = Modifier.padding(bottom = 16.dp),
-                                        onClick = { onClickMedicine(medicine) },
-                                        isSkipped = false,
-                                        isAccepted = false,
-                                        isMorning = true,
-                                        isFuture = true
-                                    )
+                                if ((currentMedicines.currentMorningMedicines + currentMedicines.currentEveningMedicines).isEmpty())
+                                    item {
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            Text(
+                                                text = "Нет данных...",
+                                                style = MaterialTheme.typography.headlineLarge,
+                                                color = Color(0xFFb0afb2),
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .padding(top = 90.dp)
+                                            )
+                                        }
+                                    }
+                                else {
+                                    items(currentMedicines.currentMorningMedicines) { medicine ->
+                                        MedicineCard(
+                                            medicine = medicine,
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            onClick = { onClickMedicine(medicine) },
+                                            isSkipped = false,
+                                            isAccepted = false,
+                                            isMorning = true,
+                                            isFuture = true
+                                        )
+                                    }
+                                    items(currentMedicines.currentEveningMedicines) { medicine ->
+                                        MedicineCard(
+                                            medicine = medicine,
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            onClick = { onClickMedicine(medicine) },
+                                            isSkipped = false,
+                                            isAccepted = false,
+                                            isMorning = false,
+                                            isFuture = true
+                                        )
+                                    }
                                 }
-                                items(currentMedicines.currentEveningMedicines) { medicine ->
-                                    MedicineCard(
-                                        medicine = medicine,
-                                        modifier = Modifier.padding(bottom = 16.dp),
-                                        onClick = { onClickMedicine(medicine) },
-                                        isSkipped = false,
-                                        isAccepted = false,
-                                        isMorning = false,
-                                        isFuture = true
-                                    )
-                                }
-                            } else if (isMorningMedicines)
-                                items(currentMedicines.currentMorningMedicines) { medicine ->
-                                    MedicineCard(
-                                        medicine = medicine,
-                                        modifier = Modifier.padding(bottom = 16.dp),
-                                        onClick = { onClickMedicine(medicine) },
-                                        isSkipped = medicine.isSkipped,
-                                        isAccepted = medicine.isAccepted,
-                                        isMorning = true,
-                                        isFuture = false
-                                    )
-                                }
-                            else
-                                items(currentMedicines.currentEveningMedicines) { medicine ->
-                                    MedicineCard(
-                                        medicine = medicine,
-                                        modifier = Modifier.padding(bottom = 16.dp),
-                                        onClick = { onClickMedicine(medicine) },
-                                        isSkipped = medicine.isSkipped,
-                                        isAccepted = medicine.isAccepted,
-                                        isMorning = false,
-                                        isFuture = false
-                                    )
-                                }
+                            } else if (isMorningMedicines) {
+                                if (currentMedicines.currentMorningMedicines.isEmpty())
+                                    item {
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            Text(
+                                                text = "Нет данных...",
+                                                style = MaterialTheme.typography.headlineLarge,
+                                                color = Color(0xFFb0afb2),
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .padding(top = 90.dp)
+                                            )
+                                        }
+                                    }
+                                else
+                                    items(currentMedicines.currentMorningMedicines) { medicine ->
+                                        MedicineCard(
+                                            medicine = medicine,
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            onClick = { onClickMedicine(medicine) },
+                                            isSkipped = medicine.isSkipped,
+                                            isAccepted = medicine.isAccepted,
+                                            isMorning = true,
+                                            isFuture = false
+                                        )
+                                    }
+                            } else {
+                                if (currentMedicines.currentEveningMedicines.isEmpty())
+                                    item {
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            Text(
+                                                text = "Нет данных...",
+                                                style = MaterialTheme.typography.headlineLarge,
+                                                color = Color(0xFFb0afb2),
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .padding(top = 90.dp)
+                                            )
+                                        }
+                                    }
+                                else
+                                    items(currentMedicines.currentEveningMedicines) { medicine ->
+                                        MedicineCard(
+                                            medicine = medicine,
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            onClick = { onClickMedicine(medicine) },
+                                            isSkipped = medicine.isSkipped,
+                                            isAccepted = medicine.isAccepted,
+                                            isMorning = false,
+                                            isFuture = false
+                                        )
+                                    }
+                            }
                         }
                     }
                 }
@@ -314,59 +393,99 @@ fun MedicineCard(
     isMorning: Boolean,
     isFuture: Boolean
 ) {
-    Card(elevation = 0.dp,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(112.dp)
-            .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() }
-            .alpha(if (isSkipped || isAccepted) 0.3f else 1f),
-        shape = RoundedCornerShape(16.dp)) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(end = 10.dp)
-        ) {
-            Image(
-                painter = painterResource(
-                    id =
-                    if (isAccepted) R.drawable.medicines_example_accepted
-                    else if (isSkipped) R.drawable.medicines_example_skipped
-                    else R.drawable.medicines_example
-                ),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.weight(0.30f)
+    val cornerRadius = 16.dp
+
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .drawBehind {
+            val color =
+                if (isAccepted) Color(0xFF9ed209)
+                else if (isSkipped) Color(0xFFfc3b69)
+                else Color.Transparent
+            drawLine(
+                color = color,
+                start = Offset(x = 0f, y = cornerRadius.toPx() + 3),
+                end = Offset(x = 0f, y = size.height - cornerRadius.toPx() * 2 - 3),
+                strokeWidth = 6.dp.toPx()
             )
-            Column(
+            drawArc(
+                color = color,
+                startAngle = 180f,
+                sweepAngle = -90f,
+                useCenter = false,
+                topLeft = Offset(x = 0f, y = size.height - cornerRadius.toPx() * 3 - 6),
+                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                style = Stroke(width = 6.dp.toPx())
+            )
+            drawArc(
+                color = color,
+                startAngle = 180f,
+                sweepAngle = 90f,
+                useCenter = false,
+                topLeft = Offset(x = 0f, y = 6f),
+                size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
+                style = Stroke(width = 6.dp.toPx())
+            )
+        }
+    ) {
+        Card(
+            elevation = 0.dp,
+            modifier = modifier
+                .fillMaxWidth()
+                .heightIn(min = 112.dp)
+                .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() },
+            shape = RoundedCornerShape(cornerRadius)
+        ) {
+            Row(
                 modifier = Modifier
-                    .weight(0.70f)
-                    .padding(start = 16.dp, top = 12.dp, end = 16.dp)
+                    .fillMaxSize()
+                    .padding(end = 10.dp)
             ) {
-                Text(
-                    text = medicine.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.Black
+                Image(
+                    painter = painterResource(
+                        id =
+                        if (isSkipped || isAccepted) R.drawable.medicine_transparent
+                        else R.drawable.medicines_example
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .weight(0.30f)
+                        .size(height = 112.dp, width = 96.dp)
                 )
-                Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
-                Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
-                Row(modifier = Modifier.padding(top = 16.dp)) {
-                    if (!isMorning) Icon(
-                        painter = painterResource(id = R.drawable.moon_icon),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                        tint = Color.Black
-                    )
-                    else Icon(
-                        painter = painterResource(id = R.drawable.sun_icon),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                        tint = Color.Black
-                    )
+                Column(
+                    modifier = Modifier
+                        .weight(0.70f)
+                        .padding(start = 16.dp, top = 12.dp, end = 16.dp)
+                        .alpha(if (isSkipped || isAccepted) 0.3f else 1f)
+                ) {
                     Text(
-                        text = medicine.frequency,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        text = medicine.name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.Black
                     )
+                    Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
+                    Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
+                    Row(modifier = Modifier.padding(top = 16.dp)) {
+                        if (!isMorning) Icon(
+                            painter = painterResource(id = R.drawable.moon_icon),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                            tint = Color.Black
+                        )
+                        else Icon(
+                            painter = painterResource(id = R.drawable.sun_icon),
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
+                            tint = Color.Black
+                        )
+                        Text(
+                            text = medicine.frequency,
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                    }
                 }
             }
         }
