@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.aesculapius.R
 import com.example.aesculapius.data.graphicsNavigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.signup.SignUpUiState
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -67,13 +68,15 @@ import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.context.DrawContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Duration
+import java.time.Period
 
 object StatisticsScreen : NavigationDestination {
     override val route = "StatisticsScreen"
 }
 
 @Composable
-fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifier) {
+fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: StatisticsViewModel, modifier: Modifier) {
     val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
     val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
     val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
@@ -239,7 +242,8 @@ fun StatisticsScreen(statisticsViewModel: StatisticsViewModel, modifier: Modifie
                                 modelProducer = modelProducerLine,
                                 datasetLineSpec = datasetLineSpec,
                                 onChangeMarker = { dateTextLine = it },
-                                typeface = customTypeface
+                                typeface = customTypeface,
+                                userUiState = userUiState
                             )
                         else if (currentColumnPointsAmount < 1)
                             Box(
@@ -544,6 +548,7 @@ fun ShowLineChart(
     modelProducer: ChartEntryModelProducer,
     datasetDates: MutableList<LocalDate>,
     onChangeMarker: (LocalDate) -> Unit,
+    userUiState: SignUpUiState,
     typeface: Typeface
 ) {
     val thresholdLine = rememberNullLevel(typeface)
@@ -587,7 +592,7 @@ fun ShowLineChart(
             tickLength = 0.dp,
             guideline = null
         ),
-        marker = rememberMarker(),
+        marker = rememberMarker(age = Period.between(userUiState.birthday, LocalDate.now()).years, height = userUiState.height.toInt()),
         markerVisibilityChangeListener = object : MarkerVisibilityChangeListener {
             // update data when on marker moved
             override fun onMarkerMoved(

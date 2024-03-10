@@ -45,7 +45,7 @@ interface ItemDAO {
     @Query("UPDATE medicines_items SET dose = :dose WHERE idMedicine = :medicineId")
     suspend fun updateMedicineItem(medicineId: Int, dose: String)
 
-    @Query("DELETE from dose_items WHERE medicineId = :medicineId")
+    @Query("DELETE from dose_items WHERE (medicineId = :medicineId)")
     suspend fun deleteAllDosesWithMedicineId(medicineId: Int)
 
     @Query("DELETE from medicines_items WHERE idMedicine = :medicineId")

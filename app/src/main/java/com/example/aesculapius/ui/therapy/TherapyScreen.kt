@@ -406,7 +406,7 @@ fun MedicineCard(
             drawLine(
                 color = color,
                 start = Offset(x = 0f, y = cornerRadius.toPx() + 3),
-                end = Offset(x = 0f, y = size.height - cornerRadius.toPx() * 2 - 3),
+                end = Offset(x = 0f, y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3),
                 strokeWidth = 6.dp.toPx()
             )
             drawArc(
@@ -414,7 +414,7 @@ fun MedicineCard(
                 startAngle = 180f,
                 sweepAngle = -90f,
                 useCenter = false,
-                topLeft = Offset(x = 0f, y = size.height - cornerRadius.toPx() * 3 - 6),
+                topLeft = Offset(x = 0f, y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6),
                 size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
                 style = Stroke(width = 6.dp.toPx())
             )

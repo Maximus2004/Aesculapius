@@ -169,7 +169,8 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .background(color = Color.White),
-                        statisticsViewModel = statisticsViewModel
+                        statisticsViewModel = statisticsViewModel,
+                        userUiState = user
                     )
 
                     testsNavGraph(

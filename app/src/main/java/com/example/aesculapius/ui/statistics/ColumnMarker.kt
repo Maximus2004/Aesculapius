@@ -41,9 +41,25 @@ internal fun rememberColumnMarker(): Marker {
                 context: DrawContext,
                 bounds: RectF,
                 markedEntries: List<Marker.EntryModel>,
-                chartValuesProvider: ChartValuesProvider
+                chartValuesProvider: ChartValuesProvider,
             ) {
                 bounds.set(top = markedEntries.first().location.y, bottom = bounds.bottom, left = bounds.left, right = bounds.right)
+
+                val value = markedEntries.first().entry.y
+                onApplyEntryColor = { entryColor ->
+                    if (value <= 19) {
+                        guideline.strokeColor = Color(0xFFFD9AB4).toArgb()
+                        guideline.color = Color(0xFFFC3B69).toArgb()
+                    }
+                    else if (value in 20f .. 24f) {
+                        guideline.strokeColor = Color(0xFFF9DC80).toArgb()
+                        guideline.color = Color(0xFFF3BE00).toArgb()
+                    }
+                    else {
+                        guideline.strokeColor = Color(0xFF7FDACC).toArgb()
+                        guideline.color = Color(0xFF00BB9A).toArgb()
+                    }
+                }
                 super.draw(context, bounds, markedEntries, chartValuesProvider)
             }
         }
