@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.profile.ProfileEvent
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -52,10 +53,7 @@ fun TestsScreen(
     recommendationTestDate: String,
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
-    saveMorningReminder: (LocalDateTime) -> Unit,
-    saveEveningReminder: (LocalDateTime) -> Unit,
-    saveRecommendationDate: (LocalDate) -> Unit,
-    saveAstDate: (LocalDate) -> Unit,
+    onProfileEvent: (ProfileEvent) -> Unit,
     onClickRecTest: () -> Unit,
     onClickAstTest: () -> Unit,
     onClickMetricsTest: () -> Unit,
@@ -67,45 +65,45 @@ fun TestsScreen(
     LaunchedEffect(key1 = Unit, key2 = refreshing) {
         now = LocalDateTime.now()
         if (morningReminder.plusMinutes(6).isBefore(now))
-            saveMorningReminder(
+            onProfileEvent(ProfileEvent.OnSaveMorningTime(
                 morningReminder.plusDays(Duration.between(morningReminder, now).toDays() + 1)
-            )
+            ))
         if (Duration.between(now, morningReminder).toMinutes() >= 1440)
-            saveMorningReminder(
+            onProfileEvent(ProfileEvent.OnSaveMorningTime(
                 morningReminder.minusDays(Duration.between(now, morningReminder).toDays())
-            )
+            ))
         if (eveningReminder.plusMinutes(6).isBefore(now))
-            saveEveningReminder(
+            onProfileEvent(ProfileEvent.OnSaveEveningTime(
                 eveningReminder.plusDays(Duration.between(eveningReminder, now).toDays() + 1)
-            )
+            ))
         if (Duration.between(now, eveningReminder).toMinutes() >= 1440)
-            saveEveningReminder(
+            onProfileEvent(ProfileEvent.OnSaveEveningTime(
                 eveningReminder.minusDays(Duration.between(now, eveningReminder).toDays())
-            )
+            ))
         if (astTestDate != "" && Converters.stringToDate(astTestDate).isBefore(LocalDate.now()))
-            saveAstDate(
+            onProfileEvent(ProfileEvent.OnSaveAstTestDate(
                 Converters.stringToDate(astTestDate).plusMonths(
                     ChronoUnit.MONTHS.between(Converters.stringToDate(astTestDate), LocalDate.now()) + 1
                 )
-            )
+            ))
         if (astTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(astTestDate)) >= 1)
-            saveAstDate(
+            onProfileEvent(ProfileEvent.OnSaveAstTestDate(
                 Converters.stringToDate(astTestDate).minusMonths(
                     ChronoUnit.MONTHS.between(LocalDate.now(), Converters.stringToDate(astTestDate))
                 )
-            )
+            ))
         if (recommendationTestDate != "" && Converters.stringToDate(recommendationTestDate).isBefore(LocalDate.now()))
-            saveRecommendationDate(
+            onProfileEvent(ProfileEvent.OnSaveRecommendationTestDate(
                 Converters.stringToDate(recommendationTestDate).plusMonths(
                     ChronoUnit.MONTHS.between(Converters.stringToDate(astTestDate), LocalDate.now()) + 1
                 )
-            )
+            ))
         if (recommendationTestDate != "" && ChronoUnit.MONTHS.between(LocalDate.now().plusDays(1), Converters.stringToDate(recommendationTestDate)) >= 1)
-            saveRecommendationDate(
+            onProfileEvent(ProfileEvent.OnSaveRecommendationTestDate(
                 Converters.stringToDate(recommendationTestDate).minusMonths(
                     ChronoUnit.MONTHS.between(LocalDate.now(), Converters.stringToDate(recommendationTestDate))
                 )
-            )
+            ))
         refreshing = false
     }
 

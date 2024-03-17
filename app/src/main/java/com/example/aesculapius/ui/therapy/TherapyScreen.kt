@@ -433,15 +433,11 @@ fun MedicineCard(
             elevation = 0.dp,
             modifier = modifier
                 .fillMaxWidth()
-                .heightIn(min = 112.dp)
+                .height(112.dp)
                 .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() },
             shape = RoundedCornerShape(cornerRadius)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 10.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxSize().padding(end = 10.dp)) {
                 Image(
                     painter = painterResource(
                         id =

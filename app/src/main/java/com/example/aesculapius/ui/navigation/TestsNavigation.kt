@@ -12,6 +12,8 @@ import androidx.navigation.navArgument
 import com.example.aesculapius.data.TestType
 import com.example.aesculapius.data.astTest
 import com.example.aesculapius.data.recTest
+import com.example.aesculapius.ui.profile.ProfileEvent
+import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.tests.ASTTestOnboardingScreen
 import com.example.aesculapius.ui.tests.ASTTestResult
 import com.example.aesculapius.ui.tests.ASTTestResultScreen
@@ -25,17 +27,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun NavGraphBuilder.testsNavGraph(
-    saveMorningReminder: (LocalDateTime) -> Unit,
-    saveEveningReminder: (LocalDateTime) -> Unit,
-    saveASTDate: (LocalDate) -> Unit,
-    saveRecommendationDate: (LocalDate) -> Unit,
-    recommendationTestDate: String,
-    astTestDate: String,
-    morningReminder: LocalDateTime,
-    eveningReminder: LocalDateTime,
+    onProfileEvent: (ProfileEvent) -> Unit,
     turnOffBars: () -> Unit,
     turnOnBars: () -> Unit,
     testsViewModel: TestsViewModel,
+    userUiState: SignUpUiState,
     navController: NavHostController
 ) {
     composable(route = TestsScreen.route) {
@@ -44,14 +40,11 @@ fun NavGraphBuilder.testsNavGraph(
             onClickMetricsTest = { navController.navigate(MetricsOnboardingScreen.route) },
             onClickRecTest = { navController.navigate(RecommendationsOnboardingScreen.route) },
             modifier = Modifier.padding(horizontal = 16.dp),
-            morningReminder = morningReminder,
-            eveningReminder = eveningReminder,
-            recommendationTestDate = recommendationTestDate,
-            astTestDate = astTestDate,
-            saveEveningReminder = { saveEveningReminder(it) },
-            saveMorningReminder = { saveMorningReminder(it) },
-            saveAstDate = { saveASTDate(it) },
-            saveRecommendationDate = { saveRecommendationDate(it) }
+            morningReminder = userUiState.morningReminder,
+            eveningReminder = userUiState.eveningReminder,
+            recommendationTestDate = userUiState.recommendationTestDate,
+            astTestDate = userUiState.astTestDate,
+            onProfileEvent = onProfileEvent
         )
         turnOnBars()
     }
@@ -69,7 +62,7 @@ fun NavGraphBuilder.testsNavGraph(
                 questionsList = astTest.listOfQuestion,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
-                    saveASTDate(LocalDate.now().plusMonths(1))
+                    onProfileEvent(ProfileEvent.OnSaveAstTestDate(LocalDate.now().plusMonths(1)))
                     testsViewModel.updateSummaryScore(it)
                     navController.navigate(ASTTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
@@ -82,7 +75,7 @@ fun NavGraphBuilder.testsNavGraph(
                 questionsList = recTest.listOfQuestion,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
-                    saveRecommendationDate(LocalDate.now().plusMonths(1))
+                    onProfileEvent(ProfileEvent.OnSaveRecommendationTestDate(LocalDate.now().plusMonths(1)))
                     navController.navigate(ASTTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
                     }
@@ -93,11 +86,11 @@ fun NavGraphBuilder.testsNavGraph(
                 onNavigateBack = { navController.navigateUp() },
                 onClickDoneButton = { first, second, third ->
                     val now = LocalDateTime.now()
-                    if (now.isAfter(morningReminder) && now.isBefore(morningReminder.plusMinutes(6))) {
-                        saveMorningReminder(now.plusDays(1))
+                    if (now.isAfter(userUiState.morningReminder) && now.isBefore(userUiState.morningReminder.plusMinutes(6))) {
+                        onProfileEvent(ProfileEvent.OnSaveMorningTime(now.plusDays(1)))
                         testsViewModel.insertNewMetrics(first, second, third)
                     } else {
-                        saveEveningReminder(now.plusDays(1))
+                        onProfileEvent(ProfileEvent.OnSaveEveningTime(now.plusDays(1)))
                         testsViewModel.updateNewMetrics(first, second, third)
                     }
                     navController.navigate(TestsScreen.route) {

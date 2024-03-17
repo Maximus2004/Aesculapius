@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -70,21 +71,10 @@ object SignUpScreen : NavigationDestination {
 
 @Composable
 fun SignUpScreen(
-    name: String,
-    surname: String,
-    patronymic: String,
-    height: String,
-    weight: String,
-    currentPage: Int,
     onChangeCurrentPage: () -> Unit,
-    morningTime: LocalDateTime,
-    eveningTime: LocalDateTime,
-    onNameChanged: (String) -> Unit,
-    onSurnameChanged: (String) -> Unit,
-    onChangedPatronymic: (String) -> Unit,
-    onDateChanged: (LocalDate) -> Unit,
-    onHeightChanged: (String) -> Unit,
-    onWeightChanged: (String) -> Unit,
+    userUiState: SignUpUiState,
+    currentPage: Int,
+    onEvent: (SignUpEvent) -> Unit,
     onClickSetReminder: (Hours) -> Unit,
     onEndRegistration: () -> Unit,
     modifier: Modifier = Modifier
@@ -105,24 +95,21 @@ fun SignUpScreen(
         )
         when (currentPage) {
             0 -> FieldsFIO(
-                name = name,
-                surname = surname,
-                patronymic = patronymic,
-                onNameChanged = { onNameChanged(it) },
-                onSurnameChanged = { onSurnameChanged(it) },
-                onChangedPatronymic = { onChangedPatronymic(it) }
+                name = userUiState.name,
+                surname = userUiState.surname,
+                patronymic = userUiState.patronymic,
+                onEvent = onEvent
             )
-            1 -> BirthdayFiled(onDateChanged = { onDateChanged(it) })
+            1 -> BirthdayFiled(onEvent = onEvent)
             2 -> HeightWeightFields(
-                onHeightChanged = { onHeightChanged(it) },
-                onWeightChanged = { onWeightChanged(it) },
-                height = height,
-                weight = weight
+                onEvent = onEvent,
+                height = userUiState.height,
+                weight = userUiState.weight
             )
             3 -> ReminderFields(
                 onClickSetReminder = { onClickSetReminder(it) },
-                eveningTime = eveningTime,
-                morningTime = morningTime,
+                eveningTime = userUiState.eveningReminder,
+                morningTime = userUiState.morningReminder,
                 modifier = Modifier.align(Alignment.Start)
             )
         }
@@ -133,8 +120,8 @@ fun SignUpScreen(
                     3 -> onEndRegistration()
                     2 -> {
                         try {
-                            val heightFinal = height.toFloat()
-                            val weightFinal = weight.toFloat()
+                            val heightFinal = userUiState.height.toFloat()
+                            val weightFinal = userUiState.weight.toFloat()
                             if (!(heightFinal in 20f..300f && weightFinal in 0f..1000f))
                                 throw IllegalArgumentException("Неверный формат веса или роста")
                             else {
@@ -149,7 +136,7 @@ fun SignUpScreen(
                     }
                     0 -> {
                         val regex = Regex("[а-яА-Яa-zA-Z]+")
-                        if (regex.matches(name) && regex.matches(surname) && regex.matches(patronymic))
+                        if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && regex.matches(userUiState.patronymic))
                             onChangeCurrentPage()
                         else
                             Toast.makeText(context, "Введите корректные данные", Toast.LENGTH_SHORT).show()
@@ -157,7 +144,7 @@ fun SignUpScreen(
                     else -> onChangeCurrentPage()
                 }
             },
-            enabled = if (currentPage == 0) name != "" && surname != "" else if (currentPage == 2) height != "" && weight != "" else true,
+            enabled = if (currentPage == 0) userUiState.name != "" && userUiState.surname != "" else if (currentPage == 2) userUiState.height != "" && userUiState.weight != "" else true,
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .size(height = 56.dp, width = 312.dp),
@@ -286,8 +273,7 @@ fun ReminderFields(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HeightWeightFields(
-    onHeightChanged: (String) -> Unit,
-    onWeightChanged: (String) -> Unit,
+    onEvent: (SignUpEvent) -> Unit,
     height: String,
     weight: String
 ) {
@@ -300,7 +286,7 @@ fun HeightWeightFields(
             keyboardType = KeyboardType.Number
         ),
         text = height,
-        onValueChanged = { onHeightChanged(it) },
+        onValueChanged = { onEvent(SignUpEvent.OnHeightChanged(it)) },
         hint = "Рост",
         focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
@@ -313,7 +299,7 @@ fun HeightWeightFields(
             keyboardType = KeyboardType.Number
         ),
         text = weight,
-        onValueChanged = { onWeightChanged(it) },
+        onValueChanged = { onEvent(SignUpEvent.OnWeightChanged(it)) },
         hint = "Вес",
         focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
@@ -321,11 +307,11 @@ fun HeightWeightFields(
 }
 
 @Composable
-fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
+fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
     Text(text = "Укажите дату рождения", style = MaterialTheme.typography.titleMedium)
-    var day by remember { mutableStateOf(1) }
+    var day by remember { mutableIntStateOf(1) }
     var month by remember { mutableStateOf("янв") }
-    var year by remember { mutableStateOf(2000) }
+    var year by remember { mutableIntStateOf(2000) }
     Row(modifier = Modifier.padding(top = 24.dp)) {
         Card(
             shape = MaterialTheme.shapes.small,
@@ -340,7 +326,7 @@ fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
                 list = if (year % 4 != 0) (1..days[month]!!).toList() else (1..daysSpecial[month]!!).toList(),
                 onValueChange = {
                     day = it
-                    onDateChanged(LocalDate.of(year, months.indexOf(month) + 1, day))
+                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -360,7 +346,7 @@ fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
                 list = months,
                 onValueChange = {
                     month = it
-                    onDateChanged(LocalDate.of(year, months.indexOf(month) + 1, day))
+                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -379,7 +365,7 @@ fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
                 list = (1900..2023).toList(),
                 onValueChange = {
                     year = it
-                    onDateChanged(LocalDate.of(year, months.indexOf(month) + 1, day))
+                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -391,12 +377,10 @@ fun BirthdayFiled(onDateChanged: (LocalDate) -> Unit) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FieldsFIO(
+    onEvent: (SignUpEvent) -> Unit,
     name: String,
     surname: String,
-    patronymic: String,
-    onNameChanged: (String) -> Unit,
-    onSurnameChanged: (String) -> Unit,
-    onChangedPatronymic: (String) -> Unit
+    patronymic: String
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequesterName = remember { FocusRequester() }
@@ -405,7 +389,7 @@ fun FieldsFIO(
     Text(text = "Укажите своё имя", style = MaterialTheme.typography.titleMedium)
     TextInput(
         text = name,
-        onValueChanged = { onNameChanged(it) },
+        onValueChanged = { onEvent(SignUpEvent.OnSurnameChanged(it)) },
         hint = "Фамилия",
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -414,7 +398,7 @@ fun FieldsFIO(
     )
     TextInput(
         text = surname,
-        onValueChanged = { onSurnameChanged(it) },
+        onValueChanged = { onEvent(SignUpEvent.OnNameChanged(it)) },
         hint = "Имя",
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -423,7 +407,7 @@ fun FieldsFIO(
     )
     TextInput(
         text = patronymic,
-        onValueChanged = { onChangedPatronymic(it) },
+        onValueChanged = { onEvent(SignUpEvent.OnPatronymicChanged(it)) },
         hint = "Отчество",
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -489,6 +473,13 @@ fun DotsMenuSignUp(totalDots: Int, selectedIndex: Int, modifier: Modifier = Modi
 @Composable
 fun SignUpScreenPreview() {
     AesculapiusTheme {
-
+        SignUpScreen(
+            onChangeCurrentPage = {},
+            userUiState = SignUpUiState(),
+            currentPage = 1,
+            onEvent = {},
+            onClickSetReminder = {},
+            onEndRegistration = {}
+        )
     }
 }

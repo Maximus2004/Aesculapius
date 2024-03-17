@@ -19,74 +19,28 @@ import javax.inject.Singleton
 
 private val Context.dataStore by preferencesDataStore("user_preferences")
 
-/** [UserPreferencesRepository] репозиторий для DatastorePreferences */
+/** [UserPreferencesRepository] репозиторий для DataStorePreferences */
 @Singleton
 class UserPreferencesRepository @Inject constructor(@ApplicationContext appContext: Context) {
     private val settingDataStore = appContext.dataStore
 
     val user: Flow<SignUpUiState> = settingDataStore.data.map { preferences ->
         SignUpUiState(
+            id = preferences[IS_USER_REGISTERED] ?: "",
             name = preferences[NAME] ?: "",
             surname = preferences[SURNAME] ?: "",
             patronymic = preferences[PATRONYMIC] ?: "",
             birthday = LocalDate.parse(preferences[BIRTHDAY] ?: LocalDate.now().toString()),
             height = preferences[HEIGHT] ?: "",
-            weight = preferences[WEIGHT] ?: ""
+            weight = preferences[WEIGHT] ?: "",
+            morningReminder = Converters.stringToTime(preferences[MORNING_REMINDER_TIME]),
+            eveningReminder = Converters.stringToTime(preferences[EVENING_REMINDER_TIME]),
+            astTestDate = preferences[AST_TEST] ?: "",
+            recommendationTestDate = preferences[RECOMMENDATION_TEST] ?: ""
         )
     }
 
-    val userId: Flow<String> = settingDataStore.data
-        .catch {
-            if (it is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences -> preferences[IS_USER_REGISTERED] ?: "" }
-
-    val morningReminder: Flow<LocalDateTime> = settingDataStore.data
-        .catch {
-            if (it is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences -> Converters.stringToTime(preferences[MORNING_REMINDER_TIME]) }
-
-    val eveningReminder: Flow<LocalDateTime> = settingDataStore.data
-        .catch {
-            if (it is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences -> Converters.stringToTime(preferences[EVENING_REMINDER_TIME]) }
-
-    val astTest: Flow<String> = settingDataStore.data
-        .catch {
-            if (it is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences -> preferences[AST_TEST] ?: "" }
-
-    val recommendationTest: Flow<String> = settingDataStore.data
-        .catch {
-            if (it is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences -> preferences[RECOMMENDATION_TEST] ?: "" }
-
     private companion object {
-
         val IS_USER_REGISTERED = stringPreferencesKey("is_user_registered")
         val MORNING_REMINDER_TIME = stringPreferencesKey("morning_reminder_time")
         val EVENING_REMINDER_TIME = stringPreferencesKey("evening_reminder_time")
@@ -101,41 +55,54 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
         val WEIGHT = stringPreferencesKey("weight")
     }
 
-    suspend fun saveUserData(userData: SignUpUiState) {
+    /**
+     * [saveUserData] переносит параметры из SignUpUiState в
+     * DotsStore Preferences для дальнейшего редактирования в профиле
+     */
+    suspend fun saveUserData(signUpUiState: SignUpUiState) {
         settingDataStore.edit { preferences ->
-            preferences[SURNAME] = userData.surname
-            preferences[PATRONYMIC] = userData.patronymic
-            preferences[NAME] = userData.name
-            preferences[BIRTHDAY] = userData.birthday.toString()
-            preferences[HEIGHT] = userData.height
-            preferences[WEIGHT] = userData.weight
+            preferences[IS_USER_REGISTERED] = signUpUiState.id!!
+            preferences[SURNAME] = signUpUiState.surname
+            preferences[PATRONYMIC] = signUpUiState.patronymic
+            preferences[NAME] = signUpUiState.name
+            preferences[BIRTHDAY] = signUpUiState.birthday.toString()
+            preferences[HEIGHT] = signUpUiState.height
+            preferences[WEIGHT] = signUpUiState.weight
         }
     }
 
+    /**
+     * [saveAstTestDate] сохраняет полную дату следующего прохождения АСТ теста
+     */
     suspend fun saveAstTestDate(astTestDate: String) {
         settingDataStore.edit { preferences ->
             preferences[AST_TEST] = astTestDate
         }
     }
 
+    /**
+     * [saveRecommendationTest] сохраняет полную дату следующего прохождения Теста приверженности
+     */
     suspend fun saveRecommendationTest(recommendationTest: String) {
         settingDataStore.edit { preferences ->
             preferences[RECOMMENDATION_TEST] = recommendationTest
         }
     }
 
-    suspend fun saveUserPreferences(userId: String) {
-        settingDataStore.edit { preferences ->
-            preferences[IS_USER_REGISTERED] = userId
-        }
-    }
-
+    /**
+     * [saveUserMorningReminder] сохраняет полную дату и
+     * время следующего утреннего внесения метрик
+     */
     suspend fun saveUserMorningReminder(morningReminder: String) {
         settingDataStore.edit { preferences ->
             preferences[MORNING_REMINDER_TIME] = morningReminder
         }
     }
 
+    /**
+     * [saveUserEveningReminder] сохраняет полную дату и
+     * время следующего вечернего внесения метрик
+     */
     suspend fun saveUserEveningReminder(eveningReminder: String) {
         settingDataStore.edit { preferences ->
             preferences[EVENING_REMINDER_TIME] = eveningReminder

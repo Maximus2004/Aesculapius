@@ -120,7 +120,7 @@ fun TestScreen(
                                 Text(
                                     text = (index + 1).toString(),
                                     style = MaterialTheme.typography.headlineMedium,
-                                    color = if (currentAnswers[index] != -1) Color.White else Color.Black
+                                    color = if (currentAnswers[index] != -1 || index == currentPage) Color.White else Color.Black
                                 )
                             }
                         }

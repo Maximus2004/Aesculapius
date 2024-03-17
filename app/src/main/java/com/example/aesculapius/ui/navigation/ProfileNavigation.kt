@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.navigation
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -15,23 +14,19 @@ import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.profile.EditProfileScreen
 import com.example.aesculapius.ui.profile.LearnItemScreen
 import com.example.aesculapius.ui.profile.LearnScreen
+import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.profile.SetReminderTimeProfile
 import com.example.aesculapius.ui.signup.SetReminderTime
 import com.example.aesculapius.ui.signup.SignUpUiState
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 fun NavGraphBuilder.profileNavGraph(
-    morningReminder: LocalDateTime,
-    eveningReminder: LocalDateTime,
+    userUiState: SignUpUiState,
     turnOffBars: () -> Unit,
     turnOnBars: () -> Unit,
-    saveMorningReminder: (LocalDateTime) -> Unit,
-    saveEveningReminder: (LocalDateTime) -> Unit,
-    user: SignUpUiState,
-    onSaveNewUser: (SignUpUiState) -> Unit,
+    onProfileEvent: (ProfileEvent) -> Unit,
     navController: NavHostController,
 ) {
     composable(route = ProfileScreen.route) {
@@ -45,8 +40,8 @@ fun NavGraphBuilder.profileNavGraph(
     }
     composable(route = SetReminderTimeProfile.route) {
         SetReminderTimeProfile(
-            morningTime = morningReminder,
-            eveningTime = eveningReminder,
+            morningTime = userUiState.morningReminder,
+            eveningTime = userUiState.eveningReminder,
             onNavigateBack = { navController.navigateUp() },
             onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") },
         )
@@ -55,8 +50,8 @@ fun NavGraphBuilder.profileNavGraph(
     composable(route = EditProfileScreen.route) {
         EditProfileScreen(
             onNavigateBack = { navController.navigateUp() },
-            user = user,
-            onSaveNewUser = onSaveNewUser
+            user = userUiState,
+            onSaveNewUser = { onProfileEvent(ProfileEvent.OnSaveNewUser(it)) }
         )
         turnOffBars()
     }
@@ -73,13 +68,13 @@ fun NavGraphBuilder.profileNavGraph(
         when (arg) {
             Hours.Morning -> SetReminderTime(
                 title = "Утреннее напоминание",
-                textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
-                textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
+                textHours = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                textMinutes = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
-                    if (eveningReminder.hour - it.hour < 8)
+                    if (userUiState.eveningReminder.hour - it.hour < 8)
                         Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else {
-                        saveMorningReminder(it)
+                        onProfileEvent(ProfileEvent.OnSaveMorningTime(it))
                         navController.navigateUp()
                     }
                 },
@@ -89,13 +84,13 @@ fun NavGraphBuilder.profileNavGraph(
 
             Hours.Evening -> SetReminderTime(
                 title = "Вечернее напоминание",
-                textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
-                textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
+                textHours = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                textMinutes = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
-                    if (it.hour - morningReminder.hour < 8)
+                    if (it.hour - userUiState.morningReminder.hour < 8)
                         Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else {
-                        saveEveningReminder(it)
+                        onProfileEvent(ProfileEvent.OnSaveEveningTime(it))
                         navController.navigateUp()
                     }
                 },

@@ -20,7 +20,7 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
         fun getUserId() = usersRef.document().id
     }
 
-    fun addUserAtFirst(userId: String, signUpUiState: SignUpUiState) {
+    fun addUserAtFirst(signUpUiState: SignUpUiState) {
         val user = User(
             name = signUpUiState.name,
             surname = signUpUiState.surname,
@@ -32,17 +32,17 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
             medicines = listOf(),
             metrics = listOf()
         )
-        usersRef.document(userId).set(user)
+        usersRef.document(signUpUiState.id!!).set(user)
     }
 
-    fun updateUserProfile(user: SignUpUiState, userId: String) {
-        usersRef.document(userId).update(
-            "birthDate", user.birthday.toString(),
-            "name", user.name,
-            "surname", user.surname,
-            "patronymic", user.patronymic,
-            "height", user.height.toFloat(),
-            "weight", user.weight.toFloat()
+    fun updateUserProfile(signUpUiState: SignUpUiState) {
+        usersRef.document(signUpUiState.id!!).update(
+            "birthDate", signUpUiState.birthday.toString(),
+            "name", signUpUiState.name,
+            "surname", signUpUiState.surname,
+            "patronymic", signUpUiState.patronymic,
+            "height", signUpUiState.height.toFloat(),
+            "weight", signUpUiState.weight.toFloat()
         )
     }
 

@@ -5,40 +5,54 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
-    // backing property
     private val _uiStateSignUp = MutableStateFlow(SignUpUiState())
     val uiStateSingUp: StateFlow<SignUpUiState> = _uiStateSignUp
 
-    fun onNameChanged(name: String) {
-        _uiStateSignUp.update {
-            it.copy(name = name)
-        }
-    }
-    fun onSurnameChanged(surname: String) {
-        _uiStateSignUp.update {
-            it.copy(surname = surname)
-        }
-    }
-    fun onChangedPatronymic(patronymic: String) {
-        _uiStateSignUp.update {
-            it.copy(patronymic = patronymic)
-        }
-    }
-    fun onHeightChanged(height: String) {
-        _uiStateSignUp.update {
-            it.copy(height = height)
-        }
-    }
-    fun onWeightChanged(weight: String) {
-        _uiStateSignUp.update {
-            it.copy(weight = weight)
-        }
-    }
-    fun onDateChanged(date: LocalDate) {
-        _uiStateSignUp.update {
-            it.copy(birthday = date)
+    fun onEvent(event: SignUpEvent) {
+        when(event) {
+            is SignUpEvent.OnMorningReminderChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(morningReminder = event.morningReminder)
+                }
+            }
+            is SignUpEvent.OnEveningReminderChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(eveningReminder = event.eveningReminder)
+                }
+            }
+            is SignUpEvent.OnNameChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(name = event.name)
+                }
+            }
+            is SignUpEvent.OnSurnameChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(surname = event.surname)
+                }
+            }
+            is SignUpEvent.OnPatronymicChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(patronymic = event.patronymic)
+                }
+            }
+            is SignUpEvent.OnHeightChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(height = event.height)
+                }
+            }
+            is SignUpEvent.OnWeightChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(weight = event.weight)
+                }
+            }
+            is SignUpEvent.OnBirthdayChanged -> {
+                _uiStateSignUp.update {
+                    it.copy(birthday = event.birthday)
+                }
+            }
         }
     }
 }

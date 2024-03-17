@@ -57,6 +57,7 @@ import com.example.aesculapius.ui.navigation.profileNavGraph
 import com.example.aesculapius.ui.navigation.statisticsNavGraph
 import com.example.aesculapius.ui.navigation.testsNavGraph
 import com.example.aesculapius.ui.navigation.therapyNavGraph
+import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
@@ -69,16 +70,8 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
-    saveAstDate: (LocalDate) -> Unit,
-    saveRecommendationDate: (LocalDate) -> Unit,
-    recommendationTestDate: String,
-    astTestDate: String,
-    morningReminder: LocalDateTime,
-    eveningReminder: LocalDateTime,
-    saveMorningReminder: (LocalDateTime) -> Unit,
-    saveEveningReminder: (LocalDateTime) -> Unit,
-    user: SignUpUiState,
-    onSaveNewUser: (SignUpUiState) -> Unit,
+    onProfileEvent: (ProfileEvent) -> Unit,
+    userUiState: SignUpUiState,
 ) {
     val therapyViewModel: TherapyViewModel = hiltViewModel()
     val testsViewModel: TestsViewModel = hiltViewModel()
@@ -153,15 +146,11 @@ fun HomeScreen(
                     )
 
                     profileNavGraph(
-                        morningReminder = morningReminder,
-                        eveningReminder = eveningReminder,
-                        saveMorningReminder = { saveMorningReminder(it) },
-                        saveEveningReminder = { saveEveningReminder(it) },
                         turnOffBars = { isBarsDisplayed = false },
                         turnOnBars = { isBarsDisplayed = true },
-                        user = user,
-                        onSaveNewUser = onSaveNewUser,
-                        navController = navController
+                        userUiState = userUiState,
+                        navController = navController,
+                        onProfileEvent = onProfileEvent
                     )
 
                     statisticsNavGraph(
@@ -170,22 +159,16 @@ fun HomeScreen(
                             .wrapContentHeight()
                             .background(color = Color.White),
                         statisticsViewModel = statisticsViewModel,
-                        userUiState = user
+                        userUiState = userUiState
                     )
 
                     testsNavGraph(
-                        saveMorningReminder = { saveMorningReminder(it) },
-                        saveEveningReminder = { saveEveningReminder(it) },
-                        saveASTDate = { saveAstDate(it) },
-                        saveRecommendationDate = { saveRecommendationDate(it) },
-                        astTestDate = astTestDate,
-                        recommendationTestDate = recommendationTestDate,
-                        morningReminder = morningReminder,
-                        eveningReminder = eveningReminder,
+                        userUiState = userUiState,
                         turnOffBars = { isBarsDisplayed = false },
                         turnOnBars = { isBarsDisplayed = true },
                         navController = navController,
-                        testsViewModel = testsViewModel
+                        testsViewModel = testsViewModel,
+                        onProfileEvent = onProfileEvent
                     )
                 }
             )

@@ -19,25 +19,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.signup.SetReminderTime
+import com.example.aesculapius.ui.signup.SignUpEvent
 import com.example.aesculapius.ui.signup.SignUpScreen
 import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.signup.SignUpViewModel
-import java.time.Duration
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun SignUpNavigation(
-    morningReminder: LocalDateTime,
-    eveningReminder: LocalDateTime,
-    saveMorningReminder: (LocalDateTime) -> Unit,
-    saveEveningReminder: (LocalDateTime) -> Unit,
     onEndRegistration: (SignUpUiState) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
     val signUpViewModel: SignUpViewModel = viewModel()
-    val signUpUiState = signUpViewModel.uiStateSingUp.collectAsState().value
+    val signUpUiState by signUpViewModel.uiStateSingUp.collectAsState()
     var currentPage by remember { mutableIntStateOf(0) }
 
     NavHost(
@@ -57,10 +52,10 @@ fun SignUpNavigation(
             when (arg) {
                 Hours.Morning -> SetReminderTime(
                     title = "Утреннее напоминание",
-                    textHours = morningReminder.format(DateTimeFormatter.ofPattern("HH")),
-                    textMinutes = morningReminder.format(DateTimeFormatter.ofPattern("mm")),
+                    textHours = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                    textMinutes = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        saveMorningReminder(it)
+                        signUpViewModel.onEvent(SignUpEvent.OnMorningReminderChanged(it))
                         navController.navigateUp()
                     },
                     onNavigateBack = { navController.navigateUp() },
@@ -69,10 +64,10 @@ fun SignUpNavigation(
 
                 Hours.Evening -> SetReminderTime(
                     title = "Вечернее напоминание",
-                    textHours = eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
-                    textMinutes = eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
+                    textHours = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
+                    textMinutes = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
-                        saveEveningReminder(it)
+                        signUpViewModel.onEvent(SignUpEvent.OnEveningReminderChanged(it))
                         navController.navigateUp()
                     },
                     onNavigateBack = { navController.navigateUp() },
@@ -82,23 +77,12 @@ fun SignUpNavigation(
         }
         composable(route = SignUpScreen.route) {
             SignUpScreen(
-                name = signUpUiState.name,
-                surname = signUpUiState.surname,
-                patronymic = signUpUiState.patronymic,
-                height = signUpUiState.height,
-                weight = signUpUiState.weight,
-                eveningTime = eveningReminder,
-                morningTime = morningReminder,
+                userUiState = signUpUiState,
                 currentPage = currentPage,
                 onChangeCurrentPage = { currentPage++ },
-                onNameChanged = { signUpViewModel.onNameChanged(it) },
-                onSurnameChanged = { signUpViewModel.onSurnameChanged(it) },
-                onChangedPatronymic = { signUpViewModel.onChangedPatronymic(it) },
-                onDateChanged = { signUpViewModel.onDateChanged(it) },
-                onHeightChanged = { signUpViewModel.onHeightChanged(it) },
-                onWeightChanged = { signUpViewModel.onWeightChanged(it) },
+                onEvent = signUpViewModel::onEvent,
                 onEndRegistration = {
-                    if (eveningReminder.hour - morningReminder.hour < 8)
+                    if (signUpUiState.eveningReminder.hour - signUpUiState.morningReminder.hour < 8)
                         Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
                     else
                         onEndRegistration(signUpUiState)
