@@ -1,14 +1,13 @@
 package com.example.aesculapius.worker
 
 import android.content.Context
-import android.util.Log
-import androidx.hilt.work.HiltWorker
-import androidx.work.*
-import com.example.aesculapius.database.UserRemoteDataRepository
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import java.util.concurrent.TimeUnit
 
 class UserWorkerSchedule (context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams) {
@@ -18,9 +17,10 @@ class UserWorkerSchedule (context: Context, workerParams: WorkerParameters) : Co
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-        val yourWorkRequest = PeriodicWorkRequestBuilder<UserWorker>(30, TimeUnit.MINUTES).setInputData(inputData).setConstraints(constraints).build()
+        val workRequest = PeriodicWorkRequestBuilder<UserWorker>(30, TimeUnit.MINUTES)
+            .setInputData(inputData).setConstraints(constraints).build()
         WorkManager.getInstance(applicationContext)
-            .enqueueUniquePeriodicWork("userWork", ExistingPeriodicWorkPolicy.KEEP, yourWorkRequest)
+            .enqueueUniquePeriodicWork("userWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
         return Result.success()
     }
 }

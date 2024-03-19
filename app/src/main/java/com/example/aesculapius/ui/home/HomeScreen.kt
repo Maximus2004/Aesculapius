@@ -38,8 +38,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.data.navigationItemContentList
 import com.example.aesculapius.ui.signup.SignUpUiState
-import java.time.LocalDate
-import java.time.LocalDateTime
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextButton
@@ -62,6 +60,7 @@ import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
+import com.example.aesculapius.ui.therapy.TherapyEvent
 import com.example.aesculapius.ui.therapy.TherapyScreen
 import com.example.aesculapius.ui.therapy.TherapyViewModel
 import kotlinx.coroutines.launch
@@ -79,8 +78,11 @@ fun HomeScreen(
 
     var isBarsDisplayed by remember { mutableStateOf(true) }
     val currentMedicineItem: MutableState<MedicineCard?> = remember { mutableStateOf(null) }
+
+    // используется при нажатии на препарат
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute: String = navBackStackEntry?.destination?.route ?: TherapyScreen.route
@@ -96,11 +98,11 @@ fun HomeScreen(
                     },
                     skipMedicine = {
                         scope.launch { sheetState.hide() }
-                        therapyViewModel.skipMedicine(it)
+                        therapyViewModel.onTherapyEvent(TherapyEvent.OnSkipMedicine(it))
                     },
                     acceptMedicine = {
                         scope.launch { sheetState.hide() }
-                        therapyViewModel.acceptMedicine(it)
+                        therapyViewModel.onTherapyEvent(TherapyEvent.OnAcceptMedicine(it))
                     }
                 )
         },

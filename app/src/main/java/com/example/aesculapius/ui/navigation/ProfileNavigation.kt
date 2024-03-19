@@ -18,8 +18,8 @@ import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.profile.ProfileScreen
 import com.example.aesculapius.ui.profile.SetReminderTimeProfile
 import com.example.aesculapius.ui.signup.SetReminderTime
+import com.example.aesculapius.ui.signup.SetReminderTimeScreen
 import com.example.aesculapius.ui.signup.SignUpUiState
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 fun NavGraphBuilder.profileNavGraph(
@@ -32,9 +32,7 @@ fun NavGraphBuilder.profileNavGraph(
     composable(route = ProfileScreen.route) {
         ProfileScreen(
             modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp),
-            onClickSetReminder = { navController.navigate(SetReminderTimeProfile.route) },
-            onClickLearnBlock = { navController.navigate(LearnScreen.route) },
-            onClickProfileBlock = { navController.navigate(EditProfileScreen.route) }
+            onNavigate = navController::navigate
         )
         turnOnBars()
     }
@@ -66,7 +64,7 @@ fun NavGraphBuilder.profileNavGraph(
             backStackEntry.arguments?.getString(SetReminderTime.depart) ?: "Morning"
         )
         when (arg) {
-            Hours.Morning -> SetReminderTime(
+            Hours.Morning -> SetReminderTimeScreen(
                 title = "Утреннее напоминание",
                 textHours = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
@@ -82,7 +80,7 @@ fun NavGraphBuilder.profileNavGraph(
                 textTopBar = "Настройка напоминаний"
             )
 
-            Hours.Evening -> SetReminderTime(
+            Hours.Evening -> SetReminderTimeScreen(
                 title = "Вечернее напоминание",
                 textHours = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
@@ -101,10 +99,7 @@ fun NavGraphBuilder.profileNavGraph(
     }
     composable(route = LearnScreen.route) {
         LearnScreen(
-            onNavigateBack = {
-                navController.navigateUp()
-                turnOnBars()
-            },
+            onNavigateBack = { navController.navigateUp() },
             onClickItem = { name, text -> navController.navigate("${LearnItemScreen.route}/$name^$text") }
         )
         turnOffBars()

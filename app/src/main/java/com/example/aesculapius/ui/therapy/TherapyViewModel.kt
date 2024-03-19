@@ -3,7 +3,6 @@ package com.example.aesculapius.ui.therapy
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.database.AesculapiusRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.boguszpawlowski.composecalendar.week.Week
@@ -16,9 +15,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
-// все корутины запускаются с помощью конкретного диспетчера, который указывает на поток или
-// пул потоков, на котором запускается данная каорутина, а также в конкретном контексте,
-// который определяет жизненный цикл корутины
 @HiltViewModel
 class TherapyViewModel @Inject constructor(private val aesculapiusRepository: AesculapiusRepository) : ViewModel() {
 
@@ -28,7 +24,9 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
      * текущую дату, когда это необходимо для отображения лекарств */
     private val currentDate = mutableStateListOf(LocalDate.now())
 
+    /** [currentLoadingState] статус загрузки статус бара и писка препаратов */
     var currentLoadingState: MutableStateFlow<CurrentLoadingState> = MutableStateFlow(CurrentLoadingState.Loading)
+    /** [generalLoadingState] статус загрузки всего содержимого экрана терапии */
     var generalLoadingState: MutableStateFlow<GeneralLoadingState> = MutableStateFlow(GeneralLoadingState.Success)
 
     private var _currentWeekDates = MutableStateFlow(Week.now())
@@ -39,8 +37,85 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
 
     init { updateCurrentDate(LocalDate.now()) }
 
-    fun changeIsWeek(isWeek: Boolean) {
-        _isWeek.value = isWeek
+    fun onTherapyEvent(event: TherapyEvent) {
+        when (event) {
+            is TherapyEvent.OnAcceptMedicine -> {
+                viewModelScope.launch {
+                    generalLoadingState.value = GeneralLoadingState.Loading
+                    aesculapiusRepository.acceptMedicine(event.idDose)
+                    updateCurrentDate(LocalDate.now())
+                    generalLoadingState.value = GeneralLoadingState.Success
+                }
+            }
+
+            is TherapyEvent.OnSkipMedicine -> {
+                viewModelScope.launch {
+                    generalLoadingState.value = GeneralLoadingState.Loading
+                    aesculapiusRepository.skipMedicine(event.idDose)
+                    updateCurrentDate(LocalDate.now())
+                    generalLoadingState.value = GeneralLoadingState.Success
+                }
+            }
+
+            is TherapyEvent.OnChangeIsWeek -> {
+                _isWeek.value = event.isWeek
+            }
+
+            is TherapyEvent.OnAddMedicineItem -> {
+                viewModelScope.launch {
+                    generalLoadingState.value = GeneralLoadingState.Loading
+                    aesculapiusRepository.insertMedicineItem(
+                        event.medicineType,
+                        event.name,
+                        event.undername,
+                        event.dose,
+                        event.frequency,
+                        event.startDate,
+                        event.endDate
+                    )
+                    if (!currentDate.first().isBefore(LocalDate.now()))
+                        updateCurrentDate(getCurrentDate())
+                    generalLoadingState.value = GeneralLoadingState.Success
+                }
+            }
+
+            is TherapyEvent.OnUpdateMedicineItem -> {
+                viewModelScope.launch {
+                    generalLoadingState.value = GeneralLoadingState.Loading
+                    aesculapiusRepository.updateMedicineItem(
+                        event.medicineId,
+                        event.frequency,
+                        event.dose,
+                        event.medicineType,
+                        event.startDate,
+                        event.endDate
+                    )
+                    updateCurrentDate(LocalDate.now())
+                    generalLoadingState.value = GeneralLoadingState.Success
+                }
+            }
+
+            is TherapyEvent.OnDeleteMedicineItem -> {
+                viewModelScope.launch {
+                    generalLoadingState.value = GeneralLoadingState.Loading
+                    aesculapiusRepository.deleteMedicineItem(event.medicineId)
+                    updateCurrentDate(LocalDate.now())
+                    generalLoadingState.value = GeneralLoadingState.Success
+                }
+            }
+
+            is TherapyEvent.OnGetWeekDates -> {
+                val weekDates = ArrayList<LocalDate>()
+                var startOfWeek = event.currentDate
+                while (startOfWeek.dayOfWeek != DayOfWeek.MONDAY) {
+                    startOfWeek = startOfWeek.minusDays(1)
+                }
+                for (i in 0 until 7) {
+                    weekDates.add(startOfWeek.plusDays(i.toLong()))
+                }
+                _currentWeekDates.update { Week(weekDates) }
+            }
+        }
     }
 
     /** [updateCurrentDate] - при обновлении даты требует обновить список лекарств к употреблению
@@ -106,87 +181,20 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         return true
     }
 
-    fun acceptMedicine(idDose: Int) {
-        viewModelScope.launch {
-            generalLoadingState.value = GeneralLoadingState.Loading
-            aesculapiusRepository.acceptMedicine(idDose)
-            updateCurrentDate(LocalDate.now())
-            generalLoadingState.value = GeneralLoadingState.Success
-        }
-    }
-
-    fun skipMedicine(idDose: Int) {
-        viewModelScope.launch {
-            generalLoadingState.value = GeneralLoadingState.Loading
-            aesculapiusRepository.skipMedicine(idDose)
-            updateCurrentDate(LocalDate.now())
-            generalLoadingState.value = GeneralLoadingState.Success
-        }
-    }
-
-    fun addMedicineItem(
-        medicineType: CurrentMedicineType,
-        name: String,
-        undername: String,
-        dose: String,
-        frequency: String,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ) {
-        viewModelScope.launch {
-            generalLoadingState.value = GeneralLoadingState.Loading
-            aesculapiusRepository.insertMedicineItem(medicineType, name, undername, dose, frequency, startDate, endDate)
-            if (!currentDate.first().isBefore(LocalDate.now()))
-                updateCurrentDate(getCurrentDate())
-            generalLoadingState.value = GeneralLoadingState.Success
-        }
-    }
-
-    fun updateMedicineItem(medicineId: Int, frequency: String, dose: String, medicineType: CurrentMedicineType, startDate: LocalDate, endDate: LocalDate) {
-        viewModelScope.launch {
-            generalLoadingState.value = GeneralLoadingState.Loading
-            aesculapiusRepository.updateMedicineItem(medicineId, frequency, dose, medicineType, startDate, endDate)
-            updateCurrentDate(LocalDate.now())
-            generalLoadingState.value = GeneralLoadingState.Success
-        }
-    }
-
-    fun deleteMedicineItem(medicineId: Int) {
-        viewModelScope.launch {
-            generalLoadingState.value = GeneralLoadingState.Loading
-            aesculapiusRepository.deleteMedicineItem(medicineId)
-            updateCurrentDate(LocalDate.now())
-            generalLoadingState.value = GeneralLoadingState.Success
-        }
-    }
-
-    /** [getWeekDates] - отображает неделю, на которой находится пользователь
-     * (слишком быстро, чтобы выносить в фон) */
-    fun getWeekDates(currentDate: LocalDate) {
-        val weekDates = ArrayList<LocalDate>()
-        var startOfWeek = currentDate
-        while (startOfWeek.dayOfWeek != DayOfWeek.MONDAY) {
-            startOfWeek = startOfWeek.minusDays(1)
-        }
-        for (i in 0 until 7) {
-            weekDates.add(startOfWeek.plusDays(i.toLong()))
-        }
-        _currentWeekDates.update { Week(weekDates) }
-    }
-
     /** [getAmountNotAcceptedMedicines] - служит для отображения индикторов под датами
      * (вызывается из LaunchedEffect) */
     suspend fun getAmountNotAcceptedMedicines(date: LocalDate): Int = viewModelScope.async {
         aesculapiusRepository.getAmountNotAcceptedMedicines(date)
     }.await()
 
+    /** [getCurrentDate] получить дату на которой ейчас находится пользователь */
     fun getCurrentDate(): LocalDate {
         return currentDate.first()
     }
 }
 
 sealed interface CurrentLoadingState {
-    data class Success(val therapyuiState: TherapyUiState) : CurrentLoadingState
+    data class Success(val therapyUiState: TherapyUiState) : CurrentLoadingState
     object Loading : CurrentLoadingState
 }
 

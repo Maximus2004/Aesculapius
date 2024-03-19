@@ -3,7 +3,7 @@ package com.example.aesculapius.ui.therapy
 import com.example.aesculapius.data.CurrentMedicineType
 import java.time.LocalDate
 
-// для отображения на экране терапии
+/** [MedicineCard] для отображения на экране терапии (класс в который стекаются данные из доз и препаратов) */
 data class MedicineCard(
     val id: Int,
     val name: String,

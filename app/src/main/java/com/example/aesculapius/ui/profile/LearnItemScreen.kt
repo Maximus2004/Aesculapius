@@ -1,18 +1,17 @@
 package com.example.aesculapius.ui.profile
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 
 object LearnItemScreen : NavigationDestination {
     override val route = "LearnItemScreen"
@@ -41,5 +40,17 @@ fun LearnItemScreen(onNavigateBack: () -> Unit, name: String, text: String) {
                 Text(text = text, style = MaterialTheme.typography.headlineMedium)
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun LearnItemScreenPreview() {
+    AesculapiusTheme {
+        LearnItemScreen(
+            onNavigateBack = {},
+            name = "Рандомный вопрос",
+            text = "Рандомный ответ на вопрос. И очень-очень длинный текст ааа."
+        )
     }
 }

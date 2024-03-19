@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.signup.SetReminderTime
+import com.example.aesculapius.ui.signup.SetReminderTimeScreen
 import com.example.aesculapius.ui.signup.SignUpEvent
 import com.example.aesculapius.ui.signup.SignUpScreen
 import com.example.aesculapius.ui.signup.SignUpUiState
@@ -50,7 +51,7 @@ fun SignUpNavigation(
                 backStackEntry.arguments?.getString(SetReminderTime.depart) ?: Hours.Morning.name
             )
             when (arg) {
-                Hours.Morning -> SetReminderTime(
+                Hours.Morning -> SetReminderTimeScreen(
                     title = "Утреннее напоминание",
                     textHours = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
@@ -62,7 +63,7 @@ fun SignUpNavigation(
                     textTopBar = "Время напоминаний"
                 )
 
-                Hours.Evening -> SetReminderTime(
+                Hours.Evening -> SetReminderTimeScreen(
                     title = "Вечернее напоминание",
                     textHours = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),

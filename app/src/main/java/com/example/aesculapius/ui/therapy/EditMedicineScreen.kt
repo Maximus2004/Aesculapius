@@ -4,7 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TextButton
@@ -25,13 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptionsBuilder
 import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.data.medicinesAerosol
 import com.example.aesculapius.data.medicinesPowder
 import com.example.aesculapius.data.medicinesTablets
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.AesculapiusTheme
+import java.time.LocalDate
 
 object EditMedicineScreen : NavigationDestination {
     override val route = "EditMedicineScreen"
@@ -39,9 +43,9 @@ object EditMedicineScreen : NavigationDestination {
 
 @Composable
 fun EditMedicineScreen(
-    onClickDeleteMedicine: () -> Unit,
     onNavigateBack: () -> Unit,
-    onClickUpdateMedicineItem: (String, String) -> Unit,
+    onTherapyEvent: (TherapyEvent) -> Unit,
+    onNavigate: (String, NavOptionsBuilder.() -> Unit) -> Unit,
     medicine: MedicineCard,
     modifier: Modifier = Modifier
 ) {
@@ -119,17 +123,22 @@ fun EditMedicineScreen(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    onClickUpdateMedicineItem(
-                        currentMedicine.value?.frequency?.get(selectedFrequencyIndex)
-                            ?: medicine.frequency,
-                        currentMedicine.value?.doses?.get(selectedDosesIndex) ?: medicine.dose
+                    onTherapyEvent(
+                        TherapyEvent.OnUpdateMedicineItem(
+                            medicineId = medicine.id,
+                            frequency = currentMedicine.value?.frequency?.get(selectedFrequencyIndex) ?: medicine.frequency,
+                            dose = currentMedicine.value?.doses?.get(selectedDosesIndex) ?: medicine.dose,
+                            medicineType = medicine.medicineType,
+                            startDate = medicine.startDate,
+                            endDate = medicine.endDate
+                        )
                     )
-                    Toast.makeText(context, "Лекарство успешно сохранено", Toast.LENGTH_SHORT)
-                        .show()
+                    onNavigate(TherapyScreen.route) { popUpTo(TherapyScreen.route) { inclusive = false } }
+                    Toast.makeText(context, "Лекарство успешно сохранено", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .padding(bottom = 17.dp)
-                    .height(56.dp)
+                    .heightIn(min = 56.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(16.dp)
@@ -142,7 +151,10 @@ fun EditMedicineScreen(
             }
             TextButton(
                 onClick = {
-                    onClickDeleteMedicine()
+                    onTherapyEvent(TherapyEvent.OnDeleteMedicineItem(medicine.id))
+                    onNavigate(TherapyScreen.route) {
+                        popUpTo(TherapyScreen.route) { inclusive = false }
+                    }
                     Toast.makeText(context, "Лекарство успешно удалено", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.padding(bottom = 48.dp)
@@ -154,5 +166,31 @@ fun EditMedicineScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewEditMedicineScreen() {
+    AesculapiusTheme {
+        EditMedicineScreen(
+            onNavigateBack = {},
+            onTherapyEvent = {},
+            onNavigate = { _, _ -> },
+            medicine = MedicineCard(
+                id = 12,
+                dose = "12мг/доза",
+                doseId = 13,
+                frequency = "2 раза в день",
+                fullFrequency = "3 раза в день",
+                isSkipped = false,
+                startDate = LocalDate.now(),
+                endDate = LocalDate.now(),
+                isAccepted = false,
+                undername = "что-то там",
+                name = "препарат",
+                medicineType = CurrentMedicineType.Aerosol
+            )
+        )
     }
 }

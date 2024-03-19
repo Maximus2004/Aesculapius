@@ -31,7 +31,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptionsBuilder
 import com.example.aesculapius.R
 import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.data.medicinesAerosol
@@ -63,15 +63,8 @@ object NewMedicineScreen : NavigationDestination {
 @Composable
 fun NewMedicineScreen(
     onNavigateBack: () -> Unit,
-    onClickFinishButton: (
-        medicineType: CurrentMedicineType,
-        name: String,
-        undername: String,
-        dose: String,
-        frequency: String,
-        startDate: LocalDate,
-        endDate: LocalDate
-    ) -> Unit,
+    onTherapyEvent: (TherapyEvent) -> Unit,
+    onNavigate: (String, NavOptionsBuilder.() -> Unit) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -322,16 +315,22 @@ fun NewMedicineScreen(
                 onClick = {
                     if (!isFrequencyChoosen || !isDoseChoosen)
                         Toast.makeText(context, "Выберите дозировку и кратность для этого лекарства", Toast.LENGTH_SHORT).show()
-                    else
-                        onClickFinishButton(
-                            currentMedicineType,
-                            currentMedicineItem.name,
-                            currentMedicineItem.undername,
-                            currentMedicineItem.doses[selectedDosesIndex],
-                            currentMedicineItem.frequency[selectedFrequencyIndex],
-                            LocalDate.now(),
-                            LocalDate.now().plusMonths(1),
+                    else {
+                        onTherapyEvent(
+                            TherapyEvent.OnAddMedicineItem(
+                                currentMedicineType,
+                                currentMedicineItem.name,
+                                currentMedicineItem.undername,
+                                currentMedicineItem.doses[selectedDosesIndex],
+                                currentMedicineItem.frequency[selectedFrequencyIndex],
+                                LocalDate.now(),
+                                LocalDate.now().plusMonths(1)
+                            )
                         )
+                        onNavigate(TherapyScreen.route) {
+                            popUpTo(TherapyScreen.route) { inclusive = false }
+                        }
+                    }
                 },
                 modifier = Modifier
                     .padding(bottom = 30.dp)
@@ -418,6 +417,6 @@ fun DropdownMenu(
 @Composable
 fun NewMedicineScreenPreview() {
     AesculapiusTheme {
-        //NewMedicineScreen(onNavigateBack = {})
+        NewMedicineScreen(onNavigateBack = {}, onNavigate = { _, _ -> }, onTherapyEvent = { _ -> })
     }
 }

@@ -18,23 +18,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.theme.Roboto
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object SetReminderTimeProfile : NavigationDestination {
@@ -177,5 +174,18 @@ fun SetReminderTimeProfile(
             Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
             Text(text = textPlanSecond, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(top = 8.dp))
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SetReminderTimeProfileScreenPreview() {
+    AesculapiusTheme {
+        SetReminderTimeProfile(
+            onClickSetReminder = {},
+            eveningTime = LocalDateTime.now(),
+            morningTime = LocalDateTime.now(),
+            onNavigateBack = {}
+        )
     }
 }

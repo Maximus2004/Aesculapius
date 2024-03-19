@@ -1,8 +1,6 @@
 package com.example.aesculapius.database
 
-import android.util.Log
 import com.example.aesculapius.ui.signup.SignUpUiState
-import com.example.aesculapius.ui.therapy.MedicineItem
 import com.example.aesculapius.worker.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
@@ -20,6 +18,9 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
         fun getUserId() = usersRef.document().id
     }
 
+    /**
+     * [addUserAtFirst] добавление пользователя в Firestore Database впервые
+     */
     fun addUserAtFirst(signUpUiState: SignUpUiState) {
         val user = User(
             name = signUpUiState.name,
@@ -35,6 +36,9 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
         usersRef.document(signUpUiState.id!!).set(user)
     }
 
+    /**
+     * [updateUserProfile] обновление данных пользователя в Firestore Database
+     */
     fun updateUserProfile(signUpUiState: SignUpUiState) {
         usersRef.document(signUpUiState.id!!).update(
             "birthDate", signUpUiState.birthday.toString(),
@@ -46,6 +50,9 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
         )
     }
 
+    /**
+     * [updateUser] переносит статистику пользователя в Firestore Database по его userId
+     */
     suspend fun updateUser(userId: String) {
         val metricsList = aesculapiusRepository.getAllMetrics().map { metricsItem ->
             hashMapOf(

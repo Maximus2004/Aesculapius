@@ -1,6 +1,5 @@
 package com.example.aesculapius
 
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,16 +11,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import coil.ImageLoader
-import coil.compose.rememberAsyncImagePainter
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.size.Size
 import com.example.aesculapius.database.UserRemoteDataRepository
 import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.navigation.SignUpNavigation
@@ -48,7 +42,6 @@ class MainActivity : ComponentActivity() {
                 val profileViewModel: ProfileViewModel = hiltViewModel()
                 val userUiState: SignUpUiState by profileViewModel.userUiState.collectAsState()
 
-                // так как id - это String, хранящий в себе id текущего пользователя, мы должны обработать его состояние
                 when (userUiState.id) {
                     "" -> {
                         SignUpNavigation(
@@ -61,9 +54,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    null -> ImageGifDisplay()
+                    null -> ImageDisplay()
 
                     else -> {
+                        // передаём id пользователя в worker, запускающийся периодически для бэкапа статистики
                         val inputData = Data.Builder().putString("userId", userUiState.id).build()
                         val workRequest = OneTimeWorkRequestBuilder<UserWorkerSchedule>().setInputData(inputData).build()
                         WorkManager.getInstance(this).enqueue(workRequest)
@@ -80,25 +74,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ImageGifDisplay() {
-    val context = LocalContext.current
-    val imageLoader = ImageLoader.Builder(context)
-        .components {
-            if (SDK_INT >= 28) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
-            }
-        }
-        .build()
+fun ImageDisplay() {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = rememberAsyncImagePainter(
-                coil.request.ImageRequest.Builder(context).data(data = R.drawable.downloading_dif)
-                    .apply(block = {
-                        size(Size.ORIGINAL)
-                    }).build(), imageLoader = imageLoader
-            ),
+            painter = painterResource(id = R.drawable.logo),
             contentDescription = null,
             modifier = Modifier.align(Alignment.Center),
         )

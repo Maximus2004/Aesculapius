@@ -68,7 +68,6 @@ import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.context.DrawContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.Duration
 import java.time.Period
 
 object StatisticsScreen : NavigationDestination {
@@ -77,11 +76,12 @@ object StatisticsScreen : NavigationDestination {
 
 @Composable
 fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: StatisticsViewModel, modifier: Modifier) {
-    val statisticsUiState = statisticsViewModel.statisticsUiState.collectAsState().value
-    val datesForColumnChart = statisticsViewModel.datesForColumnChart.collectAsState().value
-    val modelProducerColumn = statisticsViewModel.chartEntryModelColumn.collectAsState().value
-    val datesForLineChart = statisticsViewModel.datesForLineChart.collectAsState().value
-    val modelProducerLine = statisticsViewModel.chartEntryModelLine.collectAsState().value
+    val statisticsUiState by statisticsViewModel.statisticsUiState.collectAsState()
+    val datesForColumnChart by statisticsViewModel.datesForColumnChart.collectAsState()
+    val modelProducerColumn by statisticsViewModel.chartEntryModelColumn.collectAsState()
+    val datesForLineChart by statisticsViewModel.datesForLineChart.collectAsState()
+    val modelProducerLine by statisticsViewModel.chartEntryModelLine.collectAsState()
+
     var currentLinePointsAmount by remember { mutableIntStateOf(0) }
     var currentColumnPointsAmount by remember { mutableIntStateOf(0) }
 
@@ -141,7 +141,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
             }
         }
     }
-    Box() {
+    Box {
         LazyColumn(modifier = modifier) {
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -163,7 +163,8 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                             if (!isLineChart)
                                 DisplayDatesForColumn(
                                     pointsAmountText = pointsAmountText,
-                                    dateTextColumn = dateTextColumn
+                                    dateTextColumn = dateTextColumn,
+                                    convertToRussian = { statisticsViewModel.convertToRussian(it) }
                                 )
                             else
                                 DisplayDatesForLine(
@@ -220,7 +221,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
 
                     ProvideChartStyle {
                         if ((currentLinePointsAmount < 1 && (statisticsUiState.graphicTypes == GraphicTypes.Week ||
-                                    statisticsUiState.graphicTypes == GraphicTypes.Month)) ||
+                                    statisticsUiState.graphicTypes == GraphicTypes.Month) && isLineChart) ||
                             (currentLinePointsAmount < 7 && (statisticsUiState.graphicTypes == GraphicTypes.ThreeMonths ||
                                     statisticsUiState.graphicTypes == GraphicTypes.HalfYear ||
                                     statisticsUiState.graphicTypes == GraphicTypes.Year)) && isLineChart)
@@ -447,7 +448,7 @@ fun ShowColumnChart(
 }
 
 @Composable
-fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate) {
+fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate, convertToRussian: (Int) -> String) {
     val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ru"))
     Text(
         text =
@@ -513,14 +514,6 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
             LocalDate.now().format(formatterYearFull)
         }", style = MaterialTheme.typography.bodySmall
     )
-}
-
-private fun convertToRussian(points: Int): String {
-    return when {
-        (points % 10 == 1 && points != 11) -> "$points балл"
-        ((points % 10 == 2 || points % 10 == 3 || points % 10 == 4) && points != 12 && points != 13 && points != 14) -> "$points балла"
-        else -> "$points баллов"
-    }
 }
 
 @Composable

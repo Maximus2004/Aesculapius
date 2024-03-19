@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.therapy
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -55,9 +53,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
@@ -81,17 +81,16 @@ object TherapyScreen : NavigationDestination {
 
 @Composable
 fun TherapyScreen(
-    therapyViewModel: TherapyViewModel,
+    getAmountNotAcceptedMedicines: suspend (LocalDate) -> Int,
+    therapyEvent: (TherapyEvent) -> Unit,
     currentDate: LocalDate,
-    getWeekDates: (LocalDate) -> Unit,
     updateCurrentDate: (LocalDate) -> Boolean,
     currentLoadingState: CurrentLoadingState,
     generalLoadingState: GeneralLoadingState,
     currentWeekDates: Week,
-    onCreateNewMedicine: () -> Unit,
+    onNavigate: (String) -> Unit,
     isAfterCurrentDate: Boolean,
     isWeek: Boolean,
-    onClickChangeWeek: (Boolean) -> Unit,
     onClickMedicine: (MedicineCard) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,13 +114,12 @@ fun TherapyScreen(
                 is GeneralLoadingState.Success -> {
                     item {
                         CalendarItem(
-                            therapyViewModel = therapyViewModel,
+                            getAmountNotAcceptedMedicines = getAmountNotAcceptedMedicines,
                             currentDate = currentDate,
                             onDateChanged = { updateCurrentDate(it) },
                             weekDates = currentWeekDates,
-                            getWeekDates = { getWeekDates(it) },
                             isWeek = isWeek,
-                            onClickChangeWeek = { onClickChangeWeek(it) },
+                            therapyEvent = therapyEvent
                         )
                     }
                     when (currentLoadingState) {
@@ -137,7 +135,7 @@ fun TherapyScreen(
 
                         is CurrentLoadingState.Success -> {
 
-                            val currentMedicines = currentLoadingState.therapyuiState
+                            val currentMedicines = currentLoadingState.therapyUiState
 
                             item {
                                 Card(
@@ -358,7 +356,7 @@ fun TherapyScreen(
             }
         }
         FloatingButton(
-            onClick = { onCreateNewMedicine() }, modifier = Modifier.align(Alignment.BottomEnd)
+            onClick = { onNavigate(NewMedicineScreen.route) }, modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
 }
@@ -406,7 +404,10 @@ fun MedicineCard(
             drawLine(
                 color = color,
                 start = Offset(x = 0f, y = cornerRadius.toPx() + 3),
-                end = Offset(x = 0f, y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3),
+                end = Offset(
+                    x = 0f,
+                    y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3
+                ),
                 strokeWidth = 6.dp.toPx()
             )
             drawArc(
@@ -414,7 +415,10 @@ fun MedicineCard(
                 startAngle = 180f,
                 sweepAngle = -90f,
                 useCenter = false,
-                topLeft = Offset(x = 0f, y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6),
+                topLeft = Offset(
+                    x = 0f,
+                    y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6
+                ),
                 size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
                 style = Stroke(width = 6.dp.toPx())
             )
@@ -437,7 +441,9 @@ fun MedicineCard(
                 .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() },
             shape = RoundedCornerShape(cornerRadius)
         ) {
-            Row(modifier = Modifier.fillMaxSize().padding(end = 10.dp)) {
+            Row(modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 10.dp)) {
                 Image(
                     painter = painterResource(
                         id =
@@ -566,7 +572,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
 
 @Composable
 fun DayContent(
-    state: DayState<DynamicSelectionState>, therapyViewModel: TherapyViewModel
+    state: DayState<DynamicSelectionState>, getAmountNotAcceptedMedicines: suspend (LocalDate) -> Int
 ) {
     var currentColorCircle by remember { mutableStateOf(Color(0xFFB0A3D1)) }
 
@@ -578,7 +584,7 @@ fun DayContent(
     LaunchedEffect(key1 = Unit) {
         currentColorCircle = withContext(Dispatchers.IO) {
             if (date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
-            else if (therapyViewModel.getAmountNotAcceptedMedicines(date) > 0) Color(0xFFFC3B69)
+            else if (getAmountNotAcceptedMedicines(date) > 0) Color(0xFFFC3B69)
             else Color(0xFF9ED209)
         }
     }
@@ -687,49 +693,60 @@ fun CalendarItem(
     onDateChanged: (LocalDate) -> Boolean,
     currentDate: LocalDate,
     weekDates: Week,
-    getWeekDates: (LocalDate) -> Unit,
-    therapyViewModel: TherapyViewModel,
+    getAmountNotAcceptedMedicines: suspend (LocalDate) -> Int,
     isWeek: Boolean,
-    onClickChangeWeek: (Boolean) -> Unit,
+    therapyEvent: (TherapyEvent) -> Unit
 ) {
-//    анимасьон
-//    Column(
-//        modifier = Modifier.animateContentSize(
-//            animationSpec = spring(
-//                dampingRatio = Spring.DampingRatioLowBouncy,
-//                stiffness = Spring.StiffnessLow
-//            )
-//        )
-//    ) {
     // внутри ViewModel currentDate обновляется так, чтобы не триггерить recomposition календаря снова
     if (isWeek) SelectableWeekCalendar(modifier = modifier,
         calendarState = rememberSelectableWeekCalendarState(initialSelection = listOf(currentDate),
             initialWeek = weekDates,
             confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }),
         dayContent = { state ->
-            DayContent(state = state, therapyViewModel = therapyViewModel)
+            DayContent(state = state, getAmountNotAcceptedMedicines = getAmountNotAcceptedMedicines)
         },
         daysOfWeekHeader = { daysOfWeek ->
             DaysOfWeekHeader(daysOfWeek = daysOfWeek)
         },
         weekHeader = { weekState ->
-            WeekHeader(weekState = weekState, onClickWeek = { onClickChangeWeek(it) })
-        })
+            WeekHeader(weekState = weekState, onClickWeek = { therapyEvent(TherapyEvent.OnChangeIsWeek(it)) })
+        }
+    )
     else SelectableCalendar(modifier = modifier,
         calendarState = rememberSelectableCalendarState(initialSelection = listOf(currentDate),
             initialMonth = YearMonth.from(currentDate),
             confirmSelectionChange = { if (it.isNotEmpty()) onDateChanged(it.first()) else false }),
         dayContent = { state ->
-            DayContent(state = state, therapyViewModel = therapyViewModel)
+            DayContent(state = state, getAmountNotAcceptedMedicines = getAmountNotAcceptedMedicines)
         },
         monthHeader = { monthState ->
             MonthHeader(monthState = monthState, onClickMonth = {
-                onClickChangeWeek(it)
-                getWeekDates(currentDate)
+                therapyEvent(TherapyEvent.OnChangeIsWeek(it))
+                therapyEvent(TherapyEvent.OnGetWeekDates(currentDate))
             })
         },
         daysOfWeekHeader = { daysOfWeek ->
             DaysOfWeekHeader(daysOfWeek = daysOfWeek)
-        })
-//    }
+        }
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewTherapyScreen() {
+    AesculapiusTheme {
+        TherapyScreen(
+            getAmountNotAcceptedMedicines = { 30 },
+            therapyEvent = {},
+            currentDate = LocalDate.now(),
+            updateCurrentDate = { true },
+            currentLoadingState = CurrentLoadingState.Success(TherapyUiState()),
+            generalLoadingState = GeneralLoadingState.Success,
+            currentWeekDates = Week.now(),
+            onNavigate = {},
+            isAfterCurrentDate = false,
+            isWeek = true,
+            onClickMedicine = {}
+        )
+    }
 }

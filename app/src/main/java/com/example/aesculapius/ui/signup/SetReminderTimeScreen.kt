@@ -35,8 +35,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 import java.time.LocalDateTime
 
 object SetReminderTime : NavigationDestination {
@@ -47,7 +49,7 @@ object SetReminderTime : NavigationDestination {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SetReminderTime(
+fun SetReminderTimeScreen(
     textTopBar: String,
     title: String,
     textHours: String,
@@ -182,3 +184,17 @@ fun TextInputTime(
     )
 }
 
+@Composable
+@Preview(showBackground = true)
+fun SetReminderTimeScreenPreview() {
+    AesculapiusTheme {
+        SetReminderTimeScreen(
+            onDoneButton = {},
+            onNavigateBack = {},
+            textHours = "12",
+            textMinutes = "10",
+            title = "Вечернее напоминание",
+            textTopBar = "Напоминания"
+        )
+    }
+}

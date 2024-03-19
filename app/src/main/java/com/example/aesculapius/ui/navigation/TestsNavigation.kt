@@ -36,19 +36,17 @@ fun NavGraphBuilder.testsNavGraph(
 ) {
     composable(route = TestsScreen.route) {
         TestsScreen(
-            onClickAstTest = { navController.navigate(ASTTestOnboardingScreen.route) },
-            onClickMetricsTest = { navController.navigate(MetricsOnboardingScreen.route) },
-            onClickRecTest = { navController.navigate(RecommendationsOnboardingScreen.route) },
             modifier = Modifier.padding(horizontal = 16.dp),
             morningReminder = userUiState.morningReminder,
             eveningReminder = userUiState.eveningReminder,
             recommendationTestDate = userUiState.recommendationTestDate,
             astTestDate = userUiState.astTestDate,
-            onProfileEvent = onProfileEvent
+            onProfileEvent = onProfileEvent,
+            onNavigate = navController::navigate
         )
         turnOnBars()
     }
-    // не делаем несколько отдельных compopsables, так как экран для двух первых тестов один
+    // не делаем несколько отдельных composables, так как экран для двух первых тестов один
     composable(
         route = TestScreen.routeWithArgs,
         arguments = listOf(navArgument(name = TestScreen.depart) { type = NavType.StringType })

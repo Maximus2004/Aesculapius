@@ -30,11 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.profile.ProfileEvent
+import com.example.aesculapius.ui.theme.AesculapiusTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -54,9 +56,7 @@ fun TestsScreen(
     morningReminder: LocalDateTime,
     eveningReminder: LocalDateTime,
     onProfileEvent: (ProfileEvent) -> Unit,
-    onClickRecTest: () -> Unit,
-    onClickAstTest: () -> Unit,
-    onClickMetricsTest: () -> Unit,
+    onNavigate: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var now by remember { mutableStateOf(LocalDateTime.now()) }
@@ -180,7 +180,7 @@ fun TestsScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .width(81.dp)
-                                            .clickable { onClickMetricsTest() },
+                                            .clickable { onNavigate(MetricsOnboardingScreen.route) },
                                         shape = RoundedCornerShape(12.dp),
                                         backgroundColor = MaterialTheme.colorScheme.primary
                                     ) {
@@ -294,7 +294,7 @@ fun TestsScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .width(81.dp)
-                                            .clickable { onClickRecTest() },
+                                            .clickable { onNavigate(RecommendationsOnboardingScreen.route) },
                                         shape = RoundedCornerShape(12.dp),
                                         backgroundColor = MaterialTheme.colorScheme.primary
                                     ) {
@@ -404,7 +404,7 @@ fun TestsScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .width(81.dp)
-                                            .clickable { onClickAstTest() },
+                                            .clickable { onNavigate(ASTTestOnboardingScreen.route) },
                                         shape = RoundedCornerShape(12.dp),
                                         backgroundColor = MaterialTheme.colorScheme.primary
                                     ) {
@@ -473,5 +473,20 @@ fun TestsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun TestsScreenPreview() {
+    AesculapiusTheme {
+        TestsScreen(
+            astTestDate = Converters.dateToStringWithFormat(LocalDate.now()),
+            recommendationTestDate = Converters.dateToStringWithFormat(LocalDate.now()),
+            morningReminder = LocalDateTime.now(),
+            eveningReminder = LocalDateTime.now(),
+            onProfileEvent = {},
+            onNavigate = {}
+        )
     }
 }
