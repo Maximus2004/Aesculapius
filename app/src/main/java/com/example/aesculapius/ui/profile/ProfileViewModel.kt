@@ -62,7 +62,7 @@ class ProfileViewModel @Inject constructor(
             }
 
             is ProfileEvent.OnSaveMorningTime -> {
-                prefRepository.saveUserEveningReminder(Converters.timeToString(event.morningTime))
+                prefRepository.saveUserMorningReminder(Converters.timeToString(event.morningTime))
                 setMorningNotification(event.morningTime)
             }
 

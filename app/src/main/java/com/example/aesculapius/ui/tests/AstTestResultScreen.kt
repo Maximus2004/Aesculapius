@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -36,53 +35,9 @@ fun ASTTestResultScreen(
     onClickReturnButton: () -> Unit,
     summaryScore: Int
 ) {
-    val textASTResultGood = buildAnnotatedString {
-        append("Вы ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("полностью контролировали")
-        }
-        append(" астму за последние 4 недели. У Вас не было симптомов астмы и связанных с ней ограничений. Проконсультируйтесь с врачом, если ситуация изменится.")
-    }
-    val textASTResultMedium = buildAnnotatedString {
-        append("За последние 4 недели Вы ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("хорошо контролировали")
-        }
-        append(" астму, но ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("не полностью.")
-        }
-        append(" Ваш врач поможет Вам добиться полного контроля.")
-    }
-    val textASTResultBad = buildAnnotatedString {
-        append("Вам ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("не удавалось контролировать")
-        }
-        append(" астму. Ваш врач может посоветовать Вам, какие меры нужно применять, чтобы добиться улучшения контроля над Вашим заболеванием.")
-    }
+    val textASTResultGood = "У тебя не было симптомов астмы и связанных с ней ограничений. Если ситуация изменится – проконсультируйся с врачом."
+    val textASTResultMedium = "За последние 4 недели ты хорошо контролировал астму, но не полностью. Твой врач поможет добиться полного контроля."
+    val textASTResultBad = "За последние 4 недели тебе не удавалось контролировать астму. Твой врач может посоветовать, какие меры нужно принять, чтобы добиться более полного контроля над астмой."
     val textASTGoodResult = buildAnnotatedString {
         append("Сумма ")
         withStyle(
@@ -95,7 +50,7 @@ fun ASTTestResultScreen(
         ) {
             append("25 быллов")
         }
-        append(" означает полный контроль;")
+        append(" - ты полностью контролировал астму за последние 4 недели.")
     }
     val textASTMediumResult = buildAnnotatedString {
         append("Сумма ")
@@ -109,7 +64,7 @@ fun ASTTestResultScreen(
         ) {
             append("20-24 былла")
         }
-        append(" означает, что астма контролируется хорошо;")
+        append(" - ты у цели.")
     }
     val textASTBadResult = buildAnnotatedString {
         append("Сумма ")
@@ -123,7 +78,7 @@ fun ASTTestResultScreen(
         ) {
             append("19 баллов и меньше")
         }
-        append(" свидетельствует о неконтролируемой астме.")
+        append(" - мимо цели.")
     }
 
     Scaffold(topBar = {

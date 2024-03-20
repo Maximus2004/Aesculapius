@@ -302,13 +302,13 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                     }
                 }
                 Text(
-                    text = "Отслеживание тенденций и изменений",
+                    text = "Посмотри, как ты справляешься с астмой",
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 20.dp, start = 23.dp, end = 23.dp)
                 )
                 Text(
-                    text = "Следите за динамикой Вашего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.",
+                    text = "Следи за динамикой твоего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 8.dp, start = 23.dp, end = 23.dp)
                 )

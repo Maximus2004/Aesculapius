@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.tests
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -20,11 +18,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.theme.AesculapiusTheme
 
 object MetricsOnboardingScreen : NavigationDestination {
     override val route = "TestScreen"
@@ -45,7 +41,7 @@ fun MetricsOnboardingScreen(
         ) {
             append("важный шаг")
         }
-        append(" на пути к лучшему управлению вашей астмой. С вашей активной участием мы сможем вместе сделать каждый день ")
+        append(" на пути к лучшему управлению вашей астмой. С твоим активным участием мы сможем вместе сделать каждый день ")
         withStyle(
             style = SpanStyle(
                 fontWeight = FontWeight.W500,
@@ -75,7 +71,7 @@ fun MetricsOnboardingScreen(
         ) {
             append("установленного графика")
         }
-        append(" измерений. Результаты будут автоматически сохранены в нашей базе данных для вашего удобства и последующего анализа.")
+        append(" измерений. Результаты будут автоматически сохранены в нашей базе данных для твоего удобства и последующего анализа.")
     }
 
     Scaffold(topBar = {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -29,15 +27,11 @@ import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -202,14 +196,14 @@ fun TestScreen(
                     shape = RoundedCornerShape(16.dp),
                     title = {
                         Text(
-                            text = "Вы уверены, что хотите выйти?",
+                            text = "Ты уверен(-а), что хочешь выйти?",
                             style = MaterialTheme.typography.displayMedium,
                             modifier = Modifier.padding(top = 34.dp)
                         )
                     },
                     text = {
                         Text(
-                            text = "Ваш текущий прогресс не сохранится",
+                            text = "Твой текущий прогресс не сохранится",
                             style = MaterialTheme.typography.headlineMedium
                         )
                     },

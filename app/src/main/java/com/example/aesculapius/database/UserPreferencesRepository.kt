@@ -2,18 +2,13 @@ package com.example.aesculapius.database
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.aesculapius.ui.signup.SignUpUiState
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.io.IOException
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -68,6 +63,8 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
             preferences[BIRTHDAY] = signUpUiState.birthday.toString()
             preferences[HEIGHT] = signUpUiState.height
             preferences[WEIGHT] = signUpUiState.weight
+            preferences[MORNING_REMINDER_TIME] = Converters.timeToString(signUpUiState.morningReminder)
+            preferences[EVENING_REMINDER_TIME] = Converters.timeToString(signUpUiState.eveningReminder)
         }
     }
 

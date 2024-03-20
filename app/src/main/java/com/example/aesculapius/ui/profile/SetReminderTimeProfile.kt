@@ -21,10 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.data.Hours
@@ -47,30 +43,10 @@ fun SetReminderTimeProfile(
 ) {
     BackHandler { onNavigateBack() }
 
-    val textPlanFirst = buildAnnotatedString {
-        append("Выберите время для напоминаний, которое ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("наилучшим образом")
-        }
-        append(" соответствует Вашему режиму дня и позволяет выполнять измерения точно и без спешки. Это поможет Вам оставаться на пути к лучшему здоровью и более точному контролю над Вашей астмой.")
-    }
-
-    val textPlanSecond = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("Утро и вечер")
-        }
-        append(" - два ключевых момента для мониторинга вашего состояния.")
-    }
+    val textPlanFirst = "Проводить пикфлоуметрию нужно 2 раза в день - утром и вечером!\n" +
+                "Лучше выбрать время, когда ты сможешь выполнить пикфлоуметрию без спешки. \n" +
+                "Лучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.\n" +
+                "Запиши результат!"
 
     Scaffold(topBar = {
         TopBar(
@@ -164,7 +140,7 @@ fun SetReminderTimeProfile(
                 }
             }
             Text(
-                text = "Планирование Вашего дня",
+                text = "Планирование твоего дня",
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .padding(top = 40.dp, bottom = 8.dp)
@@ -172,7 +148,6 @@ fun SetReminderTimeProfile(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
-            Text(text = textPlanSecond, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

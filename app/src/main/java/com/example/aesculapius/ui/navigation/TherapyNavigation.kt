@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.navigation
 
+import androidx.navigation.compose.composable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -7,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
 import com.example.aesculapius.ui.therapy.NewMedicineScreen

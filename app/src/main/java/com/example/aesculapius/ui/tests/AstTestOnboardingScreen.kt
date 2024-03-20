@@ -13,14 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
@@ -35,26 +30,10 @@ fun ASTTestOnboardingScreen(
     onClickBeginButton: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val textASTTest = buildAnnotatedString {
-        append("Каждую неделю отвечайте на несколько вопросов в анкете. Это займет всего ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("пару минут")
-        }
-        append(" и поможет вам и вашему врачу лучше понимать вашу астму. Вопросы о вашем самочувствии, симптомах и образе жизни помогут сформировать полную картину")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append(" Вашего состояния")
-        }
-    }
+    val textASTTest =
+        "Проходи тест 1 раз в месяц, чтобы понять, насколько хорошо контролируется твоя астма.\n" +
+        "Это займет всего пару минут!\n" +
+        "Тест поможет врачу подобрать для тебя лучшее лечение."
 
     Scaffold(topBar = {
         TopBar(
@@ -80,7 +59,7 @@ fun ASTTestOnboardingScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Мы сравниваем ваши ответы с данными, полученными при использовании пикфлоуметра, для оценки Вашего состояния и эффективности подобранного плана лечения.",
+                text = "Мы сравниваем твои ответы с данными, полученными при использовании пикфлоуметра, для оценки твоего состояния и эффективности подобранного плана лечения.",
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
@@ -96,7 +75,7 @@ fun ASTTestOnboardingScreen(
             Button(
                 onClick = { onClickBeginButton() },
                 modifier = Modifier
-                    .padding(bottom = 64.dp)
+                    .padding(bottom = 30.dp)
                     .height(56.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),

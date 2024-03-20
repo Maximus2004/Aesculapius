@@ -45,13 +45,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.ListItemPicker
@@ -162,32 +158,14 @@ fun ReminderFields(
     morningTime: LocalDateTime,
     modifier: Modifier = Modifier
 ) {
-    val textPlanFirst = buildAnnotatedString {
-        append("Выберите время для напоминаний, которое ")
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("наилучшим образом")
-        }
-        append(" соответствует Вашему режиму дня и позволяет выполнять измерения точно и без спешки. Это поможет Вам оставаться на пути к лучшему здоровью и более точному контролю над Вашей астмой.")
-    }
+    val textPlanFirst =
+        "Проводить пикфлоуметрию нужно 2 раза в день - утром и вечером!\n" +
+        "Лучше выбрать время, когда ты сможешь выполнить пикфлоуметрию без спешки. \n" +
+        "Лучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.\n" +
+        "Запиши результат!"
 
-    val textPlanSecond = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("Утро и вечер")
-        }
-        append(" - два ключевых момента для мониторинга вашего состояния.")
-    }
     Text(
-        text = "Настройте время напоминаний для ввода метрик с пикфлоуметра",
+        text = "Настрой время напоминаний для пикфлоуметрии",
         style = MaterialTheme.typography.titleMedium,
         textAlign = TextAlign.Center
     )
@@ -261,13 +239,12 @@ fun ReminderFields(
     }
 
     Text(
-        text = "Планирование Вашего дня",
+        text = "Планирование твоего дня",
         style = MaterialTheme.typography.headlineLarge,
         modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
         color = MaterialTheme.colorScheme.primary,
     )
     Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
-    Text(text = textPlanSecond, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(top = 8.dp))
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -279,7 +256,7 @@ fun HeightWeightFields(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Text(text = "Укажите свой рост, см", style = MaterialTheme.typography.titleMedium)
+    Text(text = "Твой рост, см", style = MaterialTheme.typography.titleMedium)
     TextInput(
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -292,7 +269,7 @@ fun HeightWeightFields(
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         modifier = Modifier.padding(bottom = 48.dp)
     )
-    Text(text = "Укажите свой вес, кг", style = MaterialTheme.typography.titleMedium)
+    Text(text = "Твой вес, кг", style = MaterialTheme.typography.titleMedium)
     TextInput(
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -386,9 +363,9 @@ fun FieldsFIO(
     val focusRequesterName = remember { FocusRequester() }
     val focusRequesterPatronymic = remember { FocusRequester() }
 
-    Text(text = "Укажите своё имя", style = MaterialTheme.typography.titleMedium)
+    Text(text = "Твои фамилия, имя, отчество", style = MaterialTheme.typography.titleMedium)
     TextInput(
-        text = name,
+        text = surname,
         onValueChanged = { onEvent(SignUpEvent.OnSurnameChanged(it)) },
         hint = "Фамилия",
         modifier = Modifier.padding(top = 24.dp),
@@ -397,7 +374,7 @@ fun FieldsFIO(
         focusRequester = FocusRequester()
     )
     TextInput(
-        text = surname,
+        text = name,
         onValueChanged = { onEvent(SignUpEvent.OnNameChanged(it)) },
         hint = "Имя",
         modifier = Modifier.padding(top = 24.dp),

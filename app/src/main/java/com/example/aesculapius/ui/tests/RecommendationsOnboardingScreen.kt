@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.tests
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,19 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
-import com.example.aesculapius.ui.theme.Roboto
 
 object RecommendationsOnboardingScreen : NavigationDestination {
     override val route = "RecommendationsOnboardingScreen"
@@ -38,43 +30,6 @@ fun RecommendationsOnboardingScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val textRecTest = buildAnnotatedString {
-        append("Ответьте ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("честно")
-        }
-        append(" на вопросы о Ваших ежедневных привычках, принятии лекарств, и восприятии лечебных мероприятий и получите ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("детальную оценку")
-        }
-        append(" Вашей приверженности, а также персонализированные ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("рекомендации")
-        }
-        append(" для улучшения ухода о своем здоровье.")
-    }
-
     Scaffold(topBar = {
         TopBar(
             text = "Тест приверженности",
@@ -99,23 +54,15 @@ fun RecommendationsOnboardingScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Важным шагом к эффективному контролю над заболеванием является понимание Вашей готовности и регулярности в следовании предписаниям врача.",
+                text = "Приверженность к лечению - насколько точно ты выполняешь рекомендации врача.\n" +
+                        "Ответь на вопросы искренне. Это поможет понять, как улучшить лечение твоей астмы.",
                 style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "Ключ к успешному лечению",
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(top = 40.dp, bottom = 8.dp),
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = textRecTest, style = MaterialTheme.typography.headlineMedium
             )
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = { onClickBeginButton() },
                 modifier = Modifier
-                    .padding(bottom = 64.dp)
+                    .padding(bottom = 30.dp)
                     .height(56.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),

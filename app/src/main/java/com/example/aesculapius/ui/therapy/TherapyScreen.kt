@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,11 +52,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
+import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
@@ -96,7 +101,7 @@ fun TherapyScreen(
 ) {
     var isMorningMedicines by remember { mutableStateOf(true) }
 
-    Box() {
+    Box {
         LazyColumn(modifier = modifier.fillMaxSize()) {
             when (generalLoadingState) {
                 is GeneralLoadingState.Loading -> {
@@ -392,6 +397,10 @@ fun MedicineCard(
     isFuture: Boolean
 ) {
     val cornerRadius = 16.dp
+    var parentWidthPx by remember { mutableStateOf(0) }
+    val parentWidthDp: Dp = with(LocalDensity.current) {
+        parentWidthPx.toDp()
+    }
 
     Box(modifier = modifier
         .fillMaxWidth()
@@ -406,7 +415,7 @@ fun MedicineCard(
                 start = Offset(x = 0f, y = cornerRadius.toPx() + 3),
                 end = Offset(
                     x = 0f,
-                    y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3
+                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3
                 ),
                 strokeWidth = 6.dp.toPx()
             )
@@ -417,7 +426,7 @@ fun MedicineCard(
                 useCenter = false,
                 topLeft = Offset(
                     x = 0f,
-                    y = (112.dp + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6
+                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6
                 ),
                 size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
                 style = Stroke(width = 6.dp.toPx())
@@ -437,13 +446,16 @@ fun MedicineCard(
             elevation = 0.dp,
             modifier = modifier
                 .fillMaxWidth()
-                .height(112.dp)
+                .heightIn(min = 112.dp, max = 136.dp)
                 .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() },
             shape = RoundedCornerShape(cornerRadius)
         ) {
             Row(modifier = Modifier
-                .fillMaxSize()
-                .padding(end = 10.dp)) {
+                .fillMaxWidth().padding(end = 10.dp)
+                .onGloballyPositioned { coordinates ->
+                    parentWidthPx = coordinates.size.height
+                }
+            ) {
                 Image(
                     painter = painterResource(
                         id =
@@ -452,9 +464,7 @@ fun MedicineCard(
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .weight(0.30f)
-                        .size(height = 112.dp, width = 96.dp)
+                    modifier = Modifier.weight(0.30f).height(parentWidthDp)
                 )
                 Column(
                     modifier = Modifier
@@ -740,13 +750,47 @@ fun PreviewTherapyScreen() {
             therapyEvent = {},
             currentDate = LocalDate.now(),
             updateCurrentDate = { true },
-            currentLoadingState = CurrentLoadingState.Success(TherapyUiState()),
+            currentLoadingState = CurrentLoadingState.Success(
+                TherapyUiState(
+                    currentMorningMedicines = listOf(
+                        MedicineCard(
+                            id = 12,
+                            name = "препарат",
+                            undername = "подпрепарат",
+                            dose = "12мг/доза",
+                            frequency = "2 дозы",
+                            isSkipped = false,
+                            isAccepted = true,
+                            doseId = 12,
+                            endDate = LocalDate.now(),
+                            startDate = LocalDate.now(),
+                            fullFrequency = "2 дозы 2 раза в день",
+                            medicineType = CurrentMedicineType.Aerosol
+                        ),
+                        MedicineCard(
+                            id = 12,
+                            name = "длинный препарат препарат",
+                            undername = "подпрепарат",
+                            dose = "12мг/доза",
+                            frequency = "2 дозы",
+                            isSkipped = true,
+                            isAccepted = false,
+                            doseId = 12,
+                            endDate = LocalDate.now(),
+                            startDate = LocalDate.now(),
+                            fullFrequency = "2 дозы 2 раза в день",
+                            medicineType = CurrentMedicineType.Aerosol
+                        )
+                    )
+                )
+            ),
             generalLoadingState = GeneralLoadingState.Success,
             currentWeekDates = Week.now(),
             onNavigate = {},
             isAfterCurrentDate = false,
             isWeek = true,
-            onClickMedicine = {}
+            onClickMedicine = {},
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
     }
 }

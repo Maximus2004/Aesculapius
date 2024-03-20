@@ -130,7 +130,7 @@ fun TestsScreen(
                         .fillMaxWidth()
                 )
                 Text(
-                    text = "Своевременный ввод метрик и регулярное прохождение тестирований предоставляют уникальную возможность глубокого понимания Вашего текущего состояния.",
+                    text = "Регулярно проходи тесты - это поможет понять, насколько хорошо ты контролируешь астму. Это поможет твоему врачу выбрать для тебя правильное лечение.",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 40.dp, start = 8.dp, end = 8.dp)
                 )
@@ -150,7 +150,7 @@ fun TestsScreen(
                                 color = Color.Black
                             )
                             Text(
-                                text = "Контролируйте состояние своих легких для лучшего здоровья",
+                                text = "Оценка функции легких",
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
@@ -161,7 +161,8 @@ fun TestsScreen(
                             ) {
                                 if ((LocalDateTime.now()
                                         .isAfter(morningReminder) && LocalDateTime.now()
-                                        .isBefore(morningReminder.plusMinutes(6))) || (LocalDateTime.now()
+                                        .isBefore(morningReminder.plusMinutes(6)))
+                                    || (LocalDateTime.now()
                                         .isAfter(eveningReminder) && LocalDateTime.now()
                                         .isBefore(eveningReminder.plusMinutes(6)))
                                 ) {
@@ -236,7 +237,8 @@ fun TestsScreen(
                         }
                     }
                     if ((LocalDateTime.now().isAfter(morningReminder) && LocalDateTime.now()
-                            .isBefore(morningReminder.plusMinutes(6))) || (LocalDateTime.now()
+                            .isBefore(morningReminder.plusMinutes(6)))
+                        || (LocalDateTime.now()
                             .isAfter(eveningReminder) && LocalDateTime.now()
                             .isBefore(eveningReminder.plusMinutes(6)))
                     )
@@ -269,7 +271,7 @@ fun TestsScreen(
                                 color = Color.Black
                             )
                             Text(
-                                text = "Оцените свою лечебную дисциплину - это важный шаг к успешному контролю над астмой",
+                                text = "Насколько точно ты выполняешь рекомендации врача",
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
@@ -379,7 +381,7 @@ fun TestsScreen(
                                 color = Color.Black
                             )
                             Text(
-                                text = "Проходите ежемесячное тестирование для более качественного понимания Вашей астмы",
+                                text = "Под контролем ли твоя астма?",
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
