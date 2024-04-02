@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -58,6 +60,7 @@ import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.statistics.StatisticsViewModel
 import com.example.aesculapius.ui.tests.TestsViewModel
+import com.example.aesculapius.ui.theme.tertiaryContainer
 import com.example.aesculapius.ui.therapy.EditMedicineScreen
 import com.example.aesculapius.ui.therapy.MedicineCard
 import com.example.aesculapius.ui.therapy.TherapyEvent
@@ -117,7 +120,9 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 if (isBarsDisplayed) TopBar(
-                    screenName = topBarHomeScreen[currentRoute]?.first ?: "Базисная терапия",
+                    screenName = stringResource(
+                        id = topBarHomeScreen[currentRoute]?.first ?: R.string.therapy_name
+                    ),
                     isHelpButton = topBarHomeScreen[currentRoute]?.second ?: false
                 )
             },
@@ -133,7 +138,9 @@ fun HomeScreen(
             NavHost(
                 navController = navController,
                 startDestination = TherapyScreen.route,
-                modifier = Modifier.fillMaxSize().padding(paddingValues = contentPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues = contentPadding),
                 builder = {
                     therapyNavGraph(
                         onClickMedicine = {
@@ -159,7 +166,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
-                            .background(color = Color.White),
+                            .background(color = tertiaryContainer),
                         statisticsViewModel = statisticsViewModel,
                         userUiState = userUiState
                     )
@@ -209,7 +216,7 @@ fun TopBar(
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = null,
-                    tint = Color(0xFF49454F)
+                    tint = MaterialTheme.colorScheme.onTertiary
                 )
             }
     }
@@ -232,9 +239,7 @@ fun BottomNavigationBar(
         for (navItem in navigationItemContentList) {
             NavigationBarItem(
                 selected = currentTab == navItem.pageType,
-                onClick = {
-                    onTabPressed(navItem.pageType)
-                },
+                onClick = { onTabPressed(navItem.pageType) },
                 icon = {
                     Image(
                         painterResource(id = navItem.icon),
@@ -242,7 +247,7 @@ fun BottomNavigationBar(
                         modifier = Modifier.size(25.dp)
                     )
                 },
-                alwaysShowLabel = false,
+                alwaysShowLabel = false
             )
         }
     }
@@ -262,10 +267,18 @@ fun EditMedicineSheet(
                 Text(
                     text = medicine.name,
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onError
                 )
-                Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
-                Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = medicine.undername,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onError
+                )
+                Text(
+                    text = medicine.dose,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onError
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = navigateToEditMedicineScreen) {
@@ -278,18 +291,19 @@ fun EditMedicineSheet(
                     painter = painterResource(id = R.drawable.moon_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onError
                 )
             else
                 Icon(
                     painter = painterResource(id = R.drawable.sun_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onError
                 )
             Text(
                 text = medicine.frequency,
                 style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onError
             )
         }
         Divider(
@@ -307,7 +321,7 @@ fun EditMedicineSheet(
                     .padding(end = 8.dp)
             ) {
                 Text(
-                    text = "Пропустить",
+                    text = stringResource(R.string.skip),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -317,12 +331,12 @@ fun EditMedicineSheet(
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.tertiaryContainer
                 ),
                 modifier = Modifier.width(106.dp)
             ) {
                 Text(
-                    text = "Принять",
+                    text = stringResource(R.string.accept),
                     style = MaterialTheme.typography.headlineSmall
                 )
             }

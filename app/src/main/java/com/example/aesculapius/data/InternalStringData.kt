@@ -49,41 +49,41 @@ val navigationItemContentList = listOf(
 )
 
 val topBarHomeScreen = mapOf(
-    StatisticsScreen.route to Pair("Статистика", true),
-    TherapyScreen.route to Pair("Базисная терапия", false),
-    TestsScreen.route to Pair("Отчётность", true),
-    ProfileScreen.route to Pair("Профиль и прочее", false)
+    StatisticsScreen.route to Pair(R.string.statistics_name, true),
+    TherapyScreen.route to Pair(R.string.therapy_name, false),
+    TestsScreen.route to Pair(R.string.tests_name, true),
+    ProfileScreen.route to Pair(R.string.profile_name, false)
 )
 
 val graphicsNavigationItemContentList = listOf(
-    GraphicTypeContent(graphicTypes = GraphicTypes.Week, nameOfType = "неделя"),
-    GraphicTypeContent(graphicTypes = GraphicTypes.Month, nameOfType = "месяц"),
-    GraphicTypeContent(graphicTypes = GraphicTypes.ThreeMonths, nameOfType = "3 месяца"),
-    GraphicTypeContent(graphicTypes = GraphicTypes.HalfYear, nameOfType = "полгода"),
-    GraphicTypeContent(graphicTypes = GraphicTypes.Year, nameOfType = "год"),
+    GraphicTypeContent(graphicTypes = GraphicTypes.Week, nameOfType = R.string.week_chart),
+    GraphicTypeContent(graphicTypes = GraphicTypes.Month, nameOfType = R.string.month_chart),
+    GraphicTypeContent(graphicTypes = GraphicTypes.ThreeMonths, nameOfType = R.string.three_months_chart),
+    GraphicTypeContent(graphicTypes = GraphicTypes.HalfYear, nameOfType = R.string.half_year_chart),
+    GraphicTypeContent(graphicTypes = GraphicTypes.Year, nameOfType = R.string.year_chart),
 )
 
 val astTest = Test(
     listOfQuestion = mutableListOf(
         Question(
-            questionText = "Как часто за последние 4 недели астма мешала тебе выполнять обычный объем работы в учебном заведении, на работе или дома?",
-            answersList = mutableListOf("Все время", "Очень часто", "Иногда", "Редко", "Никогда")
+            questionText = R.string.first_ast_test_text,
+            answersList = mutableListOf(R.string.all_the_time, R.string.very_often, R.string.sometimes, R.string.rarely, R.string.never)
         ),
         Question(
-            questionText = "Как часто за последние 4 недели ты отмечал(-а) у себя затрудненное дыхание?",
-            answersList = mutableListOf("Чаще, чем раз в неделю", "1 раз в неделю", "От 3 до 6 раз в неделю", "1 или два раза в неделю", "Ни разу")
+            questionText = R.string.second_ast_test_text,
+            answersList = mutableListOf(R.string.more_one_a_week, R.string.one_time_a_week, R.string.three_six_a_week, R.string.one_two_a_week, R.string.no_one)
         ),
         Question(
-            questionText = "Как часто за последние 4 недели ты просыпался(-ась) ночью или раньше, чем обычно, из-за симптомов астмы (кашля, свистящего или затрудненного дыхания, чувства стеснения или боли в груди)?",
-            answersList = mutableListOf("4 ночи в неделю или чаще", "2 - 3 ночи в неделю", "1 раз в неделю", "1 или 2 раза", "Ни разу")
+            questionText = R.string.third_ast_test_text,
+            answersList = mutableListOf(R.string.four_nights_a_week, R.string.two_three_nights_a_week, R.string.one_time_a_week, R.string.one_two_times_a_week, R.string.no_one)
         ),
         Question(
-            questionText = "Как часто за последнюю неделю ты использовал(-а) быстродействующий ингалятор (например, Сальбутамол, Вентолин, Беродуал, Атровент) или небулайзер (аэрозольный аппарат) с лекарством (например, Беротек, Беродуал, Вентолин небулы)?",
-            answersList = mutableListOf("3 раза в день или чаще", "1 или 2 раза в день", "2 или 3 раза в неделю", "1 раз в неделю или реже ", "Ни разу")
+            questionText = R.string.fourth_ast_test_text,
+            answersList = mutableListOf(R.string.three_times_a_day, R.string.one_or_two_a_day, R.string.two_or_three_a_week, R.string.one_time_a_week_rarely, R.string.no_one)
         ),
         Question(
-            questionText = "Как бы ты оценил(-а), насколько Вам удавалось контролировать астму за последнюю неделю?",
-            answersList = mutableListOf("Совсем не удавалось контролировать", "Плохо удавалось контролировать", "В некоторой степени удавалось контролировать", "Хорошо удавалось контролировать", "Полностью удавалось контролировать")
+            questionText = R.string.fifth_ast_test_text,
+            answersList = mutableListOf(R.string.very_bad_control_asthma, R.string.bad_control_asthma, R.string.normal_control_asthma, R.string.good_control_asthma, R.string.awesome_control_asthma)
         )
     )
 )
@@ -91,45 +91,45 @@ val astTest = Test(
 val recTest = Test(
     listOfQuestion = mutableListOf(
         Question(
-            questionText = "Забываешь ли ты делать ингаляции?",
-            answersList = mutableListOf("Никогда", "Редко", "Иногда", "Часто", "Всегда")
+            questionText = R.string.first_rec_test_text,
+            answersList = mutableListOf(R.string.never, R.string.rarely, R.string.sometimes, R.string.often, R.string.always)
         ),
         Question(
-            questionText = "Пропускал(-а) ли ты ингаляции за последние 2 недели?",
-            answersList = mutableListOf("Никогда", "Редко", "Иногда", "Часто", "Всегда")
+            questionText = R.string.second_rec_test_text,
+            answersList = mutableListOf(R.string.never, R.string.rarely, R.string.sometimes, R.string.often, R.string.always)
         ),
         Question(
-            questionText = "Бывает ли так, что ты прекращаешь ингаляции, если чувствуешь себя хорошо (БЕЗ консультации с врачом)?",
-            answersList = mutableListOf("Никогда", "Редко", "Иногда", "Часто", "Всегда")
+            questionText = R.string.third_rec_test_text,
+            answersList = mutableListOf(R.string.never, R.string.rarely, R.string.sometimes, R.string.often, R.string.always)
         ),
         Question(
-            questionText = "Бывает ли так, что ты не хочешь делать ингаляции каждый день?",
-            answersList = mutableListOf("Никогда", "Редко", "Иногда", "Часто", "Всегда")
+            questionText = R.string.fourth_rec_test_text,
+            answersList = mutableListOf(R.string.never, R.string.rarely, R.string.sometimes, R.string.often, R.string.always)
         ),
         Question(
-            questionText = "Ты хорошо знаешь, как правильно пользоваться твоим ингалятором (техника ингаляции)?",
-            answersList = mutableListOf("Да", "Нет")
+            questionText = R.string.fifth_rec_test_text,
+            answersList = mutableListOf(R.string.yes, R.string.no)
         ),
         Question(
-            questionText = "Возникают ли у тебя сложности с использованием ингалятора?",
-            answersList = mutableListOf("Никогда", "Редко", "Иногда", "Часто", "Всегда")
+            questionText = R.string.sixth_rec_test_text,
+            answersList = mutableListOf(R.string.never, R.string.rarely, R.string.sometimes, R.string.often, R.string.always)
         ),
         Question(
-            questionText = "Тебе удобно пользоваться ингалятором?",
-            answersList = mutableListOf("Да", "Нет")
+            questionText = R.string.seventh_rec_test_text,
+            answersList = mutableListOf(R.string.yes, R.string.no)
         ),
         Question(
-            questionText = "Как ты считаешь, помогает ли тебе лечение?",
-            answersList = mutableListOf("Да", "Нет")
+            questionText = R.string.eighth_rec_test_text,
+            answersList = mutableListOf(R.string.yes, R.string.no)
         ),
         Question(
-            questionText = "Меняешь ли ты препарат или количество доз самостоятельно (или с родителями) БЕЗ консультации с врачом?",
-            answersList = mutableListOf("Да", "Нет")
+            questionText = R.string.ninth_rec_test_text,
+            answersList = mutableListOf(R.string.yes, R.string.no)
         )
     )
 )
 
-val days = mapOf(
+val daysUsual = mapOf(
     "янв" to 31,
     "фев" to 28,
     "мар" to 31,
@@ -163,57 +163,23 @@ val months = listOf("янв", "фев", "мар", "апр", "май", "июн", 
 
 val learnList = listOf(
     LearnItem(
-        name = "Что такое астма?",
-        text = "Астма – это заболевание дыхательных путей, которое приводит к периодическим проблемам с дыханием. \n \n" +
-                    "При астме может возникать: \n \n" +
-                    " • Кашель \n" +
-                    " • Свистящее дыхание \n" +
-                    " • Одышка (частое дыхание) \n" +
-                    " • Ощущение, что не хватает воздуха \n" +
-                    " • Ощущение сдавливания в груди\n\n" +
-                "Это появляется из-за того, что дыхательные пути (бронхи) отекают, сужаются и в них накапливается слизь.\n\n" +
-                "Астма – довольно частая болезнь, а склонность к ней может передаваться по наследству.\n\n" +
-                "Астма может протекать по-разному: у кого-то очень легко, а у других – крайне тяжело.\n\n" +
-                "Но при использовании специальных лекарств симптомы астмы можно держать под контролем. В этом случае она никак не мешает вести полноценную жизнь."
+        name = R.string.what_is_asthma,
+        text = R.string.what_is_asthma_text
     ),
     LearnItem(
-        name = "Почему возникает астма?",
-        text = "Никто точно не знает, почему у некоторых людей возникает астма. Скорее всего, тут играют роль и разные факторы внешней среды, и гены человека.\n\n" +
-                "Астма чаще возникает у людей с аллергией (на пищу, пыльцу, домашних животных, пыль и т.д.)\n\n" +
-                "Когда человек вдыхает, то воздух попадает сначала в нос, потом в трахею, затем в бронхи (по ним воздух движется уже внутри легких) – все вместе это называется дыхательные пути.\n\n" +
-                "При астме дыхательные пути всегда немного воспалены, даже когда нет обострения астмы. И еще они могут реагировать на самые обычные вещи (они называются триггеры): вирусы, аллергены, резкие запахи, физическая нагрузка или даже смех. При этом воспаление усиливается, стенка дыхательных путей еще больше отекает, мышцы вокруг бронхов сжимаются, образуется больше слизи – все это приводит к затруднению дыхания. Это называется обострение астмы (или приступ).\n\n" +
-                "Триггеры для каждого человека могут отличаться, но самыми частыми являются:\n\n" +
-                " • Вирусные инфекции (ОРВИ, простуда)\n" +
-                " • Пыльца\n" +
-                " • Плесень\n" +
-                " • Домашние животные\n" +
-                " • Сигаретный дым\n" +
-                " • Погода (холодный + сухой воздух или теплый + влажный воздух)\n" +
-                " • Сильные эмоции (смех, плач, сильный стресс)\n" +
-                " • Физическая нагрузка (бег и др.)"
+        name = R.string.why_asthma_appears,
+        text = R.string.why_asthma_appears_text
     ),
     LearnItem(
-        name = "Симптомы астмы",
-        text = "Симптомы – это признаки заболевания. При астме часто бывают:\n\n" +
-                " • Кашель (особенно ночью или во время физической активности)\n" +
-                " • Затрудненное дыхание\n" +
-                " • Ощущение сдавливания в груди\n" +
-                " • Свистящее дыхание\n\n" +
-                "У некоторых людей симптомов астмы между приступами нет вовсе. У других постоянно могут быть некоторые симптомы, которые усиливаются при приступе. Иногда приступы могут быть легкими, а иногда – тяжелыми. Они возникают внезапно. Если человек с астмой не получает никакого лечения, то приступы обычно усиливаются со временем и возникают чаще."
+        name = R.string.asthma_symptoms,
+        text = R.string.asthma_symptoms_text
     ),
     LearnItem(
-        name = "Как ставят диагноз Астма?",
-        text = "Прежде всего, врач спросит о жалобах на проблемы с дыханием. Уточнит, есть ли в твоей семье случаи астмы. Также врач должен выяснить, есть ли у тебя аллергия и другие заболевания.\n\n" +
-                "Врач послушает твои легкие и назначит специальный дыхательный тест для оценки функции легких. Этот тест называется спирометрия."
+        name = R.string.asthma_diagnosis,
+        text = R.string.asthma_diagnosis_text
     ),
     LearnItem(
-        name = "Как лечить астму?",
-        text = "Пока у нас нет лекарства, чтобы полностью вылечиться от астмы раз и навсегда. Но есть эффективные лекарства, чтобы предотвратить приступы астмы. Иногда некоторые ребята могут как бы «перерасти» астму, и она исчезнет с возрастом. Для лечения астмы важно избегать триггеров, которые у тебя провоцируют обострение, а также регулярно принимать назначенные врачом препараты.\n\n" +
-                "Как избежать триггеров? Например, если симптомы астмы вызывает контакт с пылью, то придется чаще пылесосить дома и чаще менять постельное белье. А если причина в пыльце – то на время цветения этого растения лучше не выходить лишний раз из дома. Если аллергия на домашнего питомца – не стоит позволять ему находиться в твоей комнате, и, возможно, подумать о том, чтобы отдать его родственниками или друзьям.\n\n" +
-                "Пациентам с астмой важно оставаться активными! Не стоит избегать физической нагрузки. При необходимости, твой врач может назначить специальные ингаляции до физнагрузки, чтобы предотвратить сужение дыхательных путей.\n\n" +
-                "Большинство лекарств от астмы принимаются в виде ингаляций.\n\n" +
-                " • Одни направлены на то, чтобы расслабить мышцы, сжимающие бронхи при обострении астмы. Это средства скорой помощи при приступе, еще их называют бронхолитики.\n\n" +
-                " • Другие снижают воспаление в дыхательных путях, и их нужно принимать каждый день постоянно или курсами (как назначит врач), даже если ты чувствуешь себя хорошо и никаких симптомов сейчас нет. Это средства контроля над симптомами астмы, их еще называют «базисная терапия». Они нужны, чтобы приступы астмы не возникали. Очень важно точно соблюдать рекомендации твоего врача!\n\n" +
-                "Если симптомы астмы под контролем - она не будет мешать твоим планам! И ты можешь делать все то же самое, что и люди без астмы."
+        name = R.string.how_heal_asthma,
+        text = R.string.how_heal_asthma_text
     )
 )

@@ -1,6 +1,9 @@
 package com.example.aesculapius.ui.tests
 
+import androidx.annotation.StringRes
+
 data class Question(
-    val questionText: String,
-    val answersList: MutableList<String>
+    @StringRes
+    val questionText: Int,
+    val answersList: MutableList<Int>
 )

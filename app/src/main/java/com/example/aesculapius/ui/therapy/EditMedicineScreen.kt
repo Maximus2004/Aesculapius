@@ -24,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavOptionsBuilder
+import com.example.aesculapius.R
 import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.data.medicinesAerosol
 import com.example.aesculapius.data.medicinesPowder
@@ -35,6 +37,7 @@ import com.example.aesculapius.data.medicinesTablets
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.theme.onError
 import java.time.LocalDate
 
 object EditMedicineScreen : NavigationDestination {
@@ -86,7 +89,7 @@ fun EditMedicineScreen(
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = onNavigateBack,
-            text = "Редактировать препарат",
+            text = stringResource(R.string.edit_medicine),
             existHelpButton = false
         )
     }) { paddingValues ->
@@ -100,22 +103,22 @@ fun EditMedicineScreen(
             Text(
                 text = medicine.name,
                 style = MaterialTheme.typography.displayMedium,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onError
             )
             Text(
                 text = "${if (medicine.medicineType == CurrentMedicineType.Tablets) "таблетки" else if (medicine.medicineType == CurrentMedicineType.Powder) "порошок" else "аэрозоль"}, ${medicine.undername}",
                 style = MaterialTheme.typography.headlineMedium,
-                color = Color(0xFF79747E)
+                color = MaterialTheme.colorScheme.onSecondary
             )
             DropdownMenu(
-                menuName = "Дозировка",
+                menuName = stringResource(R.string.dose),
                 menuList = currentMedicine.value?.doses ?: listOf(medicine.dose),
                 onCloseAction = { index -> selectedDosesIndex = index },
                 initialIndex = selectedDosesIndex,
                 modifier = Modifier.padding(top = 32.dp, bottom = 34.dp),
             )
             DropdownMenu(
-                menuName = "Кратность приёма",
+                menuName = stringResource(R.string.frequency),
                 menuList = currentMedicine.value?.frequency ?: listOf(medicine.fullFrequency),
                 onCloseAction = { index -> selectedFrequencyIndex = index },
                 initialIndex = selectedFrequencyIndex,
@@ -134,7 +137,7 @@ fun EditMedicineScreen(
                         )
                     )
                     onNavigate(TherapyScreen.route) { popUpTo(TherapyScreen.route) { inclusive = false } }
-                    Toast.makeText(context, "Лекарство успешно сохранено", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.success_save_medicine), Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .padding(bottom = 17.dp)
@@ -144,7 +147,7 @@ fun EditMedicineScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Сохранить",
+                    text = stringResource(id = R.string.save),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )
@@ -155,12 +158,12 @@ fun EditMedicineScreen(
                     onNavigate(TherapyScreen.route) {
                         popUpTo(TherapyScreen.route) { inclusive = false }
                     }
-                    Toast.makeText(context, "Лекарство успешно удалено", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.success_delete_medicine), Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.padding(bottom = 48.dp)
             ) {
                 Text(
-                    text = "Удалить препарат",
+                    text = stringResource(R.string.delete_medicine),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary
                 )

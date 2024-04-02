@@ -4,12 +4,14 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.aesculapius.R
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.profile.EditProfileScreen
 import com.example.aesculapius.ui.profile.LearnItemScreen
@@ -61,39 +63,39 @@ fun NavGraphBuilder.profileNavGraph(
     ) { backStackEntry ->
         val context = LocalContext.current
         val arg = Hours.valueOf(
-            backStackEntry.arguments?.getString(SetReminderTime.depart) ?: "Morning"
+            backStackEntry.arguments?.getString(SetReminderTime.depart) ?: context.getString(R.string.morning)
         )
         when (arg) {
             Hours.Morning -> SetReminderTimeScreen(
-                title = "Утреннее напоминание",
+                title = context.getString(R.string.morning_reminder),
                 textHours = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = userUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
                     if (userUiState.eveningReminder.hour - it.hour < 8)
-                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.reminder_warning), Toast.LENGTH_LONG).show()
                     else {
                         onProfileEvent(ProfileEvent.OnSaveMorningTime(it))
                         navController.navigateUp()
                     }
                 },
                 onNavigateBack = { navController.navigateUp() },
-                textTopBar = "Настройка напоминаний"
+                textTopBar = context.getString(R.string.set_reminders)
             )
 
             Hours.Evening -> SetReminderTimeScreen(
-                title = "Вечернее напоминание",
+                title = context.getString(R.string.evening_reminder),
                 textHours = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                 textMinutes = userUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                 onDoneButton = {
                     if (it.hour - userUiState.morningReminder.hour < 8)
-                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.reminder_warning), Toast.LENGTH_LONG).show()
                     else {
                         onProfileEvent(ProfileEvent.OnSaveEveningTime(it))
                         navController.navigateUp()
                     }
                 },
                 onNavigateBack = { navController.navigateUp() },
-                textTopBar = "Настройка напоминаний"
+                textTopBar = context.getString(R.string.set_reminders)
             )
         }
     }
@@ -110,12 +112,11 @@ fun NavGraphBuilder.profileNavGraph(
             type = NavType.StringType
         })
     ) { backStackEntry ->
-        val arg =
-            backStackEntry.arguments?.getString(LearnItemScreen.depart)?.split('^') ?: listOf()
+        val arg = (backStackEntry.arguments?.getString(LearnItemScreen.depart)?.split('^') ?: listOf()).map { it.toInt() }
         LearnItemScreen(
             onNavigateBack = { navController.navigateUp() },
-            name = arg[0],
-            text = arg[1]
+            name = stringResource(id = arg[0]),
+            text = stringResource(id = arg[1])
         )
     }
 }

@@ -25,18 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptionsBuilder
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
+import com.example.aesculapius.ui.profile.ProfileEvent
+import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.signup.TextInput
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MetricsTestScreen(
-    onClickDoneButton: (first: Float, second: Float, third: Float) -> Unit,
+    onProfileEvent: (ProfileEvent) -> Unit,
+    onTestsEvent: (TestsEvent) -> Unit,
+    navigate: (String, NavOptionsBuilder.() -> Unit) -> Unit,
     onNavigateBack: () -> Unit,
+    userUiState: SignUpUiState,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -52,7 +61,7 @@ fun MetricsTestScreen(
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = { onNavigateBack() },
-            text = "Ввод метрик",
+            text = stringResource(id = R.string.enter_metrics),
             existHelpButton = true,
             onClickHelpButton = { /* TODO */ })
     }) { paddingValues ->
@@ -67,7 +76,7 @@ fun MetricsTestScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Введите метрики с Вашего\n пикфлоуметра",
+                text = stringResource(id = R.string.enter_psv_text),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -77,8 +86,10 @@ fun MetricsTestScreen(
             TextInput(
                 text = firstMetrics,
                 onValueChanged = { firstMetrics = it },
-                hint = "Первая метрика, л/мин",
-                modifier = Modifier.padding(bottom = 24.dp).fillMaxWidth(),
+                hint = stringResource(R.string.first_metric),
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
@@ -90,8 +101,10 @@ fun MetricsTestScreen(
             TextInput(
                 text = secondMetrics,
                 onValueChanged = { secondMetrics = it },
-                hint = "Вторая метрика, л/мин",
-                modifier = Modifier.padding(bottom = 24.dp).fillMaxWidth(),
+                hint = stringResource(R.string.second_metric),
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
@@ -103,7 +116,7 @@ fun MetricsTestScreen(
             TextInput(
                 text = thirdMetrics,
                 onValueChanged = { thirdMetrics = it },
-                hint = "Третья метрика, л/мин",
+                hint = stringResource(R.string.third_metric),
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
@@ -120,11 +133,22 @@ fun MetricsTestScreen(
                         val temp2 = secondMetrics.toFloat()
                         val temp3 = thirdMetrics.toFloat()
                         if (temp1 < 0 || temp2 < 0 || temp3 < 0)
-                            throw IllegalArgumentException("Неверный формат метрик")
-                        else
-                            onClickDoneButton(temp1, temp2, temp3)
+                            throw IllegalArgumentException(context.getString(R.string.wrong_metrics))
+                        else {
+                            val now = LocalDateTime.now()
+                            if (now.isAfter(userUiState.morningReminder) && now.isBefore(userUiState.morningReminder.plusMinutes(6))) {
+                                onProfileEvent(ProfileEvent.OnSaveMorningTime(now.plusDays(1)))
+                                onTestsEvent(TestsEvent.OnInsertNewMetrics(temp1, temp2, temp3))
+                            } else {
+                                onProfileEvent(ProfileEvent.OnSaveEveningTime(now.plusDays(1)))
+                                onTestsEvent(TestsEvent.OnUpdateNewMetrics(temp1, temp2, temp3))
+                            }
+                            navigate(TestsScreen.route) {
+                                popUpTo(TestsScreen.route) { inclusive = false }
+                            }
+                        }
                     } catch (e: NumberFormatException) {
-                        Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, context.getText(R.string.wrong_numbers), Toast.LENGTH_SHORT)
                             .show()
                     } catch (e: IllegalArgumentException) {
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
@@ -138,7 +162,7 @@ fun MetricsTestScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Отправить данные",
+                    text = stringResource(R.string.send_data),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -21,11 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.Roboto
 
-object ASTTestResult : NavigationDestination {
+object AstTestResult : NavigationDestination {
     override val route = "ASTTestResult"
 }
 
@@ -35,9 +37,6 @@ fun ASTTestResultScreen(
     onClickReturnButton: () -> Unit,
     summaryScore: Int
 ) {
-    val textASTResultGood = "У тебя не было симптомов астмы и связанных с ней ограничений. Если ситуация изменится – проконсультируйся с врачом."
-    val textASTResultMedium = "За последние 4 недели ты хорошо контролировал астму, но не полностью. Твой врач поможет добиться полного контроля."
-    val textASTResultBad = "За последние 4 недели тебе не удавалось контролировать астму. Твой врач может посоветовать, какие меры нужно принять, чтобы добиться более полного контроля над астмой."
     val textASTGoodResult = buildAnnotatedString {
         append("Сумма ")
         withStyle(
@@ -82,38 +81,41 @@ fun ASTTestResultScreen(
     }
 
     Scaffold(topBar = {
-        TopBar(text = "АСТ тестирование", onNavigateBack = { onNavigateBack() }) }) { paddingValues ->
+        TopBar(text = stringResource(id = R.string.ast_test_name), onNavigateBack = { onNavigateBack() }) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding(), end = 24.dp, start = 24.dp)
         ) {
             Text(
-                text = "Ваш результат:",
+                text = stringResource(R.string.your_result),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .padding(bottom = 8.dp, top = 10.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "$summaryScore баллов",
+                text = stringResource(R.string.points, summaryScore),
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier
                     .padding(bottom = 24.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = if (summaryScore == 25) textASTResultGood else if (summaryScore in 20..24) textASTResultMedium else textASTResultBad,
+                text =
+                if (summaryScore == 25) stringResource(R.string.very_good_ast_result)
+                else if (summaryScore in 20..24) stringResource(R.string.good_ast_result)
+                else stringResource(R.string.bad_ast_result),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 40.dp),
             )
             Text(
-                text = "Пояснение", style = MaterialTheme.typography.headlineLarge,
+                text = stringResource(R.string.explanation), style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = "Шкала ACT включает в себя 5 пунктов для самостоятельного заполнения пациентом, каждому пункту присваивается значение от 1 до 5 баллов, которые затем суммируются (общее значение шкалы - 5 - 25 баллов).",
+                text = stringResource(R.string.explanation_text),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -135,7 +137,7 @@ fun ASTTestResultScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Вернуться в раздел",
+                    text = stringResource(R.string.return_back),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

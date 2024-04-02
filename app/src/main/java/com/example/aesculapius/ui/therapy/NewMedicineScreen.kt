@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -77,7 +78,7 @@ fun NewMedicineScreen(
     var isDoseChoosen by remember { mutableStateOf(true) }
 
     Scaffold(topBar = {
-        TopBar(onNavigateBack = { onNavigateBack() }, text = "Новый препарат")
+        TopBar(onNavigateBack = { onNavigateBack() }, text = stringResource(R.string.new_medicine))
     }) { paddingValues ->
         Column(
             modifier = modifier.padding(
@@ -101,7 +102,7 @@ fun NewMedicineScreen(
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Aerosol) MaterialTheme.colorScheme.primary
-                    else Color(0xFFE3E0EA)
+                    else MaterialTheme.colorScheme.errorContainer
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,13 +113,16 @@ fun NewMedicineScreen(
                             painter = painterResource(id = R.drawable.aerosol_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
-                            colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Aerosol) Color.White else MaterialTheme.colorScheme.primary),
+                            colorFilter = ColorFilter.tint(
+                                if (currentMedicineType == CurrentMedicineType.Aerosol) MaterialTheme.colorScheme.tertiaryContainer
+                                else MaterialTheme.colorScheme.primary
+                            ),
                             alignment = Alignment.TopCenter
                         )
                         Text(
-                            text = "аэрозоль",
+                            text = stringResource(R.string.aerosol),
                             color =
-                            if (currentMedicineType == CurrentMedicineType.Aerosol) Color.White
+                            if (currentMedicineType == CurrentMedicineType.Aerosol) MaterialTheme.colorScheme.tertiaryContainer
                             else MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(top = 8.dp)
@@ -141,7 +145,7 @@ fun NewMedicineScreen(
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Powder) MaterialTheme.colorScheme.primary
-                    else Color(0xFFE3E0EA)
+                    else MaterialTheme.colorScheme.errorContainer
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -152,13 +156,16 @@ fun NewMedicineScreen(
                             painter = painterResource(id = R.drawable.powder_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
-                            colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Powder) Color.White else MaterialTheme.colorScheme.primary),
+                            colorFilter = ColorFilter.tint(
+                                if (currentMedicineType == CurrentMedicineType.Powder) MaterialTheme.colorScheme.tertiaryContainer
+                                else MaterialTheme.colorScheme.primary
+                            ),
                             alignment = Alignment.TopCenter
                         )
                         Text(
-                            text = "порошок",
+                            text = stringResource(R.string.powder),
                             color =
-                            if (currentMedicineType == CurrentMedicineType.Powder) Color.White
+                            if (currentMedicineType == CurrentMedicineType.Powder) MaterialTheme.colorScheme.tertiaryContainer
                             else MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(top = 8.dp)
@@ -181,7 +188,7 @@ fun NewMedicineScreen(
                     shape = RoundedCornerShape(16.dp),
                     backgroundColor =
                     if (currentMedicineType == CurrentMedicineType.Tablets) MaterialTheme.colorScheme.primary
-                    else Color(0xFFE3E0EA)
+                    else MaterialTheme.colorScheme.errorContainer
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,13 +199,16 @@ fun NewMedicineScreen(
                             painter = painterResource(id = R.drawable.tablets_icon),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
-                            colorFilter = ColorFilter.tint(if (currentMedicineType == CurrentMedicineType.Tablets) Color.White else MaterialTheme.colorScheme.primary),
+                            colorFilter = ColorFilter.tint(
+                                if (currentMedicineType == CurrentMedicineType.Tablets) MaterialTheme.colorScheme.tertiaryContainer
+                                else MaterialTheme.colorScheme.primary
+                            ),
                             alignment = Alignment.TopCenter
                         )
                         Text(
-                            text = "таблетки",
+                            text = stringResource(R.string.tablets),
                             color =
-                            if (currentMedicineType == CurrentMedicineType.Tablets) Color.White
+                            if (currentMedicineType == CurrentMedicineType.Tablets) MaterialTheme.colorScheme.tertiaryContainer
                             else MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(top = 8.dp)
@@ -210,7 +220,7 @@ fun NewMedicineScreen(
             when (currentMedicineType) {
                 CurrentMedicineType.Aerosol -> {
                     DropdownMenu(
-                        menuName = "Название",
+                        menuName = stringResource(R.string.naming),
                         menuList = List(medicinesAerosol.size) { index -> medicinesAerosol[index].name },
                         onCloseAction = { index ->
                             selectedItemIndex = index
@@ -220,7 +230,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
-                        menuName = "Дозировка",
+                        menuName = stringResource(id = R.string.dose),
                         menuList = medicinesAerosol[selectedItemIndex].doses,
                         onCloseAction = { index ->
                             selectedDosesIndex = index
@@ -230,7 +240,7 @@ fun NewMedicineScreen(
                         isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
-                        menuName = "Кратность приёма",
+                        menuName = stringResource(id = R.string.frequency),
                         menuList = medicinesAerosol[selectedItemIndex].frequency,
                         onCloseAction = { index ->
                             selectedFrequencyIndex = index
@@ -244,7 +254,7 @@ fun NewMedicineScreen(
 
                 CurrentMedicineType.Powder -> {
                     DropdownMenu(
-                        menuName = "Название",
+                        menuName = stringResource(R.string.naming),
                         menuList = List(medicinesPowder.size) { index -> medicinesPowder[index].name },
                         onCloseAction = { index ->
                             selectedItemIndex = index
@@ -254,7 +264,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
-                        menuName = "Дозировка",
+                        menuName = stringResource(id = R.string.dose),
                         menuList = medicinesPowder[selectedItemIndex].doses,
                         onCloseAction = { index ->
                             selectedDosesIndex = index
@@ -264,7 +274,7 @@ fun NewMedicineScreen(
                         isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
-                        menuName = "Кратность приёма",
+                        menuName = stringResource(id = R.string.frequency),
                         menuList = medicinesPowder[selectedItemIndex].frequency,
                         onCloseAction = { index ->
                             selectedFrequencyIndex = index
@@ -278,7 +288,7 @@ fun NewMedicineScreen(
 
                 CurrentMedicineType.Tablets -> {
                     DropdownMenu(
-                        menuName = "Название",
+                        menuName = stringResource(R.string.naming),
                         menuList = List(medicinesTablets.size) { index -> medicinesTablets[index].name },
                         onCloseAction = { index ->
                             selectedItemIndex = index
@@ -288,7 +298,7 @@ fun NewMedicineScreen(
                         modifier = Modifier.padding(top = 48.dp),
                     )
                     DropdownMenu(
-                        menuName = "Дозировка",
+                        menuName = stringResource(id = R.string.dose),
                         menuList = medicinesTablets[selectedItemIndex].doses,
                         onCloseAction = { index ->
                             selectedDosesIndex = index
@@ -298,7 +308,7 @@ fun NewMedicineScreen(
                         isChoosen = isDoseChoosen
                     )
                     DropdownMenu(
-                        menuName = "Кратность приёма",
+                        menuName = stringResource(id = R.string.frequency),
                         menuList = medicinesTablets[selectedItemIndex].frequency,
                         onCloseAction = { index ->
                             selectedFrequencyIndex = index
@@ -314,7 +324,7 @@ fun NewMedicineScreen(
             Button(
                 onClick = {
                     if (!isFrequencyChoosen || !isDoseChoosen)
-                        Toast.makeText(context, "Выберите дозировку и кратность для этого лекарства", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.choose_dose_frequency), Toast.LENGTH_SHORT).show()
                     else {
                         onTherapyEvent(
                             TherapyEvent.OnAddMedicineItem(
@@ -340,7 +350,7 @@ fun NewMedicineScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Сохранить",
+                    text = stringResource(id = R.string.save),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )
@@ -391,7 +401,7 @@ fun DropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier
                 .scrollable(state = scrollState, orientation = Orientation.Vertical)
-                .background(color = Color.White)
+                .background(color = MaterialTheme.colorScheme.tertiaryContainer)
                 .heightIn(max = 240.dp)
         ) {
             menuList.forEachIndexed { index, selectionOption ->
@@ -403,9 +413,9 @@ fun DropdownMenu(
                         expanded = false
                     },
                     modifier = Modifier.background(
-                        color = if (selectedItem != selectionOption) Color.White else Color(
-                            0x146750A4
-                        )
+                        color =
+                        if (selectedItem != selectionOption) MaterialTheme.colorScheme.tertiaryContainer
+                        else MaterialTheme.colorScheme.outline
                     )
                 )
             }

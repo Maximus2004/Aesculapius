@@ -45,14 +45,16 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.ListItemPicker
+import com.example.aesculapius.R
 import com.example.aesculapius.data.Hours
-import com.example.aesculapius.data.days
+import com.example.aesculapius.data.daysUsual
 import com.example.aesculapius.data.daysSpecial
 import com.example.aesculapius.data.months
 import com.example.aesculapius.ui.navigation.NavigationDestination
@@ -119,13 +121,12 @@ fun SignUpScreen(
                             val heightFinal = userUiState.height.toFloat()
                             val weightFinal = userUiState.weight.toFloat()
                             if (!(heightFinal in 20f..300f && weightFinal in 0f..1000f))
-                                throw IllegalArgumentException("Неверный формат веса или роста")
+                                throw IllegalArgumentException(context.getString(R.string.weight_height_warning))
                             else {
                                 onChangeCurrentPage()
                             }
                         } catch (e: NumberFormatException) {
-                            Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(context, context.getString(R.string.warning_numbers), Toast.LENGTH_SHORT).show()
                         } catch (e: IllegalArgumentException) {
                             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                         }
@@ -135,7 +136,7 @@ fun SignUpScreen(
                         if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && regex.matches(userUiState.patronymic))
                             onChangeCurrentPage()
                         else
-                            Toast.makeText(context, "Введите корректные данные", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.wrong_data), Toast.LENGTH_SHORT).show()
                     }
                     else -> onChangeCurrentPage()
                 }
@@ -146,7 +147,7 @@ fun SignUpScreen(
                 .size(height = 56.dp, width = 312.dp),
             colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text(text = "Дальше", style = MaterialTheme.typography.displaySmall)
+            Text(text = stringResource(R.string.next), style = MaterialTheme.typography.displaySmall)
         }
     }
 }
@@ -158,14 +159,8 @@ fun ReminderFields(
     morningTime: LocalDateTime,
     modifier: Modifier = Modifier
 ) {
-    val textPlanFirst =
-        "Проводить пикфлоуметрию нужно 2 раза в день - утром и вечером!\n" +
-        "Лучше выбрать время, когда ты сможешь выполнить пикфлоуметрию без спешки. \n" +
-        "Лучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.\n" +
-        "Запиши результат!"
-
     Text(
-        text = "Настрой время напоминаний для пикфлоуметрии",
+        text = stringResource(R.string.set_time_reminders),
         style = MaterialTheme.typography.titleMedium,
         textAlign = TextAlign.Center
     )
@@ -177,13 +172,13 @@ fun ReminderFields(
             .wrapContentHeight()
             .padding(top = 24.dp, bottom = 16.dp)
             .clickable { onClickSetReminder(Hours.Morning) },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row() {
             Column(modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 16.dp)) {
                 Text(
-                    text = "Утро",
+                    text = stringResource(id = R.string.morning_text),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -210,13 +205,13 @@ fun ReminderFields(
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable { onClickSetReminder(Hours.Evening) },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row() {
             Column(modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 16.dp)) {
                 Text(
-                    text = "Вечер",
+                    text = stringResource(id = R.string.evening_text),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -244,7 +239,7 @@ fun ReminderFields(
         modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
         color = MaterialTheme.colorScheme.primary,
     )
-    Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
+    Text(text = stringResource(id = R.string.set_reminder_text), style = MaterialTheme.typography.headlineMedium)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -256,7 +251,7 @@ fun HeightWeightFields(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Text(text = "Твой рост, см", style = MaterialTheme.typography.titleMedium)
+    Text(text = stringResource(R.string.your_height), style = MaterialTheme.typography.titleMedium)
     TextInput(
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -264,12 +259,12 @@ fun HeightWeightFields(
         ),
         text = height,
         onValueChanged = { onEvent(SignUpEvent.OnHeightChanged(it)) },
-        hint = "Рост",
+        hint = stringResource(id = R.string.height),
         focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         modifier = Modifier.padding(bottom = 48.dp)
     )
-    Text(text = "Твой вес, кг", style = MaterialTheme.typography.titleMedium)
+    Text(text = stringResource(R.string.your_weight), style = MaterialTheme.typography.titleMedium)
     TextInput(
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
@@ -277,7 +272,7 @@ fun HeightWeightFields(
         ),
         text = weight,
         onValueChanged = { onEvent(SignUpEvent.OnWeightChanged(it)) },
-        hint = "Вес",
+        hint = stringResource(id = R.string.weight),
         focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     )
@@ -285,9 +280,9 @@ fun HeightWeightFields(
 
 @Composable
 fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
-    Text(text = "Укажите дату рождения", style = MaterialTheme.typography.titleMedium)
+    Text(text = stringResource(R.string.select_birthday), style = MaterialTheme.typography.titleMedium)
     var day by remember { mutableIntStateOf(1) }
-    var month by remember { mutableStateOf("янв") }
+    var month by remember { mutableStateOf("июн") }
     var year by remember { mutableIntStateOf(2000) }
     Row(modifier = Modifier.padding(top = 24.dp)) {
         Card(
@@ -295,12 +290,12 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
             modifier = Modifier
                 .width(96.dp)
                 .wrapContentHeight(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         ) {
             ListItemPicker(
                 modifier = Modifier.fillMaxWidth(),
                 value = day,
-                list = if (year % 4 != 0) (1..days[month]!!).toList() else (1..daysSpecial[month]!!).toList(),
+                list = if (year % 4 != 0) (1..daysUsual[month]!!).toList() else (1..daysSpecial[month]!!).toList(),
                 onValueChange = {
                     day = it
                     onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
@@ -315,7 +310,7 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
                 .wrapContentHeight()
                 .padding(horizontal = 12.dp)
                 .width(96.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         ) {
             ListItemPicker(
                 modifier = Modifier.fillMaxWidth(),
@@ -334,7 +329,7 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
             modifier = Modifier
                 .width(96.dp)
                 .wrapContentHeight(),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
         ) {
             ListItemPicker(
                 modifier = Modifier.fillMaxWidth(),
@@ -363,11 +358,11 @@ fun FieldsFIO(
     val focusRequesterName = remember { FocusRequester() }
     val focusRequesterPatronymic = remember { FocusRequester() }
 
-    Text(text = "Твои фамилия, имя, отчество", style = MaterialTheme.typography.titleMedium)
+    Text(text = stringResource(R.string.your_fio), style = MaterialTheme.typography.titleMedium)
     TextInput(
         text = surname,
         onValueChanged = { onEvent(SignUpEvent.OnSurnameChanged(it)) },
-        hint = "Фамилия",
+        hint = stringResource(id = R.string.surname),
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(onNext = { focusRequesterName.requestFocus() }),
@@ -376,7 +371,7 @@ fun FieldsFIO(
     TextInput(
         text = name,
         onValueChanged = { onEvent(SignUpEvent.OnNameChanged(it)) },
-        hint = "Имя",
+        hint = stringResource(id = R.string.name),
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         focusRequester = focusRequesterName,
@@ -385,7 +380,7 @@ fun FieldsFIO(
     TextInput(
         text = patronymic,
         onValueChanged = { onEvent(SignUpEvent.OnPatronymicChanged(it)) },
-        hint = "Отчество",
+        hint = stringResource(id = R.string.patronymic),
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         focusRequester = focusRequesterPatronymic,
@@ -406,7 +401,7 @@ fun TextInput(
 ) {
     OutlinedTextField(
         value = text,
-        label = { Text(text = hint, color = Color.Gray) },
+        label = { Text(text = hint, color = MaterialTheme.colorScheme.primaryContainer) },
         onValueChange = { onValueChanged(it) },
         trailingIcon = {
             if (text != "")
@@ -415,7 +410,7 @@ fun TextInput(
                         imageVector = Icons.Default.Clear,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
-                        tint = Color(0xFF49454F)
+                        tint = MaterialTheme.colorScheme.onTertiary
                     )
                 }
         },

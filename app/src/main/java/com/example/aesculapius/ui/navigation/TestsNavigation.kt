@@ -3,24 +3,27 @@ package com.example.aesculapius.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.aesculapius.R
 import com.example.aesculapius.data.TestType
 import com.example.aesculapius.data.astTest
 import com.example.aesculapius.data.recTest
 import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.signup.SignUpUiState
-import com.example.aesculapius.ui.tests.ASTTestOnboardingScreen
-import com.example.aesculapius.ui.tests.ASTTestResult
+import com.example.aesculapius.ui.tests.AstTestOnboardingScreen
+import com.example.aesculapius.ui.tests.AstTestResult
 import com.example.aesculapius.ui.tests.ASTTestResultScreen
 import com.example.aesculapius.ui.tests.MetricsOnboardingScreen
 import com.example.aesculapius.ui.tests.MetricsTestScreen
 import com.example.aesculapius.ui.tests.RecommendationsOnboardingScreen
 import com.example.aesculapius.ui.tests.TestScreen
+import com.example.aesculapius.ui.tests.TestsEvent
 import com.example.aesculapius.ui.tests.TestsScreen
 import com.example.aesculapius.ui.tests.TestsViewModel
 import java.time.LocalDate
@@ -51,30 +54,31 @@ fun NavGraphBuilder.testsNavGraph(
         route = TestScreen.routeWithArgs,
         arguments = listOf(navArgument(name = TestScreen.depart) { type = NavType.StringType })
     ) { backStackEntry ->
+        val context = LocalContext.current
         val arg = TestType.valueOf(
             backStackEntry.arguments?.getString(TestScreen.depart) ?: TestType.AST.toString()
         )
         when (arg) {
             TestType.AST -> TestScreen(
-                testName = "АСТ тестирование",
+                testName = context.getString(R.string.ast_test_name),
                 questionsList = astTest.listOfQuestion,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
                     onProfileEvent(ProfileEvent.OnSaveAstTestDate(LocalDate.now().plusMonths(1)))
-                    testsViewModel.updateSummaryScore(it)
-                    navController.navigate(ASTTestResult.route) {
+                    testsViewModel.onTestsEvent(TestsEvent.OnUpdateSummaryScore(it))
+                    navController.navigate(AstTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
                     }
                 }
             )
 
             TestType.Recommendations -> TestScreen(
-                testName = "Тест приверженности",
+                testName = context.getString(R.string.rec_test_name),
                 questionsList = recTest.listOfQuestion,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
                     onProfileEvent(ProfileEvent.OnSaveRecommendationTestDate(LocalDate.now().plusMonths(1)))
-                    navController.navigate(ASTTestResult.route) {
+                    navController.navigate(AstTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
                     }
                 }
@@ -82,19 +86,10 @@ fun NavGraphBuilder.testsNavGraph(
 
             TestType.Metrics -> MetricsTestScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onClickDoneButton = { first, second, third ->
-                    val now = LocalDateTime.now()
-                    if (now.isAfter(userUiState.morningReminder) && now.isBefore(userUiState.morningReminder.plusMinutes(6))) {
-                        onProfileEvent(ProfileEvent.OnSaveMorningTime(now.plusDays(1)))
-                        testsViewModel.insertNewMetrics(first, second, third)
-                    } else {
-                        onProfileEvent(ProfileEvent.OnSaveEveningTime(now.plusDays(1)))
-                        testsViewModel.updateNewMetrics(first, second, third)
-                    }
-                    navController.navigate(TestsScreen.route) {
-                        popUpTo(TestsScreen.route) { inclusive = false }
-                    }
-                }
+                onProfileEvent = onProfileEvent,
+                onTestsEvent = testsViewModel::onTestsEvent,
+                navigate = navController::navigate,
+                userUiState = userUiState
             )
         }
         turnOffBars()
@@ -106,8 +101,8 @@ fun NavGraphBuilder.testsNavGraph(
         )
         turnOffBars()
     }
-    composable(route = ASTTestOnboardingScreen.route) {
-        ASTTestOnboardingScreen(
+    composable(route = AstTestOnboardingScreen.route) {
+        AstTestOnboardingScreen(
             onNavigateBack = { navController.navigateUp() },
             onClickBeginButton = { navController.navigate("${TestScreen.route}/${TestType.AST}") }
         )
@@ -120,7 +115,7 @@ fun NavGraphBuilder.testsNavGraph(
         )
         turnOffBars()
     }
-    composable(route = ASTTestResult.route) {
+    composable(route = AstTestResult.route) {
         val summaryScore = testsViewModel.summaryScore.collectAsState().value
         ASTTestResultScreen(
             onClickReturnButton = { navController.navigate(TestsScreen.route) },

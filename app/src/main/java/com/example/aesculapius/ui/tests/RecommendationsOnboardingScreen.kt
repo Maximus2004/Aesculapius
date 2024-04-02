@@ -15,8 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 
@@ -32,7 +34,7 @@ fun RecommendationsOnboardingScreen(
 ) {
     Scaffold(topBar = {
         TopBar(
-            text = "Тест приверженности",
+            text = stringResource(id = R.string.rec_test_name),
             onNavigateBack = { onNavigateBack() })
     }) { paddingValues ->
         Column(
@@ -45,7 +47,7 @@ fun RecommendationsOnboardingScreen(
                 )
         ) {
             Text(
-                text = "Оценка приверженности к лечению",
+                text = stringResource(R.string.mark_rec_test),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -54,8 +56,7 @@ fun RecommendationsOnboardingScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Приверженность к лечению - насколько точно ты выполняешь рекомендации врача.\n" +
-                        "Ответь на вопросы искренне. Это поможет понять, как улучшить лечение твоей астмы.",
+                text = stringResource(R.string.what_is_rec_test),
                 style = MaterialTheme.typography.headlineMedium
             )
             Spacer(Modifier.weight(1f))
@@ -69,7 +70,7 @@ fun RecommendationsOnboardingScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Начать",
+                    text = stringResource(id = R.string.begin),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

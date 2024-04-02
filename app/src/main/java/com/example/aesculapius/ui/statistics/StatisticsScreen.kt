@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +43,7 @@ import com.example.aesculapius.R
 import com.example.aesculapius.data.graphicsNavigationItemContentList
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.signup.SignUpUiState
+import com.example.aesculapius.ui.theme.primary
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -92,7 +94,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
     // setting styles for line chart
     datasetLineSpec.add(
         LineChart.LineSpec(
-            lineColor = Color(0xFF6750A4).toArgb(),
+            lineColor = MaterialTheme.colorScheme.primary.toArgb(),
             lineThicknessDp = 4f
         )
     )
@@ -146,7 +148,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = if (isLineChart) "Значения ПСВ" else "АСТ тестирование",
+                        text = if (isLineChart) stringResource(R.string.metrics_name) else stringResource(id = R.string.ast_test_name),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier
@@ -231,9 +233,9 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                                     .fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "Нет данных...",
+                                    text = stringResource(R.string.no_data),
                                     style = MaterialTheme.typography.headlineLarge,
-                                    color = Color(0xFFb0afb2),
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
@@ -253,9 +255,9 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                                     .fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "Нет данных...",
+                                    text = stringResource(R.string.no_data),
                                     style = MaterialTheme.typography.headlineLarge,
-                                    color = Color(0xFFb0afb2),
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer,
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
@@ -285,12 +287,14 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                                     .clickable { statisticsViewModel.updateCurrentNavType(it) }
                                     .padding(end = 3.dp),
                                 backgroundColor = if (it == statisticsUiState) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
-                                contentColor = if (it == statisticsUiState) Color.White else MaterialTheme.colorScheme.primary,
+                                contentColor =
+                                if (it == statisticsUiState) MaterialTheme.colorScheme.tertiaryContainer
+                                else MaterialTheme.colorScheme.primary,
                                 shape = RoundedCornerShape(12.dp),
                                 elevation = 0.dp
                             ) {
                                 Text(
-                                    text = it.nameOfType,
+                                    text = stringResource(id = it.nameOfType),
                                     style = MaterialTheme.typography.headlineSmall,
                                     modifier = Modifier.padding(
                                         horizontal = 8.dp,
@@ -302,13 +306,13 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                     }
                 }
                 Text(
-                    text = "Посмотри, как ты справляешься с астмой",
+                    text = stringResource(R.string.how_good_is_your_asthma),
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 20.dp, start = 23.dp, end = 23.dp)
                 )
                 Text(
-                    text = "Следи за динамикой твоего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.",
+                    text = stringResource(R.string.description_dinamic),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 8.dp, start = 23.dp, end = 23.dp)
                 )
@@ -326,7 +330,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
-                text = "Скачать статистику",
+                text = stringResource(R.string.download_statistics),
                 style = MaterialTheme.typography.displaySmall,
                 textAlign = TextAlign.Center
             )
@@ -349,7 +353,7 @@ fun ShowColumnChart(
             columns = remember(defaultColumns) {
                 defaultColumns.map { _ ->
                     object : LineComponent(
-                        color = Color(0xFF6750A4).toArgb(),
+                        color = primary.toArgb(),
                         thicknessDp = 8f,
                         shape = Shapes.roundedCornerShape(
                             topLeftPercent = 40,
@@ -400,8 +404,8 @@ fun ShowColumnChart(
             horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
             itemPlacer = AxisItemPlacer.Vertical.default(maxItemCount = 6),
             guideline = LineComponent(
-                strokeColor = MaterialTheme.colorScheme.onSurface.toArgb(),
-                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                strokeColor = MaterialTheme.colorScheme.secondary.toArgb(),
+                color = MaterialTheme.colorScheme.secondary.toArgb(),
                 thicknessDp = 1f
             ),
         ),
@@ -412,7 +416,7 @@ fun ShowColumnChart(
         bottomAxis = rememberBottomAxis(
             label = null,
             axis = LineComponent(
-                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                color = MaterialTheme.colorScheme.secondary.toArgb(),
                 thicknessDp = 1f
             ),
             tickLength = 0.dp,
@@ -454,13 +458,15 @@ fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate, conv
         text =
         (if (pointsAmountText != -1) "${convertToRussian(pointsAmountText)}, "
         else "") + dateTextColumn.format(formatter),
-        style = MaterialTheme.typography.bodyLarge
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onError
     )
     Text(
         text = "${LocalDate.now().minusYears(1).format(formatter)} - ${
             LocalDate.now().format(formatter)
         }",
-        style = MaterialTheme.typography.bodySmall
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onError
     )
 }
 
@@ -474,12 +480,14 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
     when (graphicTypes) {
         GraphicTypes.Week -> Text(
             text = dateText.format(formatter),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onError
         )
 
         GraphicTypes.Month -> Text(
             text = dateText.format(formatter),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onError
         )
 
         GraphicTypes.ThreeMonths -> Text(
@@ -490,7 +498,8 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
             } - ${
                 dateText.plusDays(6).format(formatterThreeMonths)
             } ${dateText.year}",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onError
         )
 
         GraphicTypes.HalfYear -> Text(
@@ -498,7 +507,8 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                 dateText.plusDays(
                     6
                 ).format(formatterThreeMonths)
-            } ${dateText.year}", style = MaterialTheme.typography.bodyLarge
+            } ${dateText.year}", style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onError
         )
 
         else -> Text(
@@ -506,13 +516,15 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                 dateText.plusDays(
                     6
                 ).format(formatterYear)
-            }", style = MaterialTheme.typography.bodyLarge
+            }", style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onError
         )
     }
     Text(
         text = "${dateBegin.format(formatterYearFull)} - ${
             LocalDate.now().format(formatterYearFull)
-        }", style = MaterialTheme.typography.bodySmall
+        }", style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onError
     )
 }
 
@@ -567,8 +579,8 @@ fun ShowLineChart(
             horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
             itemPlacer = AxisItemPlacer.Vertical.default(maxItemCount = 6),
             guideline = LineComponent(
-                strokeColor = MaterialTheme.colorScheme.onSurface.toArgb(),
-                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                strokeColor = MaterialTheme.colorScheme.secondary.toArgb(),
+                color = MaterialTheme.colorScheme.secondary.toArgb(),
                 thicknessDp = 1f
             )
         ),
@@ -579,7 +591,7 @@ fun ShowLineChart(
         bottomAxis = rememberBottomAxis(
             label = null,
             axis = LineComponent(
-                color = MaterialTheme.colorScheme.onSurface.toArgb(),
+                color = MaterialTheme.colorScheme.secondary.toArgb(),
                 thicknessDp = 1f
             ),
             tickLength = 0.dp,

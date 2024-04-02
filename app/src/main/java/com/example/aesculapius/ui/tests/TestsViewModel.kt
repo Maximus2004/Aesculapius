@@ -15,20 +15,22 @@ class TestsViewModel @Inject constructor(private val aesculapiusRepository: Aesc
     private var _summaryScore = MutableStateFlow(0)
     val summaryScore: StateFlow<Int> = _summaryScore
 
-    /** [updateSummaryScore] - вызывается при завершении теста и отправляет результаты в Room */
-    fun updateSummaryScore(score: Int) = viewModelScope.launch {
-        _summaryScore.value = score
-        aesculapiusRepository.insertAstTestScore(LocalDate.now(), score)
-    }
+    fun onTestsEvent(event: TestsEvent) = viewModelScope.launch {
+        when (event) {
+            is TestsEvent.OnInsertNewMetrics -> {
+                aesculapiusRepository.insertMetrics((event.first + event.second + event.third) / 3, LocalDate.now())
 
-    fun insertNewMetrics(first: Float, second: Float, third: Float) = viewModelScope.launch {
-        aesculapiusRepository.insertMetrics((first + second + third) / 3, LocalDate.now())
-    }
-
-    fun updateNewMetrics(first: Float, second: Float, third: Float) = viewModelScope.launch {
-        if (aesculapiusRepository.getAllMetricsWithDate(LocalDate.now()).isEmpty())
-            aesculapiusRepository.insertMetrics((first + second + third) / 3, LocalDate.now())
-        else
-            aesculapiusRepository.updateMetrics((first + second + third) / 3, LocalDate.now())
+            }
+            is TestsEvent.OnUpdateNewMetrics -> {
+                if (aesculapiusRepository.getAllMetricsWithDate(LocalDate.now()).isEmpty())
+                    aesculapiusRepository.insertMetrics((event.first + event.second + event.third) / 3, LocalDate.now())
+                else
+                    aesculapiusRepository.updateMetrics((event.first + event.second + event.third) / 3, LocalDate.now())
+            }
+            is TestsEvent.OnUpdateSummaryScore -> {
+                _summaryScore.value = event.score
+                aesculapiusRepository.insertAstTestScore(LocalDate.now(), event.score)
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
-// для выбора нового препарата
+/** [Medicine] для выбора нового препарата */
 data class Medicine(
     @DrawableRes val image: Int,
     val name: String,

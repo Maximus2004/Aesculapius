@@ -1,6 +1,10 @@
 package com.example.aesculapius.ui.profile
 
+import androidx.annotation.StringRes
+
 data class LearnItem(
-    val name: String,
-    val text: String
+    @StringRes
+    val name: Int,
+    @StringRes
+    val text: Int
 )

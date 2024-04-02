@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.aesculapius.R
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.signup.SetReminderTime
 import com.example.aesculapius.ui.signup.SetReminderTimeScreen
@@ -52,7 +54,7 @@ fun SignUpNavigation(
             )
             when (arg) {
                 Hours.Morning -> SetReminderTimeScreen(
-                    title = "Утреннее напоминание",
+                    title = stringResource(id = R.string.morning_reminder),
                     textHours = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = signUpUiState.morningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
@@ -60,11 +62,11 @@ fun SignUpNavigation(
                         navController.navigateUp()
                     },
                     onNavigateBack = { navController.navigateUp() },
-                    textTopBar = "Время напоминаний"
+                    textTopBar = stringResource(R.string.reminder_time)
                 )
 
                 Hours.Evening -> SetReminderTimeScreen(
-                    title = "Вечернее напоминание",
+                    title = stringResource(id = R.string.evening_reminder),
                     textHours = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("HH")),
                     textMinutes = signUpUiState.eveningReminder.format(DateTimeFormatter.ofPattern("mm")),
                     onDoneButton = {
@@ -72,7 +74,7 @@ fun SignUpNavigation(
                         navController.navigateUp()
                     },
                     onNavigateBack = { navController.navigateUp() },
-                    textTopBar = "Время напоминаний"
+                    textTopBar = stringResource(R.string.reminder_time)
                 )
             }
         }
@@ -84,7 +86,7 @@ fun SignUpNavigation(
                 onEvent = signUpViewModel::onEvent,
                 onEndRegistration = {
                     if (signUpUiState.eveningReminder.hour - signUpUiState.morningReminder.hour < 8)
-                        Toast.makeText(context, "Между утренним и вечерним напоминанием должно быть минимум 8 часов", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.reminder_warning), Toast.LENGTH_LONG).show()
                     else
                         onEndRegistration(signUpUiState)
                 },

@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,6 +56,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -63,6 +65,9 @@ import com.example.aesculapius.R
 import com.example.aesculapius.data.CurrentMedicineType
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.theme.onErrorContainer
+import com.example.aesculapius.ui.theme.onPrimaryContainer
+import com.example.aesculapius.ui.theme.secondary
 import io.github.boguszpawlowski.composecalendar.SelectableCalendar
 import io.github.boguszpawlowski.composecalendar.SelectableWeekCalendar
 import io.github.boguszpawlowski.composecalendar.day.DayState
@@ -156,13 +161,13 @@ fun TherapyScreen(
                                         )
                                     ) {
                                         Text(
-                                            text = "Ежедневный прогресс",
+                                            text = stringResource(R.string.everyday_progress),
                                             style = MaterialTheme.typography.bodyLarge
                                         )
                                         LinearProgressIndicator(
                                             progress = currentMedicines.progress,
                                             color = MaterialTheme.colorScheme.primary,
-                                            trackColor = MaterialTheme.colorScheme.onSurface,
+                                            trackColor = MaterialTheme.colorScheme.secondary,
                                             modifier = Modifier
                                                 .padding(top = 12.dp, bottom = 10.dp)
                                                 .height(6.dp)
@@ -171,13 +176,19 @@ fun TherapyScreen(
                                         )
                                         Row(modifier = Modifier.fillMaxWidth()) {
                                             Text(
-                                                text = "Выполнено ${currentMedicines.done} из ${currentMedicines.amount}",
-                                                style = MaterialTheme.typography.bodySmall
+                                                text = stringResource(
+                                                    R.string.done_medicines,
+                                                    currentMedicines.done,
+                                                    currentMedicines.amount
+                                                ),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onError
                                             )
                                             Spacer(Modifier.weight(1f))
                                             Text(
                                                 text = "${(currentMedicines.progress * 100).toInt()}%",
-                                                style = MaterialTheme.typography.bodySmall
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onError
                                             )
                                         }
                                     }
@@ -189,13 +200,13 @@ fun TherapyScreen(
                                             onClick = {},
                                             shape = RoundedCornerShape(8.dp),
                                             colors = ButtonDefaults.buttonColors(
-                                                containerColor = Color(0xFFB0A3D1),
-                                                contentColor = Color.White
+                                                containerColor = MaterialTheme.colorScheme.secondary,
+                                                contentColor = MaterialTheme.colorScheme.tertiaryContainer
                                             ),
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Text(
-                                                text = "Предстоящие",
+                                                text = stringResource(R.string.future_medicines),
                                                 style = MaterialTheme.typography.headlineSmall
                                             )
                                         }
@@ -210,12 +221,12 @@ fun TherapyScreen(
                                                 shape = RoundedCornerShape(8.dp),
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor = if (isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                                    contentColor = if (isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                                    contentColor = if (isMorningMedicines) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primary
                                                 ),
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 Text(
-                                                    text = "Утро",
+                                                    text = stringResource(id = R.string.morning_text),
                                                     style = MaterialTheme.typography.headlineSmall
                                                 )
                                             }
@@ -227,7 +238,7 @@ fun TherapyScreen(
                                                         .align(Alignment.TopEnd)
                                                 ) {
                                                     drawCircle(
-                                                        color = Color(0xFFFC3B69),
+                                                        color = onErrorContainer,
                                                         center = center
                                                     )
                                                 }
@@ -239,12 +250,12 @@ fun TherapyScreen(
                                                 shape = RoundedCornerShape(8.dp),
                                                 colors = ButtonDefaults.buttonColors(
                                                     containerColor = if (!isMorningMedicines) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary,
-                                                    contentColor = if (!isMorningMedicines) Color.White else MaterialTheme.colorScheme.primary
+                                                    contentColor = if (!isMorningMedicines) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.primary
                                                 ),
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 Text(
-                                                    text = "Вечер",
+                                                    text = stringResource(id = R.string.evening_text),
                                                     style = MaterialTheme.typography.headlineSmall
                                                 )
                                             }
@@ -256,7 +267,7 @@ fun TherapyScreen(
                                                         .align(Alignment.TopEnd)
                                                 ) {
                                                     drawCircle(
-                                                        color = Color(0xFFFC3B69),
+                                                        color = onErrorContainer,
                                                         center = center
                                                     )
                                                 }
@@ -269,9 +280,9 @@ fun TherapyScreen(
                                     item {
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             Text(
-                                                text = "Нет данных...",
+                                                text = stringResource(id = R.string.no_data),
                                                 style = MaterialTheme.typography.headlineLarge,
-                                                color = Color(0xFFb0afb2),
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 modifier = Modifier
                                                     .align(Alignment.Center)
                                                     .padding(top = 90.dp)
@@ -307,9 +318,9 @@ fun TherapyScreen(
                                     item {
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             Text(
-                                                text = "Нет данных...",
+                                                text = stringResource(id = R.string.no_data),
                                                 style = MaterialTheme.typography.headlineLarge,
-                                                color = Color(0xFFb0afb2),
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 modifier = Modifier
                                                     .align(Alignment.Center)
                                                     .padding(top = 90.dp)
@@ -333,9 +344,9 @@ fun TherapyScreen(
                                     item {
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             Text(
-                                                text = "Нет данных...",
+                                                text = stringResource(id = R.string.no_data),
                                                 style = MaterialTheme.typography.headlineLarge,
-                                                color = Color(0xFFb0afb2),
+                                                color = MaterialTheme.colorScheme.onTertiaryContainer,
                                                 modifier = Modifier
                                                     .align(Alignment.Center)
                                                     .padding(top = 90.dp)
@@ -361,7 +372,8 @@ fun TherapyScreen(
             }
         }
         FloatingButton(
-            onClick = { onNavigate(NewMedicineScreen.route) }, modifier = Modifier.align(Alignment.BottomEnd)
+            onClick = { onNavigate(NewMedicineScreen.route) },
+            modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
 }
@@ -379,7 +391,7 @@ fun FloatingButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     ) {
         Icon(
             imageVector = Icons.Default.Add,
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.tertiaryContainer,
             modifier = Modifier.size(24.dp),
             contentDescription = null
         )
@@ -397,7 +409,7 @@ fun MedicineCard(
     isFuture: Boolean
 ) {
     val cornerRadius = 16.dp
-    var parentWidthPx by remember { mutableStateOf(0) }
+    var parentWidthPx by remember { mutableIntStateOf(0) }
     val parentWidthDp: Dp = with(LocalDensity.current) {
         parentWidthPx.toDp()
     }
@@ -407,8 +419,8 @@ fun MedicineCard(
         .wrapContentHeight()
         .drawBehind {
             val color =
-                if (isAccepted) Color(0xFF9ed209)
-                else if (isSkipped) Color(0xFFfc3b69)
+                if (isAccepted) onPrimaryContainer
+                else if (isSkipped) onErrorContainer
                 else Color.Transparent
             drawLine(
                 color = color,
@@ -447,11 +459,13 @@ fun MedicineCard(
             modifier = modifier
                 .fillMaxWidth()
                 .heightIn(min = 112.dp, max = 136.dp)
-                .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() },
+                .clickable { if (!isSkipped && !isAccepted && !isFuture) onClick() }
+                .alpha(if (isFuture) 0.3f else 1.0f),
             shape = RoundedCornerShape(cornerRadius)
         ) {
             Row(modifier = Modifier
-                .fillMaxWidth().padding(end = 10.dp)
+                .fillMaxWidth()
+                .padding(end = 10.dp)
                 .onGloballyPositioned { coordinates ->
                     parentWidthPx = coordinates.size.height
                 }
@@ -464,7 +478,9 @@ fun MedicineCard(
                     ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.weight(0.30f).height(parentWidthDp)
+                    modifier = Modifier
+                        .weight(0.30f)
+                        .height(parentWidthDp)
                 )
                 Column(
                     modifier = Modifier
@@ -475,27 +491,36 @@ fun MedicineCard(
                     Text(
                         text = medicine.name,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onError
                     )
-                    Text(text = medicine.undername, style = MaterialTheme.typography.bodySmall)
-                    Text(text = medicine.dose, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = medicine.undername,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                    Text(
+                        text = medicine.dose,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onError
+                    )
                     Row(modifier = Modifier.padding(top = 16.dp)) {
                         if (!isMorning) Icon(
                             painter = painterResource(id = R.drawable.moon_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onError
                         )
                         else Icon(
                             painter = painterResource(id = R.drawable.sun_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onError
                         )
                         Text(
                             text = medicine.frequency,
                             style = MaterialTheme.typography.labelSmall,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            color = MaterialTheme.colorScheme.onError
                         )
                     }
                 }
@@ -506,7 +531,7 @@ fun MedicineCard(
 
 @Composable
 fun DaysOfWeekHeader(daysOfWeek: List<DayOfWeek>) {
-    Row() {
+    Row {
         daysOfWeek.forEach { dayOfWeek ->
             Text(
                 textAlign = TextAlign.Center,
@@ -534,7 +559,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowLeft,
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
             )
         }
@@ -553,7 +578,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
                 .size(width = 90.dp, height = 24.dp)
                 .clickable { onClickWeek(false) },
             border = BorderStroke(
-                width = 2.dp, color = MaterialTheme.colorScheme.onSurface
+                width = 2.dp, color = MaterialTheme.colorScheme.secondary
             ),
             backgroundColor = MaterialTheme.colorScheme.background
         ) {
@@ -561,7 +586,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "неделя",
+                    text = stringResource(id = R.string.week_chart),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -573,7 +598,7 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
             )
         }
@@ -582,9 +607,10 @@ fun WeekHeader(weekState: WeekState, onClickWeek: (Boolean) -> Unit) {
 
 @Composable
 fun DayContent(
-    state: DayState<DynamicSelectionState>, getAmountNotAcceptedMedicines: suspend (LocalDate) -> Int
+    state: DayState<DynamicSelectionState>,
+    getAmountNotAcceptedMedicines: suspend (LocalDate) -> Int
 ) {
-    var currentColorCircle by remember { mutableStateOf(Color(0xFFB0A3D1)) }
+    var currentColorCircle by remember { mutableStateOf(secondary) }
 
     val date = state.date
     val selectionState = state.selectionState
@@ -593,9 +619,9 @@ fun DayContent(
     // вынесли выполнение условий в корутину, чтобы не блокировать UI
     LaunchedEffect(key1 = Unit) {
         currentColorCircle = withContext(Dispatchers.IO) {
-            if (date.isAfter(LocalDate.now())) Color(0xFFB0A3D1)
-            else if (getAmountNotAcceptedMedicines(date) > 0) Color(0xFFFC3B69)
-            else Color(0xFF9ED209)
+            if (date.isAfter(LocalDate.now())) secondary
+            else if (getAmountNotAcceptedMedicines(date) > 0) onErrorContainer
+            else onPrimaryContainer
         }
     }
 
@@ -610,17 +636,21 @@ fun DayContent(
             .align(Alignment.TopCenter),
             shape = MaterialTheme.shapes.small,
             border = null,
-            backgroundColor = if (isSelected) MaterialTheme.colorScheme.primary else Color(
-                0xFFE3E0EA
-            )) {
+            backgroundColor =
+            if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.errorContainer
+        ) {
             Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = date.dayOfMonth.toString(), color = if (isSelected) Color.White
-                    else if (state.isCurrentDay) Color(0xFF6750A4)
-                    else if (state.isFromCurrentMonth) Color.Black
-                    else Color(0xFF86818B), style = MaterialTheme.typography.headlineLarge
+                    text = date.dayOfMonth.toString(),
+                    color =
+                    if (isSelected) MaterialTheme.colorScheme.tertiaryContainer
+                    else if (state.isCurrentDay) MaterialTheme.colorScheme.primary
+                    else if (state.isFromCurrentMonth) MaterialTheme.colorScheme.onError
+                    else MaterialTheme.colorScheme.surfaceVariant,
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
         }
@@ -650,7 +680,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowLeft,
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
             )
         }
@@ -669,7 +699,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
                 .size(width = 90.dp, height = 24.dp)
                 .clickable { onClickMonth(true) },
             border = BorderStroke(
-                width = 2.dp, color = MaterialTheme.colorScheme.onSurface
+                width = 2.dp, color = MaterialTheme.colorScheme.secondary
             ),
             backgroundColor = MaterialTheme.colorScheme.background
         ) {
@@ -677,7 +707,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "месяц",
+                    text = stringResource(id = R.string.month_chart),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -690,7 +720,7 @@ fun MonthHeader(monthState: MonthState, onClickMonth: (Boolean) -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
             )
         }
@@ -719,7 +749,9 @@ fun CalendarItem(
             DaysOfWeekHeader(daysOfWeek = daysOfWeek)
         },
         weekHeader = { weekState ->
-            WeekHeader(weekState = weekState, onClickWeek = { therapyEvent(TherapyEvent.OnChangeIsWeek(it)) })
+            WeekHeader(
+                weekState = weekState,
+                onClickWeek = { therapyEvent(TherapyEvent.OnChangeIsWeek(it)) })
         }
     )
     else SelectableCalendar(modifier = modifier,

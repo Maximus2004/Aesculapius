@@ -13,12 +13,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 
@@ -75,7 +77,7 @@ fun MetricsOnboardingScreen(
     }
 
     Scaffold(topBar = {
-        TopBar(onNavigateBack = { onNavigateBack() }, text = "Ввод метрик")
+        TopBar(onNavigateBack = { onNavigateBack() }, text = stringResource(R.string.enter_metrics))
     }) { paddingValues ->
         Column(
             modifier = Modifier
@@ -87,7 +89,7 @@ fun MetricsOnboardingScreen(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Ввод показаний\n с пикфлоуметра",
+                text = stringResource(R.string.enter_psv),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
@@ -95,7 +97,7 @@ fun MetricsOnboardingScreen(
             )
             Text(text = textFirst, style = MaterialTheme.typography.headlineMedium)
             Text(
-                text = "Точность и последовательность",
+                text = stringResource(R.string.accuracy_and_consistency),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 40.dp, bottom = 8.dp)
@@ -112,7 +114,7 @@ fun MetricsOnboardingScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Начать",
+                    text = stringResource(id = R.string.begin),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

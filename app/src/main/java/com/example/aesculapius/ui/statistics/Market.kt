@@ -2,6 +2,7 @@ package com.example.aesculapius.ui.statistics
 
 import android.graphics.RectF
 import android.graphics.Typeface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -9,6 +10,13 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.aesculapius.ui.theme.inverseOnSurface
+import com.example.aesculapius.ui.theme.inverseSurface
+import com.example.aesculapius.ui.theme.onErrorContainer
+import com.example.aesculapius.ui.theme.onSurface
+import com.example.aesculapius.ui.theme.outlineVariant
+import com.example.aesculapius.ui.theme.surfaceTint
+import com.example.aesculapius.ui.theme.tertiaryContainer
 import com.patrykandpatrick.vico.compose.component.overlayingComponent
 import com.patrykandpatrick.vico.compose.component.shapeComponent
 import com.patrykandpatrick.vico.compose.component.textComponent
@@ -27,22 +35,22 @@ import java.util.Locale
 
 @Composable
 internal fun rememberMarker(age: Int, height: Int): Marker {
-    val labelBackgroundColor = Color(0x99E7E0F1)
+    val labelBackgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
     val labelBackground = remember(labelBackgroundColor) {
         ShapeComponent(labelBackgroundShape, labelBackgroundColor.toArgb())
     }
     val assets = LocalContext.current
     val customTypeface = Typeface.createFromAsset(assets.assets, "inter_regular.ttf")
     val label = textComponent(
-        color = Color.Black,
+        color = MaterialTheme.colorScheme.onError,
         textSize = 12.sp,
         typeface = customTypeface,
         background = labelBackground,
         padding = dimensionsOf(7.dp)
     )
-    val indicatorInnerComponent = shapeComponent(Shapes.pillShape, Color.White)
-    val indicatorCenterComponent = shapeComponent(Shapes.pillShape, Color(0xFF00BB9A))
-    val indicatorOuterComponent = shapeComponent(Shapes.pillShape, Color(0xFF7FDACC))
+    val indicatorInnerComponent = shapeComponent(Shapes.pillShape, MaterialTheme.colorScheme.tertiaryContainer)
+    val indicatorCenterComponent = shapeComponent(Shapes.pillShape, MaterialTheme.colorScheme.inverseSurface)
+    val indicatorOuterComponent = shapeComponent(Shapes.pillShape, MaterialTheme.colorScheme.inverseOnSurface)
     val indicator = overlayingComponent(
         outer = indicatorOuterComponent,
         inner = overlayingComponent(
@@ -53,8 +61,8 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
         innerPaddingAll = indicatorCenterAndOuterComponentPaddingValue,
     )
     val guideline = LineComponent(
-        strokeColor = Color(0xFFB0A3D1).toArgb(),
-        color = Color(0xFFB0A3D1).toArgb(),
+        strokeColor = MaterialTheme.colorScheme.secondary.toArgb(),
+        color = MaterialTheme.colorScheme.secondary.toArgb(),
         thicknessDp = 2f
     )
     return remember(label, indicator, guideline) {
@@ -82,9 +90,9 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
                         height in 150 .. 160 && value in 289f .. 488f ||
                         height in 160 .. 170 && value in 394f .. 488f ||
                         height in 170 .. 190 && value in 394f .. 450f) {
-                        indicatorOuterComponent.color = Color(0xFF7FDACC).toArgb()
-                        indicatorInnerComponent.color = Color.White.toArgb()
-                        indicatorCenterComponent.color = Color(0xFF00BB9A).toArgb()
+                        indicatorOuterComponent.color = inverseOnSurface.toArgb()
+                        indicatorInnerComponent.color = tertiaryContainer.toArgb()
+                        indicatorCenterComponent.color = inverseSurface.toArgb()
                     }
                     else if (height in 100 .. 110 && value in 14f .. 87f ||
                         height in 110 .. 120 && value in 67f .. 140f ||
@@ -94,14 +102,14 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
                         height in 150 .. 160 && value in 279f .. 498f ||
                         height in 160 .. 170 && value in 384f .. 498f ||
                         height in 170 .. 190 && value in 384f .. 460f) {
-                        indicatorOuterComponent.color = Color(0xFFF9DC80).toArgb()
-                        indicatorInnerComponent.color = Color.White.toArgb()
-                        indicatorCenterComponent.color = Color(0xFFF3BE00).toArgb()
+                        indicatorOuterComponent.color = onSurface.toArgb()
+                        indicatorInnerComponent.color = tertiaryContainer.toArgb()
+                        indicatorCenterComponent.color = surfaceTint.toArgb()
                     }
                     else {
-                        indicatorOuterComponent.color = Color(0xFFFD9AB4).toArgb()
-                        indicatorInnerComponent.color = Color.White.toArgb()
-                        indicatorCenterComponent.color = Color(0xFFFC3B69).toArgb()
+                        indicatorOuterComponent.color = outlineVariant.toArgb()
+                        indicatorInnerComponent.color = tertiaryContainer.toArgb()
+                        indicatorCenterComponent.color = onErrorContainer.toArgb()
                     }
                 }
                 super.draw(context, bounds, markedEntries, chartValuesProvider)

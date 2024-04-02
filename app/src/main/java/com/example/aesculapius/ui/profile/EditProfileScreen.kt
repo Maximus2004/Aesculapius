@@ -25,11 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.signup.SignUpUiState
@@ -61,7 +63,7 @@ fun EditProfileScreen(
 
     Scaffold(topBar = {
         TopBar(
-            text = "Профиль",
+            text = stringResource(R.string.profile),
             existHelpButton = true,
             onNavigateBack = onNavigateBack
         )
@@ -81,7 +83,7 @@ fun EditProfileScreen(
                     TextInput(
                         text = tempUser.surname,
                         onValueChanged = { tempUser = tempUser.copy(surname = it) },
-                        hint = "Фамилия",
+                        hint = stringResource(R.string.surname),
                         modifier = Modifier
                             .padding(top = 24.dp)
                             .fillMaxWidth(),
@@ -92,7 +94,7 @@ fun EditProfileScreen(
                     TextInput(
                         text = tempUser.name,
                         onValueChanged = { tempUser = tempUser.copy(name = it) },
-                        hint = "Имя",
+                        hint = stringResource(R.string.name),
                         modifier = Modifier
                             .padding(top = 16.dp)
                             .fillMaxWidth(),
@@ -103,7 +105,7 @@ fun EditProfileScreen(
                     TextInput(
                         text = tempUser.patronymic,
                         onValueChanged = { tempUser = tempUser.copy(patronymic = it) },
-                        hint = "Отчество",
+                        hint = stringResource(R.string.patronymic),
                         modifier = Modifier
                             .padding(top = 16.dp)
                             .fillMaxWidth(),
@@ -119,7 +121,7 @@ fun EditProfileScreen(
                             if (matcher.find()) tempBirthday = matcher.group()
                             else if (it == "") tempBirthday = "//"
                         },
-                        hint = "Дата рождения, дд/мм/гггг",
+                        hint = stringResource(R.string.birthday),
                         modifier = Modifier
                             .padding(top = 40.dp)
                             .fillMaxWidth(),
@@ -134,7 +136,7 @@ fun EditProfileScreen(
                     TextInput(
                         text = tempUser.height,
                         onValueChanged = { tempUser = tempUser.copy(height = it) },
-                        hint = "Рост, см",
+                        hint = stringResource(R.string.height),
                         modifier = Modifier
                             .padding(top = 40.dp)
                             .fillMaxWidth(),
@@ -148,7 +150,7 @@ fun EditProfileScreen(
                     TextInput(
                         text = tempUser.weight,
                         onValueChanged = { tempUser = tempUser.copy(weight = it) },
-                        hint = "Вес, кг",
+                        hint = stringResource(R.string.weight),
                         modifier = Modifier
                             .padding(top = 16.dp)
                             .fillMaxWidth(),
@@ -167,22 +169,22 @@ fun EditProfileScreen(
                         val regex = Regex("[а-яА-Яa-zA-Z]+")
                         val newUser = tempUser.copy(birthday = LocalDate.parse(tempBirthday, formatter))
                         if (!(tempUser.height.toFloat() in 1f..500f && tempUser.weight.toFloat() in 0f..999f))
-                            throw IllegalArgumentException("Неверный формат веса или роста")
+                            throw IllegalArgumentException(context.getString(R.string.weight_height_warning))
                         if (!(regex.matches(tempUser.name) && regex.matches(tempUser.surname) && regex.matches(
                                 tempUser.patronymic
                             ))
                             && tempUser.patronymic != ""
                         )
-                            throw IllegalArgumentException("Неверные ФИО")
+                            throw IllegalArgumentException(context.getString(R.string.fio_warning))
                         onSaveNewUser(newUser)
                         onNavigateBack()
-                        Toast.makeText(context, "Данные успешно сохранены", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.success_edit_profile), Toast.LENGTH_SHORT).show()
                     } catch (e: NumberFormatException) {
-                        Toast.makeText(context, "Введены некорректные числа", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.warning_numbers), Toast.LENGTH_SHORT).show()
                     } catch (e: IllegalArgumentException) {
                         Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                     } catch (e: DateTimeParseException) {
-                        Toast.makeText(context, "Введена некорректная дата", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.date_warning), Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
@@ -194,7 +196,7 @@ fun EditProfileScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Сохранить",
+                    text = stringResource(R.string.save),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

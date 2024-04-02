@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.example.aesculapius.data.CurrentMedicineType
 import java.time.LocalDate
 
-// для отображения в БД
+/** [MedicineItem] для отображения в БД */
 @Entity(tableName = "medicines_items")
 data class MedicineItem(
     @PrimaryKey(autoGenerate = false)

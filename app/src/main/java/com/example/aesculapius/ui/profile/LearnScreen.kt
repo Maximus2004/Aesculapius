@@ -13,8 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.data.learnList
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
@@ -27,14 +29,14 @@ object LearnScreen : NavigationDestination {
 @Composable
 fun LearnScreen(
     onNavigateBack: () -> Unit,
-    onClickItem: (String, String) -> Unit,
+    onClickItem: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = onNavigateBack,
             existHelpButton = false,
-            text = "Обучающий блок"
+            text = stringResource(id = R.string.learn_block_name)
         )
     }) { paddingValues ->
         LazyColumn(
@@ -52,9 +54,12 @@ fun LearnScreen(
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .padding(top = 16.dp)
-                        .clickable { onClickItem(listItem.name, listItem.text) }) {
+                        .clickable {
+                            onClickItem(listItem.name, listItem.text)
+                        }
+                ) {
                     Text(
-                        text = listItem.name,
+                        text = stringResource(id = listItem.name),
                         Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )

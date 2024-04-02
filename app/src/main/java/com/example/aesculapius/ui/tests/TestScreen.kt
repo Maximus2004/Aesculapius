@@ -39,10 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
+import com.example.aesculapius.ui.theme.background
 
 object TestScreen : NavigationDestination {
     override val route = "TestScreen"
@@ -97,15 +100,16 @@ fun TestScreen(
                                 .clickable {
                                     currentAnswers[currentPage] = currentAnswer
                                     currentPage = index
-                                    if (currentAnswers[index] != -1)
-                                        currentAnswer = currentAnswers[index]
-                                    else currentAnswer = -1
+                                    currentAnswer =
+                                        if (currentAnswers[index] != -1)
+                                            currentAnswers[index]
+                                        else -1
                                 }
                                 .align(Alignment.TopCenter),
                             shape = MaterialTheme.shapes.small,
                             backgroundColor =
                             if (currentAnswers[index] != -1 || index == currentPage) MaterialTheme.colorScheme.primary
-                            else Color(0xFFE3E0EA)
+                            else MaterialTheme.colorScheme.errorContainer
                         ) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -114,7 +118,9 @@ fun TestScreen(
                                 Text(
                                     text = (index + 1).toString(),
                                     style = MaterialTheme.typography.headlineMedium,
-                                    color = if (currentAnswers[index] != -1 || index == currentPage) Color.White else Color.Black
+                                    color =
+                                    if (currentAnswers[index] != -1 || index == currentPage) MaterialTheme.colorScheme.tertiaryContainer
+                                    else MaterialTheme.colorScheme.onError
                                 )
                             }
                         }
@@ -124,23 +130,23 @@ fun TestScreen(
                                     .size(8.dp)
                                     .align(Alignment.BottomCenter)
                             ) {
-                                drawCircle(color = Color(0xFFEEECF0), center = center)
+                                drawCircle(color = background, center = center)
                             }
                         }
                     }
                 }
             }
             Text(
-                text = questionsList[currentPage].questionText,
+                text = stringResource(id = questionsList[currentPage].questionText),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 29.dp, bottom = 18.dp),
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onError
             )
             LazyColumn() {
                 itemsIndexed(questionsList[currentPage].answersList) { index, answer ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 10.dp)
+                        modifier = Modifier.padding(bottom = 10.dp).clickable { currentAnswer = index }
                     ) {
                         RadioButton(
                             selected = (index == currentAnswer),
@@ -148,9 +154,9 @@ fun TestScreen(
                             colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
                         )
                         Text(
-                            text = answer,
+                            text = stringResource(id = answer),
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 17.dp)
+                            modifier = Modifier.padding(start = 17.dp).clickable { currentAnswer = index }
                         )
                     }
                 }
@@ -160,7 +166,7 @@ fun TestScreen(
                 onClick = {
                     if (currentPage == questionsList.size - 1) {
                         if (-1 in currentAnswers && currentAnswer == -1) {
-                            Toast.makeText(context, "Ответьте на все вопросы", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.answer_all_questions), Toast.LENGTH_SHORT).show()
                             currentAnswers[currentPage] = currentAnswer
                         }
                         else {
@@ -182,7 +188,9 @@ fun TestScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = if (currentPage == questionsList.size - 1) "Подвести итоги" else "Дальше",
+                    text =
+                    if (currentPage == questionsList.size - 1) stringResource(R.string.sum_up)
+                    else stringResource(id = R.string.next),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )
@@ -196,21 +204,21 @@ fun TestScreen(
                     shape = RoundedCornerShape(16.dp),
                     title = {
                         Text(
-                            text = "Ты уверен(-а), что хочешь выйти?",
+                            text = stringResource(R.string.are_you_sure),
                             style = MaterialTheme.typography.displayMedium,
                             modifier = Modifier.padding(top = 34.dp)
                         )
                     },
                     text = {
                         Text(
-                            text = "Твой текущий прогресс не сохранится",
+                            text = stringResource(R.string.your_progress),
                             style = MaterialTheme.typography.headlineMedium
                         )
                     },
                     dismissButton = {
                         TextButton(onClick = { onNavigateBack() }, modifier = Modifier.padding(bottom = 24.dp)) {
                             Text(
-                                text = "Выйти", style = MaterialTheme.typography.headlineSmall,
+                                text = stringResource(R.string.exit), style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -218,7 +226,7 @@ fun TestScreen(
                     confirmButton = {
                         TextButton(onClick = { isAlertDialogShown = false }, modifier = Modifier.padding(bottom = 24.dp, end = 24.dp)) {
                             Text(
-                                text = "Назад", style = MaterialTheme.typography.headlineSmall,
+                                text = stringResource(id = R.string.back), style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }

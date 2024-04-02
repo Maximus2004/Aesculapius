@@ -5,4 +5,220 @@
     <string name="data_set_x">Data set %d</string>
     <string name="x_axis">x-axis</string>
     <string name="y_axis">y-axis</string>
+    <string name="statistics_name">Статистика</string>
+    <string name="therapy_name">Базисная терапия</string>
+    <string name="tests_name">Отчётность</string>
+    <string name="profile_name">Профиль и прочее</string>
+    <string name="week_chart">неделя</string>
+    <string name="month_chart">месяц</string>
+    <string name="three_months_chart">3 месяца</string>
+    <string name="half_year_chart">полгода</string>
+    <string name="year_chart">год</string>
+    <string name="first_ast_test_text">Как часто за последние 4 недели астма мешала тебе выполнять обычный объем работы в учебном заведении, на работе или дома?</string>
+    <string name="second_ast_test_text">Как часто за последние 4 недели ты отмечал(-а) у себя затрудненное дыхание?</string>
+    <string name="third_ast_test_text">Как часто за последние 4 недели ты просыпался(-ась) ночью или раньше, чем обычно, из-за симптомов астмы (кашля, свистящего или затрудненного дыхания, чувства стеснения или боли в груди)?</string>
+    <string name="fourth_ast_test_text">Как часто за последнюю неделю ты использовал(-а) быстродействующий ингалятор (например, Сальбутамол, Вентолин, Беродуал, Атровент) или небулайзер (аэрозольный аппарат) с лекарством (например, Беротек, Беродуал, Вентолин небулы)?</string>
+    <string name="fifth_ast_test_text">Как бы ты оценил(-а), насколько тебе удавалось контролировать астму за последнюю неделю?</string>
+    <string name="first_rec_test_text">Забываешь ли ты делать ингаляции?</string>
+    <string name="second_rec_test_text">Пропускал(-а) ли ты ингаляции за последние 2 недели?</string>
+    <string name="third_rec_test_text">Бывает ли так, что ты прекращаешь ингаляции, если чувствуешь себя хорошо (БЕЗ консультации с врачом)?</string>
+    <string name="fourth_rec_test_text">Бывает ли так, что ты не хочешь делать ингаляции каждый день?</string>
+    <string name="fifth_rec_test_text">Ты хорошо знаешь, как правильно пользоваться твоим ингалятором (техника ингаляции)?</string>
+    <string name="sixth_rec_test_text">Возникают ли у тебя сложности с использованием ингалятора?</string>
+    <string name="seventh_rec_test_text">Тебе удобно пользоваться ингалятором?</string>
+    <string name="eighth_rec_test_text">Как ты считаешь, помогает ли тебе лечение?</string>
+    <string name="ninth_rec_test_text">Меняешь ли ты препарат или количество доз самостоятельно (или с родителями) БЕЗ консультации с врачом?</string>
+    <string name="never">Никогда</string>
+    <string name="rarely">Редко</string>
+    <string name="sometimes">Иногда</string>
+    <string name="often">Часто</string>
+    <string name="always">Всегда</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="all_the_time">Все время</string>
+    <string name="very_often">Очень часто</string>
+    <string name="very_bad_control_asthma">Совсем не удавалось контролировать</string>
+    <string name="bad_control_asthma">Плохо удавалось контролировать</string>
+    <string name="normal_control_asthma">В некоторой степени удавалось контролировать</string>
+    <string name="good_control_asthma">Хорошо удавалось контролировать</string>
+    <string name="awesome_control_asthma">Полностью удавалось контролировать</string>
+    <string name="three_times_a_day">3 раза в день или чаще</string>
+    <string name="one_or_two_a_day">1 или 2 раза в день</string>
+    <string name="two_or_three_a_week">2 или 3 раза в неделю</string>
+    <string name="one_time_a_week_rarely">"1 раз в неделю или реже "</string>
+    <string name="no_one">Ни разу</string>
+    <string name="four_nights_a_week">4 ночи в неделю или чаще</string>
+    <string name="two_three_nights_a_week">2 – 3 ночи в неделю</string>
+    <string name="one_time_a_week">1 раз в неделю</string>
+    <string name="one_two_times_a_week">1 или 2 раза</string>
+    <string name="more_one_a_week">Чаще, чем раз в неделю</string>
+    <string name="three_six_a_week">От 3 до 6 раз в неделю</string>
+    <string name="one_two_a_week">1 или два раза в неделю</string>
+    <string name="what_is_asthma">Что такое астма?</string>
+    <string name="what_is_asthma_text">Астма – это заболевание дыхательных путей, которое приводит к периодическим проблемам с дыханием.\n
+                    \nПри астме может возникать:\n
+                    \n • Кашель
+                    \n • Свистящее дыхание
+                    \n • Одышка (частое дыхание)
+                    \n • Ощущение, что не хватает воздуха
+                    \n • Ощущение сдавливания в груди\n
+                \nЭто появляется из-за того, что дыхательные пути (бронхи) отекают, сужаются и в них накапливается слизь.\n
+                \nАстма – довольно частая болезнь, а склонность к ней может передаваться по наследству.\n
+                \nАстма может протекать по-разному: у кого-то очень легко, а у других – крайне тяжело.\n
+                \nНо при использовании специальных лекарств симптомы астмы можно держать под контролем. В этом случае она никак не мешает вести полноценную жизнь.</string>
+    <string name="why_asthma_appears">Почему возникает астма?</string>
+    <string name="why_asthma_appears_text">Никто точно не знает, почему у некоторых людей возникает астма. Скорее всего, тут играют роль и разные факторы внешней среды, и гены человека.\n
+                \nАстма чаще возникает у людей с аллергией (на пищу, пыльцу, домашних животных, пыль и т.д.)\n
+                \nКогда человек вдыхает, то воздух попадает сначала в нос, потом в трахею, затем в бронхи (по ним воздух движется уже внутри легких) – все вместе это называется дыхательные пути.\n
+                \nПри астме дыхательные пути всегда немного воспалены, даже когда нет обострения астмы. И еще они могут реагировать на самые обычные вещи (они называются триггеры): вирусы, аллергены, резкие запахи, физическая нагрузка или даже смех. При этом воспаление усиливается, стенка дыхательных путей еще больше отекает, мышцы вокруг бронхов сжимаются, образуется больше слизи – все это приводит к затруднению дыхания. Это называется обострение астмы (или приступ).\n
+                \nТриггеры для каждого человека могут отличаться, но самыми частыми являются:\n
+                \n • Вирусные инфекции (ОРВИ, простуда)
+                \n • Пыльца
+                \n • Плесень
+                \n • Домашние животные
+                \n • Сигаретный дым
+                \n • Погода (холодный + сухой воздух или теплый + влажный воздух)
+                \n • Сильные эмоции (смех, плач, сильный стресс)
+                \n • Физическая нагрузка (бег и др.)</string>
+    <string name="asthma_symptoms">Симптомы астмы</string>
+    <string name="asthma_symptoms_text">Симптомы – это признаки заболевания. При астме часто бывают:\n
+                \n • Кашель (особенно ночью или во время физической активности)
+                \n • Затрудненное дыхание
+                \n • Ощущение сдавливания в груди
+                \n • Свистящее дыхание\n
+                \nУ некоторых людей симптомов астмы между приступами нет вовсе. У других постоянно могут быть некоторые симптомы, которые усиливаются при приступе. Иногда приступы могут быть легкими, а иногда – тяжелыми. Они возникают внезапно. Если человек с астмой не получает никакого лечения, то приступы обычно усиливаются со временем и возникают чаще.</string>
+    <string name="asthma_diagnosis">Как ставят диагноз Астма?</string>
+    <string name="asthma_diagnosis_text">Прежде всего, врач спросит о жалобах на проблемы с дыханием. Уточнит, есть ли в твоей семье случаи астмы. Также врач должен выяснить, есть ли у тебя аллергия и другие заболевания.\n
+                \nВрач послушает твои легкие и назначит специальный дыхательный тест для оценки функции легких. Этот тест называется спирометрия."</string>
+    <string name="how_heal_asthma">Как лечить астму?</string>
+    <string name="how_heal_asthma_text">Пока у нас нет лекарства, чтобы полностью вылечиться от астмы раз и навсегда. Но есть эффективные лекарства, чтобы предотвратить приступы астмы. Иногда некоторые ребята могут как бы «перерасти» астму, и она исчезнет с возрастом. Для лечения астмы важно избегать триггеров, которые у тебя провоцируют обострение, а также регулярно принимать назначенные врачом препараты.\n
+                \nКак избежать триггеров? Например, если симптомы астмы вызывает контакт с пылью, то придется чаще пылесосить дома и чаще менять постельное белье. А если причина в пыльце – то на время цветения этого растения лучше не выходить лишний раз из дома. Если аллергия на домашнего питомца – не стоит позволять ему находиться в твоей комнате, и, возможно, подумать о том, чтобы отдать его родственниками или друзьям.\n
+                \nПациентам с астмой важно оставаться активными! Не стоит избегать физической нагрузки. При необходимости, твой врач может назначить специальные ингаляции до физнагрузки, чтобы предотвратить сужение дыхательных путей.\n
+                \nБольшинство лекарств от астмы принимаются в виде ингаляций.\n
+                \n • Одни направлены на то, чтобы расслабить мышцы, сжимающие бронхи при обострении астмы. Это средства скорой помощи при приступе, еще их называют бронхолитики.\n
+                \n • Другие снижают воспаление в дыхательных путях, и их нужно принимать каждый день постоянно или курсами (как назначит врач), даже если ты чувствуешь себя хорошо и никаких симптомов сейчас нет. Это средства контроля над симптомами астмы, их еще называют «базисная терапия». Они нужны, чтобы приступы астмы не возникали. Очень важно точно соблюдать рекомендации твоего врача!\n
+                \nЕсли симптомы астмы под контролем - она не будет мешать твоим планам! И ты можешь делать все то же самое, что и люди без астмы.</string>
+    <string name="jan">янв</string>
+    <string name="feb">фев</string>
+    <string name="mar">мар</string>
+    <string name="may">май</string>
+    <string name="apr">апр</string>
+    <string name="jun">июн</string>
+    <string name="jul">июл</string>
+    <string name="aug">авг</string>
+    <string name="sep">сен</string>
+    <string name="oct">окт</string>
+    <string name="nov">ноя</string>
+    <string name="dec">дек</string>
+    <string name="select_birthday">Укажи дату рождения</string>
+    <string name="skip">Пропустить</string>
+    <string name="accept">Принять</string>
+    <string name="morning_reminder">Утреннее напоминание</string>
+    <string name="evening_reminder">Вечернее напоминание</string>
+    <string name="reminder_warning">Между утренним и вечерним напоминанием должно быть минимум 8 часов</string>
+    <string name="set_reminders">Настройка напоминаний</string>
+    <string name="morning">Morning</string>
+    <string name="morning_text">Утро</string>
+    <string name="evening_text">Вечер</string>
+    <string name="reminder_time">Время напоминаний</string>
+    <string name="ast_test_name">АСТ тестирование</string>
+    <string name="rec_test_name">Тест приверженности</string>
+    <string name="profile">Профиль</string>
+    <string name="surname">Фамилия</string>
+    <string name="name">Имя</string>
+    <string name="patronymic">Отчество</string>
+    <string name="birthday">Дата рождения, дд/мм/гггг</string>
+    <string name="height">Рост, см</string>
+    <string name="weight">Вес, кг</string>
+    <string name="weight_height_warning">Неверный формат веса или роста</string>
+    <string name="fio_warning">Неверные ФИО</string>
+    <string name="success_edit_profile">Данные успешно сохранены</string>
+    <string name="date_warning">Введена некорректная дата</string>
+    <string name="warning_numbers">Введены некорректные числа</string>
+    <string name="save">Сохранить</string>
+    <string name="learn_block_name">Обучающий блок</string>
+    <string name="color_theme">Цветовая тема</string>
+    <string name="connect_with_developer">Связь с разработчиком</string>
+    <string name="set_reminder_text">
+        Проводить пикфлоуметрию нужно 2 раза в день - утром и вечером!
+        \nЛучше выбрать время, когда ты сможешь выполнить пикфлоуметрию без спешки.
+        \nЛучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.
+        \nЗапиши результат!
+    </string>
+    <string name="enter_comfortable_time">Введите удобное для тебя время</string>
+    <string name="hours">Часы</string>
+    <string name="minutes">Минуты</string>
+    <string name="back">Назад</string>
+    <string name="wrong_time_format">Неверный формат времени</string>
+    <string name="wrong_numbers">Введи корректные числа</string>
+    <string name="ok">Ок</string>
+    <string name="wrong_data">Введи корректные данные</string>
+    <string name="next">Дальше</string>
+    <string name="set_time_reminders">Настрой время напоминаний для пикфлоуметрии</string>
+    <string name="your_height">Твой рост, см</string>
+    <string name="your_weight">Твой вес, кг</string>
+    <string name="your_fio">Твои фамилия, имя, отчество</string>
+    <string name="metrics_name">Значения ПСВ</string>
+    <string name="no_data">Нет данных…</string>
+    <string name="how_good_is_your_asthma">Посмотри, как ты справляешься с астмой</string>
+    <string name="description_dinamic">Следи за динамикой твоего состояния, используя две диаграммы: столбчатую, отражающую значения АСТ теста, и линейную, представляющую значения ПСВ.</string>
+    <string name="download_statistics">Скачать статистику</string>
+    <string name="asthma_control">
+        Проходи тест 1 раз в месяц, чтобы понять, насколько хорошо контролируется твоя астма.
+        \nЭто займет всего пару минут!
+        \nТест поможет врачу подобрать для тебя лучшее лечение.
+    </string>
+    <string name="test_control_asthma">Тест по контролю над астмой</string>
+    <string name="ast_test_onboarding">Мы сравниваем твои ответы с данными, полученными при использовании пикфлоуметра, для оценки твоего состояния и эффективности подобранного плана лечения.</string>
+    <string name="test_is_easy">Пройти тестирование просто</string>
+    <string name="begin">Начать</string>
+    <string name="very_good_ast_result">У тебя не было симптомов астмы и связанных с ней ограничений. Если ситуация изменится – проконсультируйся с врачом.</string>
+    <string name="good_ast_result">За последние 4 недели ты хорошо контролировал астму, но не полностью. Твой врач поможет добиться полного контроля.</string>
+    <string name="bad_ast_result">За последние 4 недели тебе не удавалось контролировать астму. Твой врач может посоветовать, какие меры нужно принять, чтобы добиться более полного контроля над астмой.</string>
+    <string name="your_result">Твой результат:</string>
+    <string name="explanation_text">Шкала ACT включает в себя 5 пунктов для самостоятельного заполнения пациентом, каждому пункту присваивается значение от 1 до 5 баллов, которые затем суммируются (общее значение шкалы – 5 – 25 баллов).</string>
+    <string name="explanation">Пояснение</string>
+    <string name="points">%1$s баллов</string>
+    <string name="return_back">Вернуться в раздел</string>
+    <string name="enter_metrics">Ввод метрик</string>
+    <string name="enter_psv">Ввод показаний\n с пикфлоуметра</string>
+    <string name="accuracy_and_consistency">Точность и последовательность</string>
+    <string name="enter_psv_text">Введи метрики со своего\n пикфлоуметра</string>
+    <string name="first_metric">Первая метрика, л/мин</string>
+    <string name="second_metric">Вторая метрика, л/мин</string>
+    <string name="third_metric">Третья метрика, л/мин</string>
+    <string name="wrong_metrics">Неверный формат метрик</string>
+    <string name="send_data">Отправить данные</string>
+    <string name="mark_rec_test">Оценка приверженности к лечению</string>
+    <string name="what_is_rec_test">Приверженность к лечению - насколько точно ты выполняешь рекомендации врача. \n Ответь на вопросы искренне. Это поможет понять, как улучшить лечение твоей астмы.</string>
+    <string name="answer_all_questions">Ответьте на все вопросы</string>
+    <string name="sum_up">Подвести итоги</string>
+    <string name="are_you_sure">Ты уверен(-а), что хочешь выйти?</string>
+    <string name="your_progress">Твой текущий прогресс не сохранится</string>
+    <string name="exit">Выйти</string>
+    <string name="tests_metrics">Тесты и метрики</string>
+    <string name="regular_do_tests">Регулярно проходи тесты - это поможет понять, насколько хорошо ты контролируешь астму. Это поможет твоему врачу выбрать для тебя правильное лечение.</string>
+    <string name="input_psv">Ввод метрик с пикфлоуметра</string>
+    <string name="mark_lungs">Оценка функции легких</string>
+    <string name="its_time">Время пришло!</string>
+    <string name="unable">Недоступно</string>
+    <string name="rec_test_explanation">Насколько точно ты выполняешь рекомендации врача</string>
+    <string name="ast_test_explantion">Под контролем ли твоя астма?</string>
+    <string name="edit_medicine">Редактировать препарат</string>
+    <string name="dose">Дозировка</string>
+    <string name="frequency">Кратность приёма</string>
+    <string name="success_save_medicine">Лекарство успешно сохранено</string>
+    <string name="success_delete_medicine">Лекарство успешно удалено</string>
+    <string name="delete_medicine">Удалить препарат</string>
+    <string name="new_medicine">Новый препарат</string>
+    <string name="aerosol">аэрозоль</string>
+    <string name="powder">порошок</string>
+    <string name="tablets">таблетки</string>
+    <string name="naming">Название</string>
+    <string name="choose_dose_frequency">Выберите дозировку и кратность для этого лекарства</string>
+    <string name="everyday_progress">Ежедневный прогресс</string>
+    <string name="done_medicines">Выполнено %1$s из %2$s</string>
+    <string name="future_medicines">Предстоящие</string>
+    <string name="plan_your_day">Планирование твоего дня</string>
+    <string name="version_1_0">Версия 1.0</string>
 </resources>

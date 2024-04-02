@@ -1,7 +1,6 @@
 package com.example.aesculapius.ui.signup
 
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
@@ -62,8 +63,6 @@ fun SetReminderTimeScreen(
     var hours by remember { mutableStateOf(textHours) }
     val context = LocalContext.current
 
-    BackHandler { onNavigateBack() }
-
     Scaffold(topBar = {
         TopBar(onNavigateBack = onNavigateBack, text = textTopBar)
     }) { paddingValue ->
@@ -78,10 +77,10 @@ fun SetReminderTimeScreen(
             Card(
                 modifier = Modifier.padding(24.dp),
                 shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
             ) {
                 Text(
-                    text = "Введите удобное для Вас время",
+                    text = stringResource(R.string.enter_comfortable_time),
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.padding(24.dp)
                 )
@@ -101,7 +100,7 @@ fun SetReminderTimeScreen(
                             modifier = Modifier.width(83.dp),
                             onValueChanged = { hours = it }
                         )
-                        Text(text = "Часы", style = MaterialTheme.typography.labelSmall)
+                        Text(text = stringResource(R.string.hours), style = MaterialTheme.typography.labelSmall)
                     }
                     Text(text = ":", fontSize = 57.sp, modifier = Modifier.padding(5.dp))
                     Column() {
@@ -115,7 +114,7 @@ fun SetReminderTimeScreen(
                             modifier = Modifier.width(83.dp),
                             onValueChanged = { minutes = it }
                         )
-                        Text(text = "Минуты", style = MaterialTheme.typography.labelSmall)
+                        Text(text = stringResource(R.string.minutes), style = MaterialTheme.typography.labelSmall)
                     }
                     Spacer(Modifier.weight(1f))
                 }
@@ -126,14 +125,14 @@ fun SetReminderTimeScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { onNavigateBack() }) {
-                        Text(text = "Назад", fontSize = 14.sp)
+                        Text(text = stringResource(R.string.back), fontSize = 14.sp)
                     }
                     TextButton(onClick = {
                         try {
                             val hoursFinal = hours.toInt()
                             val minutesFinal = minutes.toInt()
                             if (!(hoursFinal in 0..23 && minutesFinal in 0..59))
-                                throw IllegalArgumentException("Неверный формат времени")
+                                throw IllegalArgumentException(context.getString(R.string.wrong_time_format))
                             else {
                                 val now = LocalDateTime.now()
                                 val nowHours = now.hour
@@ -144,13 +143,12 @@ fun SetReminderTimeScreen(
                                     onDoneButton(LocalDateTime.of(now.year, now.monthValue, now.dayOfMonth, hoursFinal, minutesFinal))
                             }
                         } catch (e: NumberFormatException) {
-                            Toast.makeText(context, "Введите корректные числа", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(context, context.getString(R.string.wrong_numbers), Toast.LENGTH_SHORT).show()
                         } catch (e: IllegalArgumentException) {
                             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                         }
                     }) {
-                        Text(text = "Ок", fontSize = 14.sp)
+                        Text(text = stringResource(R.string.ok), fontSize = 14.sp)
                     }
                 }
             }
@@ -176,9 +174,9 @@ fun TextInputTime(
         keyboardActions = keyboardActions,
         textStyle = MaterialTheme.typography.displayLarge,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedLabelColor = Color(0xFF6750A4),
-            unfocusedLabelColor = Color(0xFFAB90F1),
-            containerColor = Color(0xFFD8D1E9)
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.inversePrimary,
+            containerColor = MaterialTheme.colorScheme.scrim
         ),
         shape = MaterialTheme.shapes.small
     )

@@ -15,29 +15,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 
-object ASTTestOnboardingScreen : NavigationDestination {
+object AstTestOnboardingScreen : NavigationDestination {
     override val route = "ASTTestOnboardingScreen"
 }
 
 @Composable
-fun ASTTestOnboardingScreen(
+fun AstTestOnboardingScreen(
     onNavigateBack: () -> Unit,
     onClickBeginButton: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val textASTTest =
-        "Проходи тест 1 раз в месяц, чтобы понять, насколько хорошо контролируется твоя астма.\n" +
-        "Это займет всего пару минут!\n" +
-        "Тест поможет врачу подобрать для тебя лучшее лечение."
-
     Scaffold(topBar = {
         TopBar(
-            text = "АСТ тестирование",
+            text = stringResource(id = R.string.ast_test_name),
             onNavigateBack = { onNavigateBack() })
     }) { paddingValues ->
         Column(
@@ -50,7 +47,7 @@ fun ASTTestOnboardingScreen(
                 )
         ) {
             Text(
-                text = "Тест по контролю над астмой",
+                text = stringResource(R.string.test_control_asthma),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -59,17 +56,17 @@ fun ASTTestOnboardingScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Мы сравниваем твои ответы с данными, полученными при использовании пикфлоуметра, для оценки твоего состояния и эффективности подобранного плана лечения.",
+                text = stringResource(R.string.ast_test_onboarding),
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Пройти тестирование просто",
+                text = stringResource(R.string.test_is_easy),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 40.dp, bottom = 8.dp),
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = textASTTest, style = MaterialTheme.typography.headlineMedium
+                text = stringResource(R.string.asthma_control), style = MaterialTheme.typography.headlineMedium
             )
             Spacer(Modifier.weight(1f))
             Button(
@@ -82,7 +79,7 @@ fun ASTTestOnboardingScreen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "Начать",
+                    text = stringResource(id = R.string.begin),
                     style = MaterialTheme.typography.displaySmall,
                     textAlign = TextAlign.Center
                 )

@@ -1,6 +1,5 @@
 package com.example.aesculapius.ui.profile
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,8 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.aesculapius.R
 import com.example.aesculapius.data.Hours
 import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
@@ -41,17 +42,10 @@ fun SetReminderTimeProfile(
     morningTime: LocalDateTime,
     onNavigateBack: () -> Unit
 ) {
-    BackHandler { onNavigateBack() }
-
-    val textPlanFirst = "Проводить пикфлоуметрию нужно 2 раза в день - утром и вечером!\n" +
-                "Лучше выбрать время, когда ты сможешь выполнить пикфлоуметрию без спешки. \n" +
-                "Лучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.\n" +
-                "Запиши результат!"
-
     Scaffold(topBar = {
         TopBar(
             onNavigateBack = onNavigateBack,
-            text = "Настройка напоминаний"
+            text = stringResource(id = R.string.set_reminders)
         )
     }) { paddingValue ->
         Column(
@@ -65,7 +59,7 @@ fun SetReminderTimeProfile(
                     .wrapContentHeight()
                     .padding(top = 24.dp, bottom = 16.dp)
                     .clickable { onClickSetReminder(Hours.Morning) },
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Row() {
@@ -77,7 +71,7 @@ fun SetReminderTimeProfile(
                         )
                     ) {
                         Text(
-                            text = "Утро",
+                            text = stringResource(id = R.string.morning_text),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -91,7 +85,7 @@ fun SetReminderTimeProfile(
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = null,
-                        tint = Color(0xFF49454F),
+                        tint = MaterialTheme.colorScheme.onTertiary,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .padding(end = 28.dp)
@@ -105,7 +99,7 @@ fun SetReminderTimeProfile(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .clickable { onClickSetReminder(Hours.Evening) },
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Row() {
@@ -117,7 +111,7 @@ fun SetReminderTimeProfile(
                         )
                     ) {
                         Text(
-                            text = "Вечер",
+                            text = stringResource(id = R.string.evening_text),
                             style = MaterialTheme.typography.titleSmall,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -131,7 +125,7 @@ fun SetReminderTimeProfile(
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = null,
-                        tint = Color(0xFF49454F),
+                        tint = MaterialTheme.colorScheme.onTertiary,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .padding(end = 28.dp)
@@ -140,14 +134,14 @@ fun SetReminderTimeProfile(
                 }
             }
             Text(
-                text = "Планирование твоего дня",
+                text = stringResource(R.string.plan_your_day),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier
                     .padding(top = 40.dp, bottom = 8.dp)
                     .align(Alignment.Start),
                 color = MaterialTheme.colorScheme.primary,
             )
-            Text(text = textPlanFirst, style = MaterialTheme.typography.headlineMedium)
+            Text(text = stringResource(R.string.set_reminder_text), style = MaterialTheme.typography.headlineMedium)
         }
     }
 }

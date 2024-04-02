@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.example.aesculapius.database.Converters
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.theme.onErrorContainer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -122,7 +124,7 @@ fun TestsScreen(
         LazyColumn(modifier = modifier) {
             item {
                 Text(
-                    text = "Тесты и метрики",
+                    text = stringResource(R.string.tests_metrics),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
@@ -130,7 +132,7 @@ fun TestsScreen(
                         .fillMaxWidth()
                 )
                 Text(
-                    text = "Регулярно проходи тесты - это поможет понять, насколько хорошо ты контролируешь астму. Это поможет твоему врачу выбрать для тебя правильное лечение.",
+                    text = stringResource(R.string.regular_do_tests),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 40.dp, start = 8.dp, end = 8.dp)
                 )
@@ -144,13 +146,13 @@ fun TestsScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Ввод метрик с пикфлоуметра",
+                                text = stringResource(R.string.input_psv),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onError
                             )
                             Text(
-                                text = "Оценка функции легких",
+                                text = stringResource(R.string.mark_lungs),
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
@@ -172,7 +174,7 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = "Время пришло!",
+                                        text = stringResource(R.string.its_time),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -190,10 +192,10 @@ fun TestsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Начать",
+                                                text = stringResource(id = R.string.begin),
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -225,10 +227,10 @@ fun TestsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Недоступно",
+                                                text = stringResource(R.string.unable),
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -249,7 +251,7 @@ fun TestsScreen(
                                 .align(Alignment.TopEnd)
                         ) {
                             drawCircle(
-                                color = Color(0xFFFC3B69),
+                                color = onErrorContainer,
                                 center = center
                             )
                         }
@@ -265,13 +267,13 @@ fun TestsScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "Тест приверженности",
+                                text = stringResource(id = R.string.rec_test_name),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onError
                             )
                             Text(
-                                text = "Насколько точно ты выполняешь рекомендации врача",
+                                text = stringResource(R.string.rec_test_explanation),
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
@@ -287,7 +289,7 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = "Время пришло!",
+                                        text = stringResource(id = R.string.its_time),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -305,10 +307,10 @@ fun TestsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Начать",
+                                                text = stringResource(id = R.string.begin),
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -339,10 +341,10 @@ fun TestsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Недоступно",
+                                                text = stringResource(id = R.string.unable),
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -358,7 +360,7 @@ fun TestsScreen(
                                 .align(Alignment.TopEnd)
                         ) {
                             drawCircle(
-                                color = Color(0xFFFC3B69),
+                                color = onErrorContainer,
                                 center = center
                             )
                         }
@@ -375,13 +377,13 @@ fun TestsScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                text = "АСТ тестирование",
+                                text = stringResource(id = R.string.ast_test_name),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onError
                             )
                             Text(
-                                text = "Под контролем ли твоя астма?",
+                                text = stringResource(R.string.ast_test_explantion),
                                 style = MaterialTheme.typography.labelSmall
                             )
                             Row(
@@ -397,7 +399,7 @@ fun TestsScreen(
                                         modifier = Modifier.padding(end = 8.dp, top = 8.dp)
                                     )
                                     Text(
-                                        text = "Время пришло!",
+                                        text = stringResource(id = R.string.its_time),
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(top = 8.dp)
                                     )
@@ -406,7 +408,7 @@ fun TestsScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .width(81.dp)
-                                            .clickable { onNavigate(ASTTestOnboardingScreen.route) },
+                                            .clickable { onNavigate(AstTestOnboardingScreen.route) },
                                         shape = RoundedCornerShape(12.dp),
                                         backgroundColor = MaterialTheme.colorScheme.primary
                                     ) {
@@ -415,10 +417,10 @@ fun TestsScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = "Начать",
+                                                text = stringResource(id = R.string.begin),
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -452,7 +454,7 @@ fun TestsScreen(
                                                 text = "Недоступно",
                                                 style = MaterialTheme.typography.headlineMedium,
                                                 textAlign = TextAlign.Center,
-                                                color = Color.White
+                                                color = MaterialTheme.colorScheme.tertiaryContainer
                                             )
                                         }
                                     }
@@ -468,7 +470,7 @@ fun TestsScreen(
                                 .align(Alignment.TopEnd)
                         ) {
                             drawCircle(
-                                color = Color(0xFFFC3B69),
+                                color = onErrorContainer,
                                 center = center
                             )
                         }

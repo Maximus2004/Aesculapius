@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
@@ -43,8 +44,9 @@ fun ProfileScreen(
         ) {
             SingleItem(
                 image = R.drawable.profile_icon,
-                name = "Профиль",
-                onClick = { onNavigate(EditProfileScreen.route) })
+                name = stringResource(id = R.string.profile),
+                onClick = { onNavigate(EditProfileScreen.route) }
+            )
         }
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -56,42 +58,42 @@ fun ProfileScreen(
         ) {
             SingleItem(
                 image = R.drawable.book_icon,
-                name = "Обучающий блок",
+                name = stringResource(id = R.string.learn_block_name),
                 onClick = { onNavigate(LearnScreen.route) }
             )
         }
         Card(
             shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             elevation = 0.dp
         ) {
             Column {
                 SingleItem(
                     image = R.drawable.timer_icon,
-                    name = "Настройка напоминаний",
-                    onClick = { onNavigate(SetReminderTimeProfile.route) })
+                    name = stringResource(id = R.string.set_reminders),
+                    onClick = { onNavigate(SetReminderTimeProfile.route) }
+                )
                 Divider(
                     color = MaterialTheme.colorScheme.secondary,
                     thickness = 1.dp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                SingleItem(image = R.drawable.theme_icon, name = "Цветовая тема")
+                SingleItem(image = R.drawable.theme_icon, name = stringResource(R.string.color_theme))
                 Divider(
                     color = MaterialTheme.colorScheme.secondary,
                     thickness = 1.dp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                SingleItem(image = R.drawable.question_icon, name = "Связь с разработчиком")
+                SingleItem(image = R.drawable.question_icon, name = stringResource(R.string.connect_with_developer))
             }
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Версия 1.0",
+            text = stringResource(R.string.version_1_0),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 20.dp),
-            color = Color(0xFF79747E),
+            color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.headlineMedium
         )
     }
@@ -103,6 +105,7 @@ fun SingleItem(image: Int, name: String, onClick: () -> Unit = {}) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(vertical = 16.dp, horizontal = 20.dp)
+            .fillMaxWidth()
             .clickable { onClick() }
     ) {
         Image(painter = painterResource(id = image), contentDescription = null)

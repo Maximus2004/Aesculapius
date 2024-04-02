@@ -14,10 +14,28 @@ private val LightColorScheme = lightColorScheme(
     primary = primary,
     secondary = secondary,
     background = background,
-    onSurface = onSurface,
     onBackground = onBackground,
     onPrimary = onPrimary,
-    tertiary = tertiary
+    tertiary = tertiary,
+    onTertiary = onTertiary,
+    inversePrimary = inversePrimary,
+    scrim = scrim,
+    inverseOnSurface = inverseOnSurface,
+    inverseSurface = inverseSurface,
+    surfaceTint = surfaceTint,
+    outlineVariant = outlineVariant,
+    onErrorContainer = onErrorContainer,
+    onSecondaryContainer = onSecondaryContainer,
+    onTertiaryContainer = onTertiaryContainer,
+    errorContainer = errorContainer,
+    secondaryContainer = secondaryContainer,
+    onPrimaryContainer = onPrimaryContainer,
+    surfaceVariant = surfaceVariant,
+    tertiaryContainer = tertiaryContainer,
+    onError = onError,
+    primaryContainer = primaryContainer,
+    onSecondary = onSecondary,
+    outline = outline
 )
 
 @Composable

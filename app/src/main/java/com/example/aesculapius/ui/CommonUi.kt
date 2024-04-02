@@ -41,7 +41,7 @@ fun TopBar(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color(0xFF49454F)
+                tint = MaterialTheme.colorScheme.onTertiary
             )
         }
         Text(
@@ -60,7 +60,7 @@ fun TopBar(
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = null,
-                    tint = Color(0xFF49454F)
+                    tint = MaterialTheme.colorScheme.onTertiary
                 )
             }
     }

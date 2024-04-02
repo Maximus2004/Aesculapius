@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -24,7 +25,7 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp,
-        color = Color.Black
+        color = onError
     ),
     labelLarge = TextStyle(
         fontFamily = Roboto,
@@ -45,7 +46,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W400,
         fontSize = 18.sp,
         lineHeight = 21.78.sp,
-        color = Color.Black,
+        color = onError,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
@@ -53,14 +54,14 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 20.sp,
         lineHeight = 23.44.sp,
-        color = Color.Black
+        color = onError
     ),
     displaySmall = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        color = Color.White,
+        color = tertiaryContainer,
         letterSpacing = 0.sp
     ),
     displayMedium = TextStyle(
@@ -68,7 +69,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 24.sp,
         lineHeight = 28.13.sp,
-        color = Color.Black
+        color = onError
     ),
     titleSmall = TextStyle(
         fontFamily = Roboto,
@@ -82,7 +83,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W400,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        color = Color.Black
+        color = onError
     ),
     labelSmall = TextStyle(
         fontFamily = Roboto,
@@ -107,7 +108,7 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        color = Color.Black,
+        color = onError,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
