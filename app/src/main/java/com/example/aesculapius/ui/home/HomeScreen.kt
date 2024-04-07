@@ -140,6 +140,7 @@ fun HomeScreen(
                 startDestination = TherapyScreen.route,
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(paddingValues = contentPadding),
                 builder = {
                     therapyNavGraph(
@@ -266,18 +267,17 @@ fun EditMedicineSheet(
             Column {
                 Text(
                     text = medicine.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onError
+                    style = MaterialTheme.typography.headlineLarge
                 )
                 Text(
                     text = medicine.undername,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onError
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
                 Text(
                     text = medicine.dose,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onError
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -291,19 +291,18 @@ fun EditMedicineSheet(
                     painter = painterResource(id = R.drawable.moon_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = MaterialTheme.colorScheme.onError
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             else
                 Icon(
                     painter = painterResource(id = R.drawable.sun_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = MaterialTheme.colorScheme.onError
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             Text(
                 text = medicine.frequency,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onError
             )
         }
         Divider(

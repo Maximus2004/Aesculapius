@@ -182,13 +182,13 @@ fun TherapyScreen(
                                                     currentMedicines.amount
                                                 ),
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onError
+                                                color = MaterialTheme.colorScheme.primaryContainer
                                             )
                                             Spacer(Modifier.weight(1f))
                                             Text(
                                                 text = "${(currentMedicines.progress * 100).toInt()}%",
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onError
+                                                color = MaterialTheme.colorScheme.primaryContainer
                                             )
                                         }
                                     }
@@ -491,36 +491,36 @@ fun MedicineCard(
                     Text(
                         text = medicine.name,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = medicine.undername,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = medicine.dose,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Row(modifier = Modifier.padding(top = 16.dp)) {
                         if (!isMorning) Icon(
                             painter = painterResource(id = R.drawable.moon_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = MaterialTheme.colorScheme.onError
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                         else Icon(
                             painter = painterResource(id = R.drawable.sun_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = MaterialTheme.colorScheme.onError
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                         Text(
                             text = medicine.frequency,
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(bottom = 12.dp),
-                            color = MaterialTheme.colorScheme.onError
+                            color = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 }
@@ -648,7 +648,7 @@ fun DayContent(
                     color =
                     if (isSelected) MaterialTheme.colorScheme.tertiaryContainer
                     else if (state.isCurrentDay) MaterialTheme.colorScheme.primary
-                    else if (state.isFromCurrentMonth) MaterialTheme.colorScheme.onError
+                    else if (state.isFromCurrentMonth) MaterialTheme.colorScheme.onSecondary
                     else MaterialTheme.colorScheme.surfaceVariant,
                     style = MaterialTheme.typography.headlineLarge
                 )

@@ -65,6 +65,8 @@ class UserPreferencesRepository @Inject constructor(@ApplicationContext appConte
             preferences[WEIGHT] = signUpUiState.weight
             preferences[MORNING_REMINDER_TIME] = Converters.timeToString(signUpUiState.morningReminder)
             preferences[EVENING_REMINDER_TIME] = Converters.timeToString(signUpUiState.eveningReminder)
+            preferences[AST_TEST] = signUpUiState.astTestDate
+            preferences[RECOMMENDATION_TEST] = signUpUiState.recommendationTestDate
         }
     }
 

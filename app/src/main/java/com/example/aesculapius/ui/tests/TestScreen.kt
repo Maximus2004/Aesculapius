@@ -120,7 +120,7 @@ fun TestScreen(
                                     style = MaterialTheme.typography.headlineMedium,
                                     color =
                                     if (currentAnswers[index] != -1 || index == currentPage) MaterialTheme.colorScheme.tertiaryContainer
-                                    else MaterialTheme.colorScheme.onError
+                                    else MaterialTheme.colorScheme.onSecondary
                                 )
                             }
                         }
@@ -140,7 +140,7 @@ fun TestScreen(
                 text = stringResource(id = questionsList[currentPage].questionText),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 29.dp, bottom = 18.dp),
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.onSecondary
             )
             LazyColumn() {
                 itemsIndexed(questionsList[currentPage].answersList) { index, answer ->

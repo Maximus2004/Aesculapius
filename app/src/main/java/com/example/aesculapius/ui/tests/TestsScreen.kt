@@ -149,7 +149,7 @@ fun TestsScreen(
                                 text = stringResource(R.string.input_psv),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = MaterialTheme.colorScheme.onError
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = stringResource(R.string.mark_lungs),
@@ -270,7 +270,7 @@ fun TestsScreen(
                                 text = stringResource(id = R.string.rec_test_name),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = MaterialTheme.colorScheme.onError
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = stringResource(R.string.rec_test_explanation),
@@ -380,7 +380,7 @@ fun TestsScreen(
                                 text = stringResource(id = R.string.ast_test_name),
                                 style = MaterialTheme.typography.headlineLarge,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = MaterialTheme.colorScheme.onError
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = stringResource(R.string.ast_test_explantion),

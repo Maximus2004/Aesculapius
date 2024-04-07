@@ -5,6 +5,9 @@ import java.time.LocalDateTime
 
 data class SignUpUiState(
     val id: String? = null,
+    val email: String = "",
+    val firstPassword: String = "",
+    val secondPassword: String = "",
     val name: String = "",
     val surname: String = "",
     val patronymic: String = "",
@@ -14,5 +17,9 @@ data class SignUpUiState(
     val morningReminder: LocalDateTime = LocalDateTime.now(),
     val eveningReminder: LocalDateTime = LocalDateTime.now(),
     val astTestDate: String = "",
-    val recommendationTestDate: String = ""
+    val recommendationTestDate: String = "",
+    val emailError: String = "",
+    val firstPasswordError: String = "",
+    val secondPasswordError: String = "",
+    val password: String = ""
 )

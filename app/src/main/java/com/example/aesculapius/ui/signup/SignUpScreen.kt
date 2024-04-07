@@ -10,15 +10,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
@@ -29,7 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,12 +48,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,6 +65,7 @@ import com.example.aesculapius.data.daysSpecial
 import com.example.aesculapius.data.months
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.example.aesculapius.ui.theme.errorLoginField
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -69,87 +76,267 @@ object SignUpScreen : NavigationDestination {
 
 @Composable
 fun SignUpScreen(
+    onNavigateBack: () -> Unit,
     onChangeCurrentPage: () -> Unit,
     userUiState: SignUpUiState,
     currentPage: Int,
     onEvent: (SignUpEvent) -> Unit,
     onClickSetReminder: (Hours) -> Unit,
-    onEndRegistration: () -> Unit,
+    onEndRegistration: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val EMAIL_ADDRESS_PATTERN = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+\$"
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp)
-    ) {
-        DotsMenuSignUp(
-            totalDots = 4,
-            selectedIndex = currentPage,
-            Modifier.padding(top = 26.dp, bottom = 24.dp)
-        )
-        when (currentPage) {
-            0 -> FieldsFIO(
-                name = userUiState.name,
-                surname = userUiState.surname,
-                patronymic = userUiState.patronymic,
-                onEvent = onEvent
-            )
-            1 -> BirthdayFiled(onEvent = onEvent)
-            2 -> HeightWeightFields(
-                onEvent = onEvent,
-                height = userUiState.height,
-                weight = userUiState.weight
-            )
-            3 -> ReminderFields(
-                onClickSetReminder = { onClickSetReminder(it) },
-                eveningTime = userUiState.eveningReminder,
-                morningTime = userUiState.morningReminder,
-                modifier = Modifier.align(Alignment.Start)
-            )
+    Scaffold(
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+            ) {
+                DotsMenuSignUp(
+                    totalDots = 6,
+                    selectedIndex = currentPage,
+                    modifier = Modifier.padding(top = 26.dp, bottom = 24.dp),
+                    onNavigateBack = onNavigateBack
+                )
+            }
         }
-        Spacer(Modifier.weight(1f))
-        Button(
-            onClick = {
-                when (currentPage) {
-                    3 -> onEndRegistration()
-                    2 -> {
-                        try {
-                            val heightFinal = userUiState.height.toFloat()
-                            val weightFinal = userUiState.weight.toFloat()
-                            if (!(heightFinal in 20f..300f && weightFinal in 0f..1000f))
-                                throw IllegalArgumentException(context.getString(R.string.weight_height_warning))
-                            else {
-                                onChangeCurrentPage()
-                            }
-                        } catch (e: NumberFormatException) {
-                            Toast.makeText(context, context.getString(R.string.warning_numbers), Toast.LENGTH_SHORT).show()
-                        } catch (e: IllegalArgumentException) {
-                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    0 -> {
-                        val regex = Regex("[а-яА-Яa-zA-Z]+")
-                        if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && regex.matches(userUiState.patronymic))
-                            onChangeCurrentPage()
-                        else
-                            Toast.makeText(context, context.getString(R.string.wrong_data), Toast.LENGTH_SHORT).show()
-                    }
-                    else -> onChangeCurrentPage()
-                }
-            },
-            enabled = if (currentPage == 0) userUiState.name != "" && userUiState.surname != "" else if (currentPage == 2) userUiState.height != "" && userUiState.weight != "" else true,
-            modifier = Modifier
-                .padding(bottom = 24.dp)
-                .size(height = 56.dp, width = 312.dp),
-            colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.secondary)
+    ) { paddingValues ->
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 20.dp)
+                .padding(paddingValues)
         ) {
-            Text(text = stringResource(R.string.next), style = MaterialTheme.typography.displaySmall)
+            item {
+
+                when (currentPage) {
+                    0 -> EmailField(
+                        email = userUiState.email,
+                        emailError = userUiState.emailError,
+                        onEvent = onEvent
+                    )
+
+                    1 -> PasswordFields(
+                        passwordFirst = userUiState.firstPassword,
+                        passwordSecond = userUiState.secondPassword,
+                        onEvent = onEvent,
+                        firstPasswordError = userUiState.firstPasswordError,
+                        secondPasswordError = userUiState.secondPasswordError
+                    )
+
+                    2 -> FieldsFIO(
+                        name = userUiState.name,
+                        surname = userUiState.surname,
+                        patronymic = userUiState.patronymic,
+                        onEvent = onEvent
+                    )
+
+                    3 -> BirthdayFiled(onEvent = onEvent)
+                    4 -> HeightWeightFields(
+                        onEvent = onEvent,
+                        height = userUiState.height,
+                        weight = userUiState.weight
+                    )
+
+                    5 -> ReminderFields(
+                        onClickSetReminder = { onClickSetReminder(it) },
+                        eveningTime = userUiState.eveningReminder,
+                        morningTime = userUiState.morningReminder,
+                    )
+                }
+                Button(
+                    onClick = {
+                        when (currentPage) {
+                            5 -> onEvent(
+                                SignUpEvent.OnClickRegister(
+                                    login = userUiState.email,
+                                    password = userUiState.firstPassword,
+                                    context = context,
+                                    onEndRegistration = onEndRegistration
+                                )
+                            )
+
+                            4 -> {
+                                try {
+                                    val heightFinal = userUiState.height.toFloat()
+                                    val weightFinal = userUiState.weight.toFloat()
+                                    if (!(heightFinal in 20f..300f && weightFinal in 0f..1000f))
+                                        throw IllegalArgumentException(context.getString(R.string.weight_height_warning))
+                                    else {
+                                        onChangeCurrentPage()
+                                    }
+                                } catch (e: NumberFormatException) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.warning_numbers),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } catch (e: IllegalArgumentException) {
+                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            2 -> {
+                                val regex = Regex("[а-яА-Яa-zA-Z]+")
+                                if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && (userUiState.patronymic.isBlank() || regex.matches(
+                                        userUiState.patronymic
+                                    ))
+                                )
+                                    onChangeCurrentPage()
+                                else
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.wrong_data),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                            }
+
+                            1 -> {
+                                if (userUiState.firstPassword != userUiState.secondPassword)
+                                    onEvent(SignUpEvent.OnUpdateSecondPasswordError("Пароли не совпадают"))
+                                else onEvent(SignUpEvent.OnUpdateSecondPasswordError(""))
+                                if (userUiState.firstPassword.length < 8)
+                                    onEvent(SignUpEvent.OnUpdateFirstPasswordError("Пароль должен быть не меньше 8 символов"))
+                                else onEvent(SignUpEvent.OnUpdateFirstPasswordError(""))
+                                if (userUiState.firstPassword == userUiState.secondPassword && userUiState.firstPassword.length >= 8)
+                                    onChangeCurrentPage()
+                            }
+
+                            0 -> {
+                                if (userUiState.email.isEmpty() ||
+                                    userUiState.email[0].isDigit() ||
+                                    EMAIL_ADDRESS_PATTERN.toRegex().matches(userUiState.email).not()
+                                )
+                                    onEvent(SignUpEvent.OnUpdateEmailError("Проверь, что вводишь почту в правильном формате, например mail@example.com"))
+                                else
+                                    onChangeCurrentPage()
+                            }
+
+                            else -> onChangeCurrentPage()
+                        }
+                    },
+                    enabled =
+                    when (currentPage) {
+                        0 -> userUiState.email != ""
+                        1 -> userUiState.firstPassword != "" && userUiState.secondPassword != ""
+                        2 -> userUiState.name != "" && userUiState.surname != ""
+                        4 -> userUiState.height != "" && userUiState.weight != ""
+                        else -> true
+                    },
+                    modifier = Modifier
+                        .padding(bottom = 16.dp, top = 51.dp)
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.secondary),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.next),
+                        style = MaterialTheme.typography.displaySmall
+                    )
+                }
+                TextButton(onClick = onNavigateBack, Modifier.padding(bottom = 24.dp).fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.i_have_account),
+                        style = MaterialTheme.typography.displaySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
+}
+
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun EmailField(emailError: String, email: String, onEvent: (SignUpEvent) -> Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Text(
+        text = stringResource(R.string.type_email),
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center
+    )
+    TextInput(
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        text = email,
+        onValueChanged = { onEvent(SignUpEvent.OnEmailChanged(it)) },
+        hint = stringResource(id = R.string.email),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        modifier = Modifier.padding(top = 28.dp, bottom = 4.dp),
+        isError = emailError.isNotEmpty()
+    )
+    if (emailError.isNotEmpty())
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                text = emailError,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Start,
+                color = errorLoginField,
+                modifier = Modifier.padding(start = 32.dp)
+            )
+        }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun PasswordFields(
+    firstPasswordError: String,
+    secondPasswordError: String,
+    passwordFirst: String,
+    passwordSecond: String,
+    onEvent: (SignUpEvent) -> Unit
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Text(
+        text = stringResource(R.string.think_password),
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center
+    )
+    TextInput(
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        text = passwordFirst,
+        onValueChanged = { onEvent(SignUpEvent.OnFirstPasswordChanged(it)) },
+        hint = stringResource(id = R.string.password),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        modifier = Modifier.padding(top = 28.dp, bottom = 4.dp)
+    )
+    if (firstPasswordError.isNotEmpty())
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                text = firstPasswordError,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Start,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.padding(start = 32.dp)
+            )
+        }
+    TextInput(
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        text = passwordSecond,
+        onValueChanged = { onEvent(SignUpEvent.OnSecondPasswordChanged(it)) },
+        hint = stringResource(R.string.retype_password),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        modifier = Modifier.padding(top = 28.dp, bottom = 4.dp),
+        isError = secondPasswordError.isNotEmpty()
+    )
+    if (secondPasswordError.isNotEmpty())
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                text = secondPasswordError,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Start,
+                color = errorLoginField,
+                modifier = Modifier.padding(start = 32.dp),
+            )
+        }
 }
 
 @Composable
@@ -239,7 +426,10 @@ fun ReminderFields(
         modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
         color = MaterialTheme.colorScheme.primary,
     )
-    Text(text = stringResource(id = R.string.set_reminder_text), style = MaterialTheme.typography.headlineMedium)
+    Text(
+        text = stringResource(id = R.string.set_reminder_text),
+        style = MaterialTheme.typography.headlineMedium
+    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -260,7 +450,6 @@ fun HeightWeightFields(
         text = height,
         onValueChanged = { onEvent(SignUpEvent.OnHeightChanged(it)) },
         hint = stringResource(id = R.string.height),
-        focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         modifier = Modifier.padding(bottom = 48.dp)
     )
@@ -273,14 +462,16 @@ fun HeightWeightFields(
         text = weight,
         onValueChanged = { onEvent(SignUpEvent.OnWeightChanged(it)) },
         hint = stringResource(id = R.string.weight),
-        focusRequester = FocusRequester(),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     )
 }
 
 @Composable
 fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
-    Text(text = stringResource(R.string.select_birthday), style = MaterialTheme.typography.titleMedium)
+    Text(
+        text = stringResource(R.string.select_birthday),
+        style = MaterialTheme.typography.titleMedium
+    )
     var day by remember { mutableIntStateOf(1) }
     var month by remember { mutableStateOf("июн") }
     var year by remember { mutableIntStateOf(2000) }
@@ -298,7 +489,15 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
                 list = if (year % 4 != 0) (1..daysUsual[month]!!).toList() else (1..daysSpecial[month]!!).toList(),
                 onValueChange = {
                     day = it
-                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
+                    onEvent(
+                        SignUpEvent.OnBirthdayChanged(
+                            LocalDate.of(
+                                year,
+                                months.indexOf(month) + 1,
+                                day
+                            )
+                        )
+                    )
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -318,7 +517,15 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
                 list = months,
                 onValueChange = {
                     month = it
-                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
+                    onEvent(
+                        SignUpEvent.OnBirthdayChanged(
+                            LocalDate.of(
+                                year,
+                                months.indexOf(month) + 1,
+                                day
+                            )
+                        )
+                    )
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -337,7 +544,15 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
                 list = (1900..2023).toList(),
                 onValueChange = {
                     year = it
-                    onEvent(SignUpEvent.OnBirthdayChanged(LocalDate.of(year, months.indexOf(month) + 1, day)))
+                    onEvent(
+                        SignUpEvent.OnBirthdayChanged(
+                            LocalDate.of(
+                                year,
+                                months.indexOf(month) + 1,
+                                day
+                            )
+                        )
+                    )
                 },
                 textStyle = MaterialTheme.typography.displayMedium,
                 dividersColor = MaterialTheme.colorScheme.primary
@@ -366,7 +581,6 @@ fun FieldsFIO(
         modifier = Modifier.padding(top = 24.dp),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(onNext = { focusRequesterName.requestFocus() }),
-        focusRequester = FocusRequester()
     )
     TextInput(
         text = name,
@@ -395,13 +609,20 @@ fun TextInput(
     text: String,
     onValueChanged: (String) -> Unit,
     hint: String,
-    focusRequester: FocusRequester,
+    focusRequester: FocusRequester = FocusRequester(),
     keyboardActions: KeyboardActions,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     OutlinedTextField(
         value = text,
-        label = { Text(text = hint, color = MaterialTheme.colorScheme.primaryContainer) },
+        label = {
+            Text(
+                text = hint,
+                color = if (isError) errorLoginField else MaterialTheme.colorScheme.primaryContainer
+            )
+        },
         onValueChange = { onValueChanged(it) },
         trailingIcon = {
             if (text != "")
@@ -418,25 +639,46 @@ fun TextInput(
         modifier = modifier.focusRequester(focusRequester),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
+        isError = isError,
+        visualTransformation = visualTransformation
     )
 }
 
 @Composable
-fun DotsMenuSignUp(totalDots: Int, selectedIndex: Int, modifier: Modifier = Modifier) {
-    LazyRow(
+fun DotsMenuSignUp(
+    onNavigateBack: () -> Unit,
+    totalDots: Int,
+    selectedIndex: Int,
+    modifier: Modifier = Modifier
+) {
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
-        horizontalArrangement = Arrangement.Center
+            .wrapContentHeight()
     ) {
-        items(totalDots) { index ->
-            Box(
-                modifier = Modifier
-                    .size(14.dp)
-                    .clip(CircleShape)
-                    .background(color = if (index == selectedIndex) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
+        IconButton(onClick = onNavigateBack, modifier = Modifier.align(Alignment.CenterStart)) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onTertiary
             )
-            if (index != totalDots - 1) Spacer(modifier = Modifier.padding(horizontal = 16.dp))
+        }
+        LazyRow(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            items(totalDots) { index ->
+                Box(
+                    modifier = Modifier
+                        .size(14.dp)
+                        .clip(CircleShape)
+                        .background(color = if (index == selectedIndex) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
+                        .padding(end = if (index != totalDots - 1) 16.dp else 0.dp)
+                )
+                Spacer(Modifier.width(16.dp))
+            }
         }
     }
 }
@@ -451,7 +693,8 @@ fun SignUpScreenPreview() {
             currentPage = 1,
             onEvent = {},
             onClickSetReminder = {},
-            onEndRegistration = {}
+            onEndRegistration = {},
+            onNavigateBack = {}
         )
     }
 }

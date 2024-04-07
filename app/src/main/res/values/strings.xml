@@ -221,4 +221,19 @@
     <string name="future_medicines">Предстоящие</string>
     <string name="plan_your_day">Планирование твоего дня</string>
     <string name="version_1_0">Версия 1.0</string>
+    <string name="your_helper_with_asthma">Твой помощник в борьбе с астмой</string>
+    <string name="email">Почта</string>
+    <string name="password">Пароль</string>
+    <string name="new_user">Я новый пользователь</string>
+    <string name="login">Войти</string>
+    <string name="recover_password">Восстановить пароль</string>
+    <string name="check_internet_connextion">Проверьте подключение к сети</string>
+    <string name="check_email_password">Проверьте введённые почту и пароль</string>
+    <string name="something_went_wrong">Что-то пошло не так, попробуй позже</string>
+    <string name="wrong_password">Неверный пароль</string>
+    <string name="wrong_email">Неверная почта</string>
+    <string name="type_email">Укажи электронную почту</string>
+    <string name="think_password">Придумай пароль</string>
+    <string name="retype_password">Повтори пароль</string>
+    <string name="i_have_account">У меня уже есть аккаунт</string>
 </resources>

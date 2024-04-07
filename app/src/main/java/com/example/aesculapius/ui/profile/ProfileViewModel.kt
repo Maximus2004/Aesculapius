@@ -5,8 +5,10 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.aesculapius.database.AesculapiusRepository
 import com.example.aesculapius.database.Converters
 import com.example.aesculapius.database.UserPreferencesRepository
 import com.example.aesculapius.database.UserRemoteDataRepository
@@ -17,6 +19,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -25,6 +29,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val prefRepository: UserPreferencesRepository,
     private val userRemoteDataRepository: UserRemoteDataRepository,
+    private val aesculapiusRepository: AesculapiusRepository,
     private val application: Application
 ) : ViewModel() {
     private val morningAlarmManager =
@@ -39,7 +44,7 @@ class ProfileViewModel @Inject constructor(
             initialValue = SignUpUiState()
         )
 
-    fun onEvent(event: ProfileEvent) = viewModelScope.launch {
+    fun onProfileEvent(event: ProfileEvent) = viewModelScope.launch {
         when (event) {
             is ProfileEvent.OnSaveAstTestDate -> {
                 prefRepository.saveAstTestDate(Converters.dateToStringWithFormat(event.astTestDate))
@@ -73,6 +78,35 @@ class ProfileViewModel @Inject constructor(
                     event.signUpUiState.morningReminder,
                     event.signUpUiState.eveningReminder
                 )
+            }
+
+            is ProfileEvent.OnLoginUser -> {
+                val user = userRemoteDataRepository.pullUserData(event.userId)
+                initMorningEveningNotifications(
+                    LocalDateTime.parse(user.morningReminder),
+                    LocalDateTime.parse(user.eveningReminder)
+                )
+                prefRepository.saveUserData(
+                    SignUpUiState(
+                        id = event.userId,
+                        name = user.name,
+                        surname = user.surname,
+                        patronymic = user.patronymic,
+                        birthday = LocalDate.parse(user.birthDate),
+                        height = user.height.toString(),
+                        weight = user.weight.toString(),
+                        morningReminder = LocalDateTime.parse(user.morningReminder),
+                        eveningReminder = LocalDateTime.parse(user.eveningReminder),
+                        astTestDate = user.astTestDate,
+                        recommendationTestDate = user.recommendationTestDate
+                    )
+                )
+                user.metrics.forEach {
+                    aesculapiusRepository.insertMetrics(it.metrics, it.date)
+                }
+                user.astTests.forEach {
+                    aesculapiusRepository.insertAstTestScore(it.date, it.score)
+                }
             }
         }
     }

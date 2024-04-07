@@ -5,6 +5,7 @@ import com.example.aesculapius.worker.User
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,11 +30,28 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
             height = signUpUiState.height.toFloat(),
             weight = signUpUiState.weight.toFloat(),
             birthDate = signUpUiState.birthday.toString(),
+            morningReminder = signUpUiState.morningReminder.toString(),
+            eveningReminder = signUpUiState.eveningReminder.toString(),
+            astTestDate = signUpUiState.astTestDate,
+            recommendationTestDate = signUpUiState.recommendationTestDate,
             astTests = listOf(),
             medicines = listOf(),
             metrics = listOf()
         )
         usersRef.document(signUpUiState.id!!).set(user)
+    }
+
+    /**
+     * [pullUserData] извлечение информации о пользователе через id
+     */
+    suspend fun pullUserData(userId: String): User {
+        if (userId.isEmpty()) return User()
+        var user = User()
+        usersRef.document(userId).get()
+            .addOnSuccessListener {
+                user = it?.toObject(User::class.java) ?: User()
+            }.await()
+        return user
     }
 
     /**

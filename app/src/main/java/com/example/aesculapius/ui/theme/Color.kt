@@ -2,15 +2,15 @@ package com.example.aesculapius.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// onSurfaceVariant не занимать
-val onSurface = Color(0xFFF9DC80)
+// onSurfaceVariant не занимать (уже идёт под стрелочки в DropdownMenu)
+// onSurface свободен (выставляется по умолчанию)
 val outline = Color(0x146750A4)
 val surface = Color(0xFFD9D9D9)
 val primary = Color(0xFF6750A4)
 val secondary = Color(0xFFB0A3D1)
 val background = Color(0xFFEEECF0)
 val onBackground = Color(0xFFF2F0F4)
-val onSecondary = Color(0x146750A4)
+val onSecondary = Color.Black
 val onPrimary = Color(0xFFE3DFEA)
 val tertiary = Color(0xFFF0ECF8)
 val onTertiary = Color(0xFF49454F)
@@ -28,5 +28,8 @@ val secondaryContainer = Color(0xFFE7E3EE)
 val onPrimaryContainer = Color(0xFF9ED209)
 val surfaceVariant = Color(0xFF86818B)
 val tertiaryContainer = Color.White
-val onError = Color.Black
+val onError = Color(0x146750A4)
 val primaryContainer = Color.Gray
+
+val errorLoginField = Color(0xFFD71544)
+val mediumResultColor = Color(0xFFF9DC80)

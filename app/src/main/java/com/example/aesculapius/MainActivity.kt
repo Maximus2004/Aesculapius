@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,10 +18,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.aesculapius.database.UserRemoteDataRepository
 import com.example.aesculapius.ui.home.HomeScreen
 import com.example.aesculapius.ui.navigation.SignUpNavigation
-import com.example.aesculapius.ui.profile.ProfileEvent
 import com.example.aesculapius.ui.profile.ProfileViewModel
 import com.example.aesculapius.ui.signup.SignUpUiState
 import com.example.aesculapius.ui.theme.AesculapiusTheme
@@ -43,16 +43,7 @@ class MainActivity : ComponentActivity() {
                 val userUiState: SignUpUiState by profileViewModel.userUiState.collectAsState()
 
                 when (userUiState.id) {
-                    "" -> {
-                        SignUpNavigation(
-                            // в окончание регистрации меняет id и устанавливает напоминания
-                            onEndRegistration = {
-                                profileViewModel.onEvent(ProfileEvent.OnSaveNewUser(
-                                    it.copy(id = UserRemoteDataRepository.getUserId())
-                                ))
-                            }
-                        )
-                    }
+                    "" -> SignUpNavigation(onProfileEvent = profileViewModel::onProfileEvent)
 
                     null -> ImageDisplay()
 
@@ -64,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
                         HomeScreen(
                             userUiState = userUiState,
-                            onProfileEvent = profileViewModel::onEvent
+                            onProfileEvent = profileViewModel::onProfileEvent
                         )
                     }
                 }
@@ -75,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ImageDisplay() {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = null,

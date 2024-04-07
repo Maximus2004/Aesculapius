@@ -25,7 +25,7 @@ val Typography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp,
-        color = onError
+        color = onSecondary
     ),
     labelLarge = TextStyle(
         fontFamily = Roboto,
@@ -46,7 +46,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W400,
         fontSize = 18.sp,
         lineHeight = 21.78.sp,
-        color = onError,
+        color = onSecondary,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
@@ -54,7 +54,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 20.sp,
         lineHeight = 23.44.sp,
-        color = onError
+        color = onSecondary
     ),
     displaySmall = TextStyle(
         fontFamily = Roboto,
@@ -69,7 +69,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W500,
         fontSize = 24.sp,
         lineHeight = 28.13.sp,
-        color = onError
+        color = onSecondary
     ),
     titleSmall = TextStyle(
         fontFamily = Roboto,
@@ -83,7 +83,7 @@ val Typography = Typography(
         fontWeight = FontWeight.W400,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        color = onError
+        color = onSecondary
     ),
     labelSmall = TextStyle(
         fontFamily = Roboto,
@@ -108,7 +108,7 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 14.sp,
-        color = onError,
+        color = onSecondary,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
@@ -123,6 +123,5 @@ val Typography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.W400,
         fontSize = 12.sp,
-        color = onSecondary
     )
 )

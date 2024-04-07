@@ -458,15 +458,14 @@ fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate, conv
         text =
         (if (pointsAmountText != -1) "${convertToRussian(pointsAmountText)}, "
         else "") + dateTextColumn.format(formatter),
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onError
+        style = MaterialTheme.typography.bodyLarge
     )
     Text(
         text = "${LocalDate.now().minusYears(1).format(formatter)} - ${
             LocalDate.now().format(formatter)
         }",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onError
+        color = MaterialTheme.colorScheme.primaryContainer
     )
 }
 
@@ -480,14 +479,12 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
     when (graphicTypes) {
         GraphicTypes.Week -> Text(
             text = dateText.format(formatter),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            style = MaterialTheme.typography.bodyLarge
         )
 
         GraphicTypes.Month -> Text(
             text = dateText.format(formatter),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            style = MaterialTheme.typography.bodyLarge
         )
 
         GraphicTypes.ThreeMonths -> Text(
@@ -498,8 +495,7 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
             } - ${
                 dateText.plusDays(6).format(formatterThreeMonths)
             } ${dateText.year}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            style = MaterialTheme.typography.bodyLarge
         )
 
         GraphicTypes.HalfYear -> Text(
@@ -507,8 +503,7 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                 dateText.plusDays(
                     6
                 ).format(formatterThreeMonths)
-            } ${dateText.year}", style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            } ${dateText.year}", style = MaterialTheme.typography.bodyLarge
         )
 
         else -> Text(
@@ -516,15 +511,14 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                 dateText.plusDays(
                     6
                 ).format(formatterYear)
-            }", style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            }", style = MaterialTheme.typography.bodyLarge
         )
     }
     Text(
         text = "${dateBegin.format(formatterYearFull)} - ${
             LocalDate.now().format(formatterYearFull)
         }", style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onError
+        color = MaterialTheme.colorScheme.primaryContainer
     )
 }
 

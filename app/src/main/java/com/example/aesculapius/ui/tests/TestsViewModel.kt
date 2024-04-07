@@ -19,7 +19,6 @@ class TestsViewModel @Inject constructor(private val aesculapiusRepository: Aesc
         when (event) {
             is TestsEvent.OnInsertNewMetrics -> {
                 aesculapiusRepository.insertMetrics((event.first + event.second + event.third) / 3, LocalDate.now())
-
             }
             is TestsEvent.OnUpdateNewMetrics -> {
                 if (aesculapiusRepository.getAllMetricsWithDate(LocalDate.now()).isEmpty())
