@@ -17,7 +17,7 @@ sealed interface SignUpEvent {
     data class OnFirstPasswordChanged(val firstPassword: String): SignUpEvent
     data class OnSecondPasswordChanged(val secondPassword: String): SignUpEvent
     data class OnClickRegister(val login: String, val password: String, val context: Context, val onEndRegistration: (String) -> Unit): SignUpEvent
-    data class OnUpdateEmailError(val emailError: String): SignUpEvent
+    data class OnCheckEmailIsValid(val email: String, val onComplete: () -> Unit): SignUpEvent
     data class OnUpdateSecondPasswordError(val secondPasswordError: String): SignUpEvent
     data class OnUpdateFirstPasswordError(val firstPasswordError: String): SignUpEvent
 }

@@ -3,7 +3,6 @@ package com.example.aesculapius.worker
 import com.example.aesculapius.ui.tests.MetricsItem
 import com.example.aesculapius.ui.tests.ScoreItem
 import com.example.aesculapius.ui.therapy.MedicineItem
-import java.time.LocalDate
 
 data class User(
     val name: String = "",

@@ -122,15 +122,15 @@ fun LoginScreenContent(
                         color = errorLoginField
                     )
                 }
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                TextButton(onClick = {}) {
-                    Text(
-                        text = stringResource(R.string.recover_password),
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+//            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+//                TextButton(onClick = {}) {
+//                    Text(
+//                        text = stringResource(R.string.recover_password),
+//                        style = MaterialTheme.typography.displaySmall,
+//                        color = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+//            }
             Button(
                 onClick = { onLoginEvent(LoginEvent.OnClickLogin(login = loginUiState.login, password = loginUiState.password, context = context, onEndLogin = onEndLogin)) },
                 modifier = Modifier

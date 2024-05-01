@@ -33,7 +33,7 @@ import com.patrykandpatrick.vico.core.marker.MarkerLabelFormatter
 import java.util.Locale
 
 @Composable
-internal fun rememberMarker(age: Int, height: Int): Marker {
+internal fun rememberMarker(age: Int, height: Float): Marker {
     val labelBackgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
     val labelBackground = remember(labelBackgroundColor) {
         ShapeComponent(labelBackgroundShape, labelBackgroundColor.toArgb())
@@ -81,26 +81,26 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
             ) {
                 val value = markedEntries.first().entry.y
                 onApplyEntryColor = { entryColor ->
-                    if (height in 100 .. 110 && value in 24f .. 77f ||
-                        height in 110 .. 120 && value in 77f .. 130f ||
-                        height in 120 .. 130 && value in 130f ..183f ||
-                        height in 130 .. 140 && value in 183f .. 236f ||
-                        height in 140 .. 150 && value in 236f .. 289f ||
-                        height in 150 .. 160 && value in 289f .. 488f ||
-                        height in 160 .. 170 && value in 394f .. 488f ||
-                        height in 170 .. 190 && value in 394f .. 450f) {
+                    if (height in 100f .. 110f && value in 24f .. 77f ||
+                        height in 110f .. 120f && value in 77f .. 130f ||
+                        height in 120f .. 130f && value in 130f ..183f ||
+                        height in 130f .. 140f && value in 183f .. 236f ||
+                        height in 140f .. 150f && value in 236f .. 289f ||
+                        height in 150f .. 160f && value in 289f .. 488f ||
+                        height in 160f .. 170f && value in 394f .. 488f ||
+                        height in 170f .. 190f && value in 394f .. 450f) {
                         indicatorOuterComponent.color = inverseOnSurface.toArgb()
                         indicatorInnerComponent.color = tertiaryContainer.toArgb()
                         indicatorCenterComponent.color = inverseSurface.toArgb()
                     }
-                    else if (height in 100 .. 110 && value in 14f .. 87f ||
-                        height in 110 .. 120 && value in 67f .. 140f ||
-                        height in 120 .. 130 && value in 120f ..193f ||
-                        height in 130 .. 140 && value in 173f .. 246f ||
-                        height in 140 .. 150 && value in 226f .. 299f ||
-                        height in 150 .. 160 && value in 279f .. 498f ||
-                        height in 160 .. 170 && value in 384f .. 498f ||
-                        height in 170 .. 190 && value in 384f .. 460f) {
+                    else if (height in 100f .. 110f && value in 14f .. 87f ||
+                        height in 110f .. 120f && value in 67f .. 140f ||
+                        height in 120f .. 130f && value in 120f ..193f ||
+                        height in 130f .. 140f && value in 173f .. 246f ||
+                        height in 140f .. 150f && value in 226f .. 299f ||
+                        height in 150f .. 160f && value in 279f .. 498f ||
+                        height in 160f .. 170f && value in 384f .. 498f ||
+                        height in 170f .. 190f && value in 384f .. 460f) {
                         indicatorOuterComponent.color = mediumResultColor.toArgb()
                         indicatorInnerComponent.color = tertiaryContainer.toArgb()
                         indicatorCenterComponent.color = surfaceTint.toArgb()

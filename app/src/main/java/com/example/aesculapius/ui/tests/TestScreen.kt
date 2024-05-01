@@ -165,7 +165,7 @@ fun TestScreen(
             Button(
                 onClick = {
                     if (currentPage == questionsList.size - 1) {
-                        if (-1 in currentAnswers && currentAnswer == -1) {
+                        if ((-1 in currentAnswers && currentAnswer == -1) || (-1 == currentAnswers[0])) {
                             Toast.makeText(context, context.getString(R.string.answer_all_questions), Toast.LENGTH_SHORT).show()
                             currentAnswers[currentPage] = currentAnswer
                         }

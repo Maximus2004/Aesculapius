@@ -496,12 +496,12 @@ fun MedicineCard(
                     Text(
                         text = medicine.undername,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
                     Text(
                         text = medicine.dose,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
                     Row(modifier = Modifier.padding(top = 16.dp)) {
                         if (!isMorning) Icon(

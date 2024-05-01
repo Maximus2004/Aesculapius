@@ -438,7 +438,7 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         itemDAO.insertASTTestScore(date, score)
     }
 
-    fun getAllAstResultsInRange(): Flow<List<ScoreItem>> {
+    suspend fun getAllAstResultsInRange(): List<ScoreItem> {
         return itemDAO.getAllAstResultsInRange(LocalDate.now().minusYears(1), LocalDate.now())
     }
 

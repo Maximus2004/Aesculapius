@@ -61,7 +61,7 @@ interface ItemDAO {
     suspend fun insertASTTestScore(date: LocalDate, score: Int)
 
     @Query("SELECT * from score_items WHERE (date <= :endDate) AND (date >= :startDate)")
-    fun getAllAstResultsInRange(startDate: LocalDate, endDate: LocalDate): Flow<List<ScoreItem>>
+    suspend fun getAllAstResultsInRange(startDate: LocalDate, endDate: LocalDate): List<ScoreItem>
 
     @Query("SELECT * from score_items")
     suspend fun getAllAstResults(): List<ScoreItem>

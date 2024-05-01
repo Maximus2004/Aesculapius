@@ -145,7 +145,7 @@
         \nЛучше выбрать одно и то же время утром и вечером (например, 9.00 и 21.00), но это не обязательно.
         \nЗапиши результат!
     </string>
-    <string name="enter_comfortable_time">Введите удобное для тебя время</string>
+    <string name="enter_comfortable_time">Введи удобное для себя время</string>
     <string name="hours">Часы</string>
     <string name="minutes">Минуты</string>
     <string name="back">Назад</string>
@@ -191,7 +191,7 @@
     <string name="send_data">Отправить данные</string>
     <string name="mark_rec_test">Оценка приверженности к лечению</string>
     <string name="what_is_rec_test">Приверженность к лечению - насколько точно ты выполняешь рекомендации врача. \n Ответь на вопросы искренне. Это поможет понять, как улучшить лечение твоей астмы.</string>
-    <string name="answer_all_questions">Ответьте на все вопросы</string>
+    <string name="answer_all_questions">Ответь на все вопросы</string>
     <string name="sum_up">Подвести итоги</string>
     <string name="are_you_sure">Ты уверен(-а), что хочешь выйти?</string>
     <string name="your_progress">Твой текущий прогресс не сохранится</string>
@@ -215,7 +215,7 @@
     <string name="powder">порошок</string>
     <string name="tablets">таблетки</string>
     <string name="naming">Название</string>
-    <string name="choose_dose_frequency">Выберите дозировку и кратность для этого лекарства</string>
+    <string name="choose_dose_frequency">Выбери дозировку и кратность для этого лекарства</string>
     <string name="everyday_progress">Ежедневный прогресс</string>
     <string name="done_medicines">Выполнено %1$s из %2$s</string>
     <string name="future_medicines">Предстоящие</string>
@@ -227,8 +227,8 @@
     <string name="new_user">Я новый пользователь</string>
     <string name="login">Войти</string>
     <string name="recover_password">Восстановить пароль</string>
-    <string name="check_internet_connextion">Проверьте подключение к сети</string>
-    <string name="check_email_password">Проверьте введённые почту и пароль</string>
+    <string name="check_internet_connextion">Проверь подключение к сети</string>
+    <string name="check_email_password">Проверь введённые почту и пароль</string>
     <string name="something_went_wrong">Что-то пошло не так, попробуй позже</string>
     <string name="wrong_password">Неверный пароль</string>
     <string name="wrong_email">Неверная почта</string>
@@ -236,4 +236,6 @@
     <string name="think_password">Придумай пароль</string>
     <string name="retype_password">Повтори пароль</string>
     <string name="i_have_account">У меня уже есть аккаунт</string>
+    <string name="plan_of_your_day">Планирование твоего дня</string>
+    <string name="email_exist">Аккаунт с такой почтой уже существует</string>
 </resources>

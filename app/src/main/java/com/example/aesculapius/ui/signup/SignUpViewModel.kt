@@ -7,6 +7,8 @@ import com.example.aesculapius.R
 import com.example.aesculapius.database.UserAuthRepository
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,10 +88,17 @@ class SignUpViewModel @Inject constructor(private val userAuthRepository: UserAu
                     it.copy(secondPasswordError = event.secondPasswordError)
                 }
             }
-            is SignUpEvent.OnUpdateEmailError -> {
-                _uiStateSignUp.update {
-                    it.copy(emailError = event.emailError)
-                }
+            is SignUpEvent.OnCheckEmailIsValid -> {
+                val EMAIL_ADDRESS_PATTERN = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+\$"
+
+                if (event.email.isEmpty() ||
+                    event.email[0].isDigit() ||
+                    EMAIL_ADDRESS_PATTERN.toRegex().matches(event.email).not())
+                    _uiStateSignUp.update {
+                        it.copy(emailError = "Проверь, что вводишь почту в правильном формате, например mail@example.com")
+                    }
+                else
+                    event.onComplete()
             }
             is SignUpEvent.OnClickRegister ->
                 viewModelScope.launch {
@@ -106,6 +115,10 @@ class SignUpViewModel @Inject constructor(private val userAuthRepository: UserAu
                                         Toast.makeText(event.context, event.context.getString(R.string.check_email_password), Toast.LENGTH_SHORT).show()
                                     }
 
+                                    is FirebaseAuthUserCollisionException -> {
+                                        Toast.makeText(event.context, event.context.getString(R.string.email_exist), Toast.LENGTH_SHORT).show()
+                                    }
+
                                     else -> {
                                         Toast.makeText(event.context, event.context.getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
                                     }
@@ -117,9 +130,5 @@ class SignUpViewModel @Inject constructor(private val userAuthRepository: UserAu
                     }
                 }
         }
-    }
-
-    private fun isEmailValid(email: String): Boolean {
-        return email.contains('@')
     }
 }

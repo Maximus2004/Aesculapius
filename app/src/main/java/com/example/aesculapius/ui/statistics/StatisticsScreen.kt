@@ -107,6 +107,7 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
 
     LaunchedEffect(key1 = statisticsUiState) {
         currentColumnPointsAmount = withContext(Dispatchers.IO) {
+            statisticsViewModel.setScoreOnDates()
             statisticsViewModel.getColumnPointsAmountOnDates(LocalDate.now().minusYears(1), LocalDate.now())
         }
         currentLinePointsAmount = withContext(Dispatchers.IO) {
@@ -269,7 +270,6 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                                     dateTextColumn = datesForColumnChart[x]
                                 },
                                 modelProducerColumn = modelProducerColumn,
-                                amountPoints = datesForColumnChart.size
                             )
                     }
                 }
@@ -319,28 +319,27 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                 Spacer(Modifier.height(130.dp))
             }
         }
-        Button(
-            onClick = { /* TODO */ },
-            modifier = Modifier
-                .padding(bottom = 24.dp)
-                .height(56.dp)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.download_statistics),
-                style = MaterialTheme.typography.displaySmall,
-                textAlign = TextAlign.Center
-            )
-        }
+//        Button(
+//            onClick = { /* TODO */ },
+//            modifier = Modifier
+//                .padding(bottom = 24.dp)
+//                .height(56.dp)
+//                .fillMaxWidth()
+//                .align(Alignment.BottomCenter)
+//                .padding(horizontal = 16.dp),
+//            shape = RoundedCornerShape(16.dp)
+//        ) {
+//            Text(
+//                text = stringResource(R.string.download_statistics),
+//                style = MaterialTheme.typography.displaySmall,
+//                textAlign = TextAlign.Center
+//            )
+//        }
     }
 }
 
 @Composable
 fun ShowColumnChart(
-    amountPoints: Int,
     typeface: Typeface,
     modelProducerColumn: ChartEntryModelProducer,
     onDataChanged: (Int, Int) -> Unit
@@ -385,7 +384,6 @@ fun ShowColumnChart(
             decorations = remember(thresholdLineNullLevel) {
                 listOf(thresholdLineNullLevel)
             },
-            spacing = if (amountPoints > 1) (14 + (12 - amountPoints) * (14 / (amountPoints - 1))).dp else 500.dp
         ),
         chartModelProducer = modelProducerColumn,
         isZoomEnabled = false,
@@ -591,7 +589,7 @@ fun ShowLineChart(
             tickLength = 0.dp,
             guideline = null
         ),
-        marker = rememberMarker(age = Period.between(userUiState.birthday, LocalDate.now()).years, height = userUiState.height.toInt()),
+        marker = rememberMarker(age = Period.between(userUiState.birthday, LocalDate.now()).years, height = userUiState.height.toFloat()),
         markerVisibilityChangeListener = object : MarkerVisibilityChangeListener {
             // update data when on marker moved
             override fun onMarkerMoved(

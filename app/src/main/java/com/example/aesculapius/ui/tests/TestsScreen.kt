@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -142,7 +143,7 @@ fun TestsScreen(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
+                            .heightIn(min = 152.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -155,6 +156,7 @@ fun TestsScreen(
                                 text = stringResource(R.string.mark_lungs),
                                 style = MaterialTheme.typography.labelSmall
                             )
+                            Spacer(Modifier.weight(1f))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -262,8 +264,8 @@ fun TestsScreen(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
                             .padding(top = 16.dp)
+                            .heightIn(min = 152.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -276,6 +278,7 @@ fun TestsScreen(
                                 text = stringResource(R.string.rec_test_explanation),
                                 style = MaterialTheme.typography.labelSmall
                             )
+                            Spacer(Modifier.weight(1f))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -372,8 +375,8 @@ fun TestsScreen(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
                             .padding(top = 16.dp, bottom = 20.dp)
+                            .heightIn(min = 152.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -386,6 +389,7 @@ fun TestsScreen(
                                 text = stringResource(R.string.ast_test_explantion),
                                 style = MaterialTheme.typography.labelSmall
                             )
+                            Spacer(Modifier.weight(1f))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()

@@ -97,14 +97,7 @@ fun SignUpNavigation(
                 onChangeCurrentPage = { currentPage++ },
                 onEvent = signUpViewModel::onEvent,
                 onEndRegistration = {
-                    if (signUpUiState.eveningReminder.hour - signUpUiState.morningReminder.hour < 8)
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.reminder_warning),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    else
-                        onProfileEvent(ProfileEvent.OnSaveNewUser(signUpUiState.copy(id = it)))
+                    onProfileEvent(ProfileEvent.OnSaveNewUser(signUpUiState.copy(id = it)))
                 },
                 onClickSetReminder = { navController.navigate("${SetReminderTime.route}/${it}") },
                 onNavigateBack = navController::navigateUp

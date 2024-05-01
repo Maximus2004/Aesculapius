@@ -108,7 +108,7 @@ fun EditMedicineScreen(
             Text(
                 text = "${if (medicine.medicineType == CurrentMedicineType.Tablets) "таблетки" else if (medicine.medicineType == CurrentMedicineType.Powder) "порошок" else "аэрозоль"}, ${medicine.undername}",
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             DropdownMenu(
                 menuName = stringResource(R.string.dose),

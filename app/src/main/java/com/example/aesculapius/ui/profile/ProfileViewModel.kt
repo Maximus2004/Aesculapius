@@ -48,12 +48,14 @@ class ProfileViewModel @Inject constructor(
         when (event) {
             is ProfileEvent.OnSaveAstTestDate -> {
                 prefRepository.saveAstTestDate(Converters.dateToStringWithFormat(event.astTestDate))
+                userRemoteDataRepository.updateAstDate(userId = userUiState.value.id!!, event.astTestDate)
             }
 
             is ProfileEvent.OnSaveRecommendationTestDate -> {
                 prefRepository.saveRecommendationTest(
                     Converters.dateToStringWithFormat(event.recommendationTestDate)
                 )
+                userRemoteDataRepository.updateRecDate(userId = userUiState.value.id!!, event.recommendationTestDate)
             }
 
             is ProfileEvent.OnUpdateUserProfile -> {
@@ -63,11 +65,13 @@ class ProfileViewModel @Inject constructor(
 
             is ProfileEvent.OnSaveEveningTime -> {
                 prefRepository.saveUserEveningReminder(Converters.timeToString(event.eveningTime))
+                userRemoteDataRepository.updateEveningDate(userId = userUiState.value.id!!, event.eveningTime)
                 setEveningNotification(event.eveningTime)
             }
 
             is ProfileEvent.OnSaveMorningTime -> {
                 prefRepository.saveUserMorningReminder(Converters.timeToString(event.morningTime))
+                userRemoteDataRepository.updateMorningDate(userId = userUiState.value.id!!, event.morningTime)
                 setMorningNotification(event.morningTime)
             }
 

@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,15 +87,10 @@ fun SignUpScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val EMAIL_ADDRESS_PATTERN = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+\$"
 
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
                 DotsMenuSignUp(
                     totalDots = 6,
                     selectedIndex = currentPage,
@@ -152,14 +148,23 @@ fun SignUpScreen(
                 Button(
                     onClick = {
                         when (currentPage) {
-                            5 -> onEvent(
-                                SignUpEvent.OnClickRegister(
-                                    login = userUiState.email,
-                                    password = userUiState.firstPassword,
-                                    context = context,
-                                    onEndRegistration = onEndRegistration
-                                )
-                            )
+                            5 -> {
+                                if (userUiState.eveningReminder.hour - userUiState.morningReminder.hour < 8)
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.reminder_warning),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                else
+                                    onEvent(
+                                        SignUpEvent.OnClickRegister(
+                                            login = userUiState.email,
+                                            password = userUiState.firstPassword,
+                                            context = context,
+                                            onEndRegistration = onEndRegistration
+                                        )
+                                    )
+                            }
 
                             4 -> {
                                 try {
@@ -208,13 +213,7 @@ fun SignUpScreen(
                             }
 
                             0 -> {
-                                if (userUiState.email.isEmpty() ||
-                                    userUiState.email[0].isDigit() ||
-                                    EMAIL_ADDRESS_PATTERN.toRegex().matches(userUiState.email).not()
-                                )
-                                    onEvent(SignUpEvent.OnUpdateEmailError("Проверь, что вводишь почту в правильном формате, например mail@example.com"))
-                                else
-                                    onChangeCurrentPage()
+                                onEvent(SignUpEvent.OnCheckEmailIsValid(email = userUiState.email, onComplete = { onChangeCurrentPage() }))
                             }
 
                             else -> onChangeCurrentPage()
@@ -240,7 +239,10 @@ fun SignUpScreen(
                         style = MaterialTheme.typography.displaySmall
                     )
                 }
-                TextButton(onClick = onNavigateBack, Modifier.padding(bottom = 24.dp).fillMaxWidth()) {
+                TextButton(onClick = onNavigateBack,
+                    Modifier
+                        .padding(bottom = 24.dp)
+                        .fillMaxWidth()) {
                     Text(
                         text = stringResource(R.string.i_have_account),
                         style = MaterialTheme.typography.displaySmall,
@@ -301,12 +303,13 @@ fun PasswordFields(
         textAlign = TextAlign.Center
     )
     TextInput(
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
         text = passwordFirst,
         onValueChanged = { onEvent(SignUpEvent.OnFirstPasswordChanged(it)) },
         hint = stringResource(id = R.string.password),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-        modifier = Modifier.padding(top = 28.dp, bottom = 4.dp)
+        modifier = Modifier.padding(top = 28.dp, bottom = 4.dp),
+        visualTransformation = PasswordVisualTransformation()
     )
     if (firstPasswordError.isNotEmpty())
         Row(Modifier.fillMaxWidth()) {
@@ -319,13 +322,14 @@ fun PasswordFields(
             )
         }
     TextInput(
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
         text = passwordSecond,
         onValueChanged = { onEvent(SignUpEvent.OnSecondPasswordChanged(it)) },
         hint = stringResource(R.string.retype_password),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         modifier = Modifier.padding(top = 28.dp, bottom = 4.dp),
-        isError = secondPasswordError.isNotEmpty()
+        isError = secondPasswordError.isNotEmpty(),
+        visualTransformation = PasswordVisualTransformation()
     )
     if (secondPasswordError.isNotEmpty())
         Row(Modifier.fillMaxWidth()) {
@@ -419,13 +423,14 @@ fun ReminderFields(
             )
         }
     }
-
-    Text(
-        text = "Планирование твоего дня",
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
-        color = MaterialTheme.colorScheme.primary,
-    )
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.plan_of_your_day),
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = modifier.padding(top = 40.dp, bottom = 8.dp),
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
     Text(
         text = stringResource(id = R.string.set_reminder_text),
         style = MaterialTheme.typography.headlineMedium
@@ -675,9 +680,8 @@ fun DotsMenuSignUp(
                         .size(14.dp)
                         .clip(CircleShape)
                         .background(color = if (index == selectedIndex) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
-                        .padding(end = if (index != totalDots - 1) 16.dp else 0.dp)
                 )
-                Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(if (index != totalDots - 1) 16.dp else 0.dp))
             }
         }
     }

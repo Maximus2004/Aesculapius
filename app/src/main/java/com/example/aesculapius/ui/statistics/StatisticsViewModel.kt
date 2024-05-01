@@ -8,10 +8,7 @@ import com.patrykandpatrick.vico.core.entry.FloatEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -33,27 +30,11 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     val chartEntryModelLine = _chartEntryModelLine
 
     /** [datesForLineChart] даты задаются каждый раз при смене выбранного периода */
-    private val _listLocalDate = MutableStateFlow(mutableListOf<LocalDate>())
-    val datesForLineChart = _listLocalDate
+    private val _datesForLineChart = MutableStateFlow(mutableListOf<LocalDate>())
+    val datesForLineChart = _datesForLineChart
 
-    /** [datesForColumnChart] отслеживаем, когда приходят новые изменения и разбиваем данные
-     * на точки и даты для каждой точки. Мы делаем так со столбчатым графиком, так как он
-     * пользователь не может ранжировать его по периоду */
-    val datesForColumnChart = aesculapiusRepository.getAllAstResultsInRange().map {
-        val tempEntries: MutableList<FloatEntry> = mutableListOf()
-        val tempDates: MutableList<LocalDate> = mutableListOf()
-        it.forEachIndexed { index, item ->
-            tempEntries.add(FloatEntry(index.toFloat(), item.score.toFloat()))
-            tempDates.add(item.date)
-        }
-        _chartEntryModelColumn.value.setEntries(tempEntries)
-        tempDates
-    }
-        .stateIn(
-            scope = viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            initialValue = listOf()
-        )
+    private val _datesForColumnChart = MutableStateFlow(mutableListOf<LocalDate>())
+    val datesForColumnChart = _datesForColumnChart
 
     /** [getLinePointsAmountOnDates] прежде чем отображать линейные графики, мы получаем информацию
      * о количестве точек если точек недостаточно для отображения графиков, выводится экран "Нет данных..." */
@@ -75,13 +56,23 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
         }
     }
 
+    fun setScoreOnDates() = viewModelScope.launch {
+        val tempEntries: MutableList<FloatEntry> = mutableListOf()
+        _datesForColumnChart.value = mutableListOf()
+        aesculapiusRepository.getAllAstResultsInRange().forEachIndexed { index, item ->
+            tempEntries.add(FloatEntry(index.toFloat(), item.score.toFloat()))
+            _datesForColumnChart.value.add(item.date)
+        }
+        _chartEntryModelColumn.value.setEntries(tempEntries)
+    }
+
     /** [setMetricsOnDatesShort] задаём точки (Entries) и список дат для короткого периода (неделя/месяц) */
     fun setMetricsOnDatesShort(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
-        _listLocalDate.value = mutableListOf()
+        _datesForLineChart.value = mutableListOf()
         aesculapiusRepository.getAllMetricsInRange(startDate, endDate).forEachIndexed { index, item ->
             tempEntries.add(FloatEntry(index.toFloat(), item.metrics))
-            _listLocalDate.value.add(item.date)
+            _datesForLineChart.value.add(item.date)
         }
         _chartEntryModelLine.value.setEntries(tempEntries)
     }
@@ -96,7 +87,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     /** [setMetricsOnDatesLong] задаём точки (Entries) и список дат для длинного периода */
     fun setMetricsOnDatesLong(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
-        _listLocalDate.value = mutableListOf()
+        _datesForLineChart.value = mutableListOf()
         var tempCount = 0f
         aesculapiusRepository.getAllMetricsInRange(startDate, endDate)
             .forEachIndexed { index, item ->
@@ -108,7 +99,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
                             String.format("%.1f", tempCount / 7).replace(",", ".").toFloat()
                         )
                     )
-                    _listLocalDate.value.add(item.date.minusDays(6))
+                    _datesForLineChart.value.add(item.date.minusDays(6))
                     tempCount = 0f
                 }
             }
