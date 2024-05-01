@@ -30,7 +30,7 @@ fun NavGraphBuilder.profileNavGraph(
     turnOnBars: () -> Unit,
     onProfileEvent: (ProfileEvent) -> Unit,
     navController: NavHostController,
-    getTestsScore: suspend () -> Double,
+    getTestsScore: suspend () -> Pair<Double, Double>,
     getMedicinesScore: suspend () -> Double
 ) {
     composable(route = ProfileScreen.route) {

@@ -49,18 +49,25 @@ class TestsViewModel @Inject constructor(private val aesculapiusRepository: Aesc
         }
     }
 
-    suspend fun getTestsScore(): Double = viewModelScope.async {
+    // некоторые функции, вызываемые в методе, требуют асинхронного выполнения, поэтому сама функция тоже асинхронна
+    suspend fun getTestsScore(): Pair<Double, Double> = viewModelScope.async {
+        // подсчитывается количество фактов ввода показателей пикфлоуметрии и делится на 60
         val successMetrics = aesculapiusRepository.getLinePointsAmountOnDates(
             LocalDate.now().minusMonths(1), LocalDate.now()
         ) * 2.0 / 60.0
+
+        // берём все показателя АСТ-тестов и записываем их в список
         val astResults = aesculapiusRepository.getAllAstResults()
         val successScores =
+            // если за последнее время не было пройдено ни одного АСТ-теста
             if (astResults.isEmpty()) 0.0
             else
-                if (astResults.last().date.isAfter(
-                        LocalDate.now().minusMonths(1)
-                    ) || astResults.last().date == LocalDate.now().minusMonths(1)
-                ) astResults.last().score / 25.0 else 0.0
-        successScores + successMetrics
+                // если тест был пройден и последний показатель был добавлен не раньше месяца назад
+                if (astResults.last().date.isAfter(LocalDate.now().minusMonths(1)) || astResults.last().date == LocalDate.now().minusMonths(1))
+                    // берём последний показатель и делим на 25.0
+                    astResults.last().score / 25.0
+                else 0.0
+        // возвращаем пару значений: коэф отвечающий за введёённые метрики и коэф отвечающий за последний показатель АСТ-теста
+        Pair(successScores, successMetrics)
     }.await()
 }

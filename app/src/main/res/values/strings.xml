@@ -228,7 +228,6 @@
     <string name="plan_your_day">Планирование твоего дня</string>
     <string name="version">Версия 2.0</string>
     <string name="your_activity">Твоя активность</string>
-    <string name="good_not_perfect">Хорошо, но можно лучше!</string>
     <string name="what_is_activity">Что такое активность?</string>
     <string name="rec_test_result">Чем больше баллов, тем хуже приверженность.</string>
 </resources>

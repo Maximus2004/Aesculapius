@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +35,7 @@ import com.example.aesculapius.R
 import com.example.aesculapius.data.learnList
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import com.google.common.primitives.Doubles.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Duration
@@ -50,17 +52,29 @@ fun ProfileScreen(
     userRegisterDate: LocalDate,
     onNavigate: (String) -> Unit,
     getMedicinesScore: suspend () -> Double,
-    getTestsScore: suspend () -> Double,
+    getTestsScore: suspend () -> Pair<Double, Double>,
     modifier: Modifier = Modifier
 ) {
-    var mainScore by remember { mutableStateOf(0.0) }
+    var mainScore by remember { mutableDoubleStateOf(0.0) }
+
+    var medicinesScore by remember { mutableDoubleStateOf(0.0) }
+    var astTestScore by remember { mutableDoubleStateOf(0.0) }
+    var metricsScore by remember { mutableDoubleStateOf(0.0) }
+
     LaunchedEffect(key1 = Unit) {
-        Log.i("TAGTAG", userRegisterDate.toString())
-        mainScore = if (ChronoUnit.DAYS.between(userRegisterDate, LocalDate.now()) >= 30) {
-            withContext(Dispatchers.IO) {
-                (getMedicinesScore() + getTestsScore() + 1) * 2.5
+        mainScore =
+            // если с момента регистрации пользователя в системе прошлло 30 и более дней, выводим математику
+            if (ChronoUnit.DAYS.between(userRegisterDate, LocalDate.now()) >= 30) {
+                withContext(Dispatchers.IO) {
+                    val temp = getTestsScore()
+                    astTestScore = temp.first
+                    metricsScore = temp.second
+                    medicinesScore = getMedicinesScore()
+                    (astTestScore + metricsScore + medicinesScore + 1) * 2.5
+                }
             }
-        } else -1.0
+            // иначе делаем показатель равным -1 и пока не отображаем его для пользователя
+            else -1.0
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -72,7 +86,7 @@ fun ProfileScreen(
                     .padding(bottom = 24.dp),
                 elevation = 0.dp
             ) {
-                YourActivity(score = mainScore, navigate = onNavigate)
+                YourActivity(metricsScore = metricsScore, astTestScore = astTestScore, medicinesScore = medicinesScore, score = mainScore, navigate = onNavigate)
             }
 
         Card(
@@ -128,7 +142,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun YourActivity(score: Double, navigate: (String) -> Unit) {
+fun YourActivity(score: Double, navigate: (String) -> Unit, metricsScore: Double, astTestScore: Double, medicinesScore: Double) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(
             modifier = Modifier
@@ -138,13 +152,30 @@ fun YourActivity(score: Double, navigate: (String) -> Unit) {
             Text(
                 text = stringResource(R.string.your_activity),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 6.dp)
             )
-            Text(
-                text = stringResource(R.string.good_not_perfect),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
+            // выявляем наименьший параметр и выводим информацию о нём
+            when(min(metricsScore, astTestScore, medicinesScore)) {
+                metricsScore ->
+                    Text(
+                        text = "Пикфлоуметр требует\nособого внимания",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+                medicinesScore ->
+                    Text(
+                        text = "Не забывай своевременно принимать препараты",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+                astTestScore -> {
+                    Text(
+                        text = "Наблюдаются проблемы с контролем астмы ",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+                }
+            }
             Row(
                 modifier = Modifier
                     .padding(top = 20.dp)
@@ -171,7 +202,7 @@ fun YourActivity(score: Double, navigate: (String) -> Unit) {
             modifier = Modifier
                 .wrapContentSize()
                 .padding(vertical = 16.dp)
-                .padding(end = 27.dp),
+                .padding(end = 27.dp, bottom = 18.dp),
             contentAlignment = Alignment.Center
         ) {
             val distance0: Double = score
@@ -266,7 +297,7 @@ fun ProfileScreenPreview() {
         ProfileScreen(
             onNavigate = {},
             getMedicinesScore = { 3.3 },
-            getTestsScore = { 3.3 },
+            getTestsScore = { Pair(3.3, 4.5) },
             userRegisterDate = LocalDate.now().minusMonths(2)
         )
     }

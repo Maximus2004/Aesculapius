@@ -182,25 +182,35 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         return true
     }
 
+    // некоторые функции, вызываемые в методе, требуют асинхронного выполнения, поэтому сама функция тоже асинхронна
     suspend fun getMedicinesScore(): Double = viewModelScope.async {
+        // количество доз препаратов, для приёма
         var amountDoses = 0.0
+        // количетсво фактически принятых доз препарата
         var acceptedDoses = 0.0
         val startDate = LocalDate.now().minusMonths(1)
         val endDate = LocalDate.now()
+        // получаем все препараты на протяжении последнего месяца с их дозами
         val medicines = aesculapiusRepository.getAllMedicinesInPeriod(startDate, endDate)
+        // для каждого препарата перебираем его дозы
         medicines.forEach { medicineWithDoses ->
             medicineWithDoses.doses.forEach {
+                // если доза препарата была выписана не раньше месяца назад
                 if ((it.date.isBefore(endDate) && it.date.isAfter(startDate)) || (it.date == startDate || it.date == endDate)) {
+                    // если доза принята
                     if (it.isAccepted) {
+                        // если 1 доза то прибавляем к обоим переменным по единице
                         if (it.dosesAmount[0] == '1') {
                             acceptedDoses++
                             amountDoses++
                         }
+                        // если две дозы препараты были приняты то прибавляем к обоим переменным по двойке
                         else if (it.dosesAmount[0] == '2') {
                             acceptedDoses += 2
                             amountDoses += 2
                         }
                     }
+                    // если доза не принята то прибавляем число только к общему числу доз
                     else {
                         if (it.dosesAmount[0] == '1') amountDoses++
                         else if (it.dosesAmount[0] == '2') amountDoses += 2
@@ -208,6 +218,7 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
                 }
             }
         }
+        // если amountDoses нулевой, во избежание ошибки, возвращаем ноль, чтобы не делить на ноль
         if (amountDoses != 0.0) acceptedDoses / amountDoses else 0.0
     }.await()
 

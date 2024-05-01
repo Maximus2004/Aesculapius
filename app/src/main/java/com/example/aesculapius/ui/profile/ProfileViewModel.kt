@@ -147,7 +147,7 @@ class ProfileViewModel @Inject constructor(
             morningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         val morningIntent = Intent(application.applicationContext, MetricsAlarm::class.java).apply {
             putExtra("title", "Утреннее напоминание")
-            putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+            putExtra("message", "Не забудь сделать пикфлоуметрию и принять препарат!")
         }
         val morningPendingIntent = PendingIntent.getBroadcast(
             application.applicationContext,
@@ -164,7 +164,7 @@ class ProfileViewModel @Inject constructor(
             eveningReminder.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         val eveningIntent = Intent(application.applicationContext, MetricsAlarm::class.java).apply {
             putExtra("title", "Вечернее напоминание")
-            putExtra("message", "Не забудьте ввести метрики с пикфлоуметра!")
+            putExtra("message", "Не забудь сделать пикфлоуметрию и принять препарат!")
         }
         val eveningPendingIntent = PendingIntent.getBroadcast(
             application.applicationContext,
