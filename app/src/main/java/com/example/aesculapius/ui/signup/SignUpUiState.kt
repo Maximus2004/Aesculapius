@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 data class SignUpUiState(
     val id: String? = null,
+    val userRegisterDate: LocalDate = LocalDate.now(),
     val name: String = "",
     val surname: String = "",
     val patronymic: String = "",

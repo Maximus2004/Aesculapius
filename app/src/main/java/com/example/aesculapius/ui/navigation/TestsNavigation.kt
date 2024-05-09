@@ -2,6 +2,7 @@ package com.example.aesculapius.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import com.example.aesculapius.ui.tests.ASTTestResultScreen
 import com.example.aesculapius.ui.tests.MetricsOnboardingScreen
 import com.example.aesculapius.ui.tests.MetricsTestScreen
 import com.example.aesculapius.ui.tests.RecommendationsOnboardingScreen
+import com.example.aesculapius.ui.tests.RecommendationsTestResult
 import com.example.aesculapius.ui.tests.TestScreen
 import com.example.aesculapius.ui.tests.TestsEvent
 import com.example.aesculapius.ui.tests.TestsScreen
@@ -62,10 +64,11 @@ fun NavGraphBuilder.testsNavGraph(
             TestType.AST -> TestScreen(
                 testName = context.getString(R.string.ast_test_name),
                 questionsList = astTest.listOfQuestion,
+                isAstTest = true,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
                     onProfileEvent(ProfileEvent.OnSaveAstTestDate(LocalDate.now().plusMonths(1)))
-                    testsViewModel.onTestsEvent(TestsEvent.OnUpdateSummaryScore(it))
+                    testsViewModel.onTestsEvent(TestsEvent.OnUpdateSummaryScore(it, true))
                     navController.navigate(AstTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
                     }
@@ -75,10 +78,12 @@ fun NavGraphBuilder.testsNavGraph(
             TestType.Recommendations -> TestScreen(
                 testName = context.getString(R.string.rec_test_name),
                 questionsList = recTest.listOfQuestion,
+                isAstTest = false,
                 onNavigateBack = { navController.navigateUp() },
                 onClickSummary = {
                     onProfileEvent(ProfileEvent.OnSaveRecommendationTestDate(LocalDate.now().plusMonths(1)))
-                    navController.navigate(AstTestResult.route) {
+                    testsViewModel.onTestsEvent(TestsEvent.OnUpdateSummaryScore(it, false))
+                    navController.navigate(RecommendationsTestResult.route) {
                         popUpTo(TestsScreen.route) { inclusive = false }
                     }
                 }
@@ -116,8 +121,17 @@ fun NavGraphBuilder.testsNavGraph(
         turnOffBars()
     }
     composable(route = AstTestResult.route) {
-        val summaryScore = testsViewModel.summaryScore.collectAsState().value
+        val summaryScore by testsViewModel.summaryScore.collectAsState()
         ASTTestResultScreen(
+            onClickReturnButton = { navController.navigate(TestsScreen.route) },
+            onNavigateBack = { navController.navigateUp() },
+            summaryScore = summaryScore
+        )
+        turnOffBars()
+    }
+    composable(route = RecommendationsTestResult.route) {
+        val summaryScore by testsViewModel.summaryScore.collectAsState()
+        RecommendationsTestResult(
             onClickReturnButton = { navController.navigate(TestsScreen.route) },
             onNavigateBack = { navController.navigateUp() },
             summaryScore = summaryScore

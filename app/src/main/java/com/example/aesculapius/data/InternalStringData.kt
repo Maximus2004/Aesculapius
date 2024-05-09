@@ -181,5 +181,9 @@ val learnList = listOf(
     LearnItem(
         name = R.string.how_heal_asthma,
         text = R.string.how_heal_asthma_text
+    ),
+    LearnItem(
+        name = R.string.what_is_activity,
+        text = R.string.what_is_activity_text
     )
 )

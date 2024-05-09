@@ -6,22 +6,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aesculapius.ui.theme.inverseOnSurface
 import com.example.aesculapius.ui.theme.inverseSurface
+import com.example.aesculapius.ui.theme.mediumResultColor
 import com.example.aesculapius.ui.theme.onErrorContainer
-import com.example.aesculapius.ui.theme.onSurface
 import com.example.aesculapius.ui.theme.outlineVariant
 import com.example.aesculapius.ui.theme.surfaceTint
 import com.patrykandpatrick.vico.compose.component.textComponent
-import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
 import com.patrykandpatrick.vico.core.chart.values.ChartValuesProvider
 import com.patrykandpatrick.vico.core.component.marker.MarkerComponent
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
-import com.patrykandpatrick.vico.core.component.shape.cornered.Corner
-import com.patrykandpatrick.vico.core.component.shape.cornered.MarkerCorneredShape
 import com.patrykandpatrick.vico.core.context.DrawContext
 import com.patrykandpatrick.vico.core.extension.set
 import com.patrykandpatrick.vico.core.marker.Marker
@@ -54,12 +50,12 @@ internal fun rememberColumnMarker(): Marker {
 
                 val value = markedEntries.first().entry.y
                 onApplyEntryColor = { entryColor ->
-                    if (value <= 19) {
+                    if (value <= 15) {
                         guideline.strokeColor = outlineVariant.toArgb()
                         guideline.color = onErrorContainer.toArgb()
                     }
-                    else if (value in 20f .. 24f) {
-                        guideline.strokeColor = onSurface.toArgb()
+                    else if (value in 16f .. 19f) {
+                        guideline.strokeColor = mediumResultColor.toArgb()
                         guideline.color = surfaceTint.toArgb()
                     }
                     else {

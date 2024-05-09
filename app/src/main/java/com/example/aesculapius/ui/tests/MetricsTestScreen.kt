@@ -132,7 +132,8 @@ fun MetricsTestScreen(
                         val temp1 = firstMetrics.toFloat()
                         val temp2 = secondMetrics.toFloat()
                         val temp3 = thirdMetrics.toFloat()
-                        if (temp1 < 0 || temp2 < 0 || temp3 < 0)
+                        if (temp1 < 0 || temp2 < 0 || temp3 < 0 || temp1.toInt().toString().length > 3
+                            || temp2.toInt().toString().length > 3 || temp3.toInt().toString().length > 3)
                             throw IllegalArgumentException(context.getString(R.string.wrong_metrics))
                         else {
                             val now = LocalDateTime.now()

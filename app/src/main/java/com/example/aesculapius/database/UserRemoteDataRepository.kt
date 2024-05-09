@@ -60,7 +60,7 @@ class UserRemoteDataRepository @Inject constructor(private val aesculapiusReposi
                 "date" to metricsItem.date.toString()
             )
         }
-        val astTestsList = aesculapiusRepository.getAllASTResults().map { scoreItem ->
+        val astTestsList = aesculapiusRepository.getAllAstResults().map { scoreItem ->
             hashMapOf(
                 "score" to scoreItem.score,
                 "date" to scoreItem.date.toString()

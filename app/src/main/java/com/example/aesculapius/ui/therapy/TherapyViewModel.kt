@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.therapy
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -180,6 +181,35 @@ class TherapyViewModel @Inject constructor(private val aesculapiusRepository: Ae
         }
         return true
     }
+
+    suspend fun getMedicinesScore(): Double = viewModelScope.async {
+        var amountDoses = 0.0
+        var acceptedDoses = 0.0
+        val startDate = LocalDate.now().minusMonths(1)
+        val endDate = LocalDate.now()
+        val medicines = aesculapiusRepository.getAllMedicinesInPeriod(startDate, endDate)
+        medicines.forEach { medicineWithDoses ->
+            medicineWithDoses.doses.forEach {
+                if ((it.date.isBefore(endDate) && it.date.isAfter(startDate)) || (it.date == startDate || it.date == endDate)) {
+                    if (it.isAccepted) {
+                        if (it.dosesAmount[0] == '1') {
+                            acceptedDoses++
+                            amountDoses++
+                        }
+                        else if (it.dosesAmount[0] == '2') {
+                            acceptedDoses += 2
+                            amountDoses += 2
+                        }
+                    }
+                    else {
+                        if (it.dosesAmount[0] == '1') amountDoses++
+                        else if (it.dosesAmount[0] == '2') amountDoses += 2
+                    }
+                }
+            }
+        }
+        if (amountDoses != 0.0) acceptedDoses / amountDoses else 0.0
+    }.await()
 
     /** [getAmountNotAcceptedMedicines] - служит для отображения индикторов под датами
      * (вызывается из LaunchedEffect) */

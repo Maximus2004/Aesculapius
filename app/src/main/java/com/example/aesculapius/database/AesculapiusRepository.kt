@@ -434,15 +434,19 @@ class AesculapiusRepository @Inject constructor(private val itemDAO: ItemDAO) {
         return itemDAO.getMedicinesOnCurrentDate(currentDate)
     }
 
+    suspend fun getAllMedicinesInPeriod(begin: LocalDate, end: LocalDate): List<MedicineWithDoses> {
+        return itemDAO.getAllMedicinesInPeriod(begin, end)
+    }
+
     suspend fun insertAstTestScore(date: LocalDate, score: Int) {
         itemDAO.insertASTTestScore(date, score)
     }
 
-    fun getAllAstResultsInRange(): Flow<List<ScoreItem>> {
+    suspend fun getAllAstResultsInRange(): List<ScoreItem> {
         return itemDAO.getAllAstResultsInRange(LocalDate.now().minusYears(1), LocalDate.now())
     }
 
-    suspend fun getAllASTResults(): List<ScoreItem> {
+    suspend fun getAllAstResults(): List<ScoreItem> {
         return itemDAO.getAllAstResults()
     }
 

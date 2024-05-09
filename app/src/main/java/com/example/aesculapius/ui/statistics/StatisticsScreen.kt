@@ -109,10 +109,11 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
         currentColumnPointsAmount = withContext(Dispatchers.IO) {
             statisticsViewModel.getColumnPointsAmountOnDates(LocalDate.now().minusYears(1), LocalDate.now())
         }
+        statisticsViewModel.setScoresInRange()
         currentLinePointsAmount = withContext(Dispatchers.IO) {
             when (statisticsUiState.graphicTypes) {
                 GraphicTypes.Week -> {
-                    dateBegin = LocalDate.now().minusWeeks(1)
+                    dateBegin = LocalDate.now().minusDays(6)
                     statisticsViewModel.setMetricsOnDatesShort(dateBegin, LocalDate.now())
                     statisticsViewModel.getLinePointsAmountOnDates(dateBegin, LocalDate.now())
                 }
@@ -316,24 +317,8 @@ fun StatisticsScreen(userUiState: SignUpUiState, statisticsViewModel: Statistics
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 8.dp, start = 23.dp, end = 23.dp)
                 )
-                Spacer(Modifier.height(130.dp))
+                Spacer(Modifier.height(50.dp))
             }
-        }
-        Button(
-            onClick = { /* TODO */ },
-            modifier = Modifier
-                .padding(bottom = 24.dp)
-                .height(56.dp)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.download_statistics),
-                style = MaterialTheme.typography.displaySmall,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -459,14 +444,14 @@ fun DisplayDatesForColumn(pointsAmountText: Int, dateTextColumn: LocalDate, conv
         (if (pointsAmountText != -1) "${convertToRussian(pointsAmountText)}, "
         else "") + dateTextColumn.format(formatter),
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onError
+        color = MaterialTheme.colorScheme.onSecondary
     )
     Text(
         text = "${LocalDate.now().minusYears(1).format(formatter)} - ${
             LocalDate.now().format(formatter)
         }",
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onError
+        color = MaterialTheme.colorScheme.primaryContainer
     )
 }
 
@@ -481,13 +466,13 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
         GraphicTypes.Week -> Text(
             text = dateText.format(formatter),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            color = MaterialTheme.colorScheme.onSecondary
         )
 
         GraphicTypes.Month -> Text(
             text = dateText.format(formatter),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            color = MaterialTheme.colorScheme.onSecondary
         )
 
         GraphicTypes.ThreeMonths -> Text(
@@ -499,7 +484,7 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                 dateText.plusDays(6).format(formatterThreeMonths)
             } ${dateText.year}",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            color = MaterialTheme.colorScheme.onSecondary
         )
 
         GraphicTypes.HalfYear -> Text(
@@ -508,7 +493,7 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                     6
                 ).format(formatterThreeMonths)
             } ${dateText.year}", style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            color = MaterialTheme.colorScheme.onSecondary
         )
 
         else -> Text(
@@ -517,14 +502,14 @@ fun DisplayDatesForLine(graphicTypes: GraphicTypes, dateText: LocalDate, dateBeg
                     6
                 ).format(formatterYear)
             }", style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onError
+            color = MaterialTheme.colorScheme.onSecondary
         )
     }
     Text(
         text = "${dateBegin.format(formatterYearFull)} - ${
             LocalDate.now().format(formatterYearFull)
         }", style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onError
+        color = MaterialTheme.colorScheme.primaryContainer
     )
 }
 

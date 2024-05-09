@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
     private val _uiStateSignUp = MutableStateFlow(SignUpUiState())
-    val uiStateSingUp: StateFlow<SignUpUiState> = _uiStateSignUp
+    val uiStateSignUp: StateFlow<SignUpUiState> = _uiStateSignUp
 
     fun onEvent(event: SignUpEvent) {
         when(event) {

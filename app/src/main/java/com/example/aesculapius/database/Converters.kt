@@ -54,6 +54,10 @@ class Converters {
             return if (time == null) LocalDateTime.now() else LocalDateTime.parse(time, formatter)
         }
 
+        fun stringToDateNoFormat(date: String?): LocalDate {
+            return if (date == null) LocalDate.now() else LocalDate.parse(date)
+        }
+
         fun dateToStringWithFormat(date: LocalDate): String {
             val formatter = DateTimeFormatter.ofPattern("dd MM yyyy");
             return date.format(formatter)
@@ -88,9 +92,9 @@ class Converters {
             val minutes = abs(duration.toMinutes() % 60)
 
             val hoursText = if ((hours > 20 || hours == 1L) && hours == 1L) "час" else if (hours in 2..4) "часа" else "часов"
-            val minutesText = if ((minutes > 20 || minutes == 1L) && minutes % 10 == 1L) "минута" else if (minutes % 10 in 2..4) "минуты" else "минут"
+//            val minutesText = if ((minutes > 20 || minutes == 1L) && minutes % 10 == 1L) "минуту" else if (minutes % 10 in 2..4) "минуты" else "минут"
 
-            return "Через $hours $hoursText $minutes $minutesText"
+            return "Через $hours $hoursText $minutes мин"
         }
     }
 }

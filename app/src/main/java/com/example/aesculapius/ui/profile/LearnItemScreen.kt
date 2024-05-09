@@ -37,7 +37,8 @@ fun LearnItemScreen(onNavigateBack: () -> Unit, name: String, text: String) {
                 Text(
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(text = text, style = MaterialTheme.typography.headlineMedium)
             }

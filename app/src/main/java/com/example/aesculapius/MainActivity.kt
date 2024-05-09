@@ -1,6 +1,7 @@
 package com.example.aesculapius
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 // здесь при запуске приложения инициализируются переменные, хранящиеся в DataStore Preferences
                 val profileViewModel: ProfileViewModel = hiltViewModel()
                 val userUiState: SignUpUiState by profileViewModel.userUiState.collectAsState()
-
+                Log.i("TAGTAG", userUiState.id ?: "загрузка")
                 when (userUiState.id) {
                     "" -> {
                         SignUpNavigation(

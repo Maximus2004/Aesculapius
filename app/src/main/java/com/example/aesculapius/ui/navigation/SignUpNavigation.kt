@@ -35,7 +35,7 @@ fun SignUpNavigation(
 ) {
     val context = LocalContext.current
     val signUpViewModel: SignUpViewModel = viewModel()
-    val signUpUiState by signUpViewModel.uiStateSingUp.collectAsState()
+    val signUpUiState by signUpViewModel.uiStateSignUp.collectAsState()
     var currentPage by remember { mutableIntStateOf(0) }
 
     NavHost(

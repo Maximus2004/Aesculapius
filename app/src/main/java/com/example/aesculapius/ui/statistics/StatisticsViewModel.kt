@@ -39,21 +39,8 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     /** [datesForColumnChart] отслеживаем, когда приходят новые изменения и разбиваем данные
      * на точки и даты для каждой точки. Мы делаем так со столбчатым графиком, так как он
      * пользователь не может ранжировать его по периоду */
-    val datesForColumnChart = aesculapiusRepository.getAllAstResultsInRange().map {
-        val tempEntries: MutableList<FloatEntry> = mutableListOf()
-        val tempDates: MutableList<LocalDate> = mutableListOf()
-        it.forEachIndexed { index, item ->
-            tempEntries.add(FloatEntry(index.toFloat(), item.score.toFloat()))
-            tempDates.add(item.date)
-        }
-        _chartEntryModelColumn.value.setEntries(tempEntries)
-        tempDates
-    }
-        .stateIn(
-            scope = viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            initialValue = listOf()
-        )
+    private val _datesForColumnChart = MutableStateFlow(mutableListOf<LocalDate>())
+    val datesForColumnChart = _datesForColumnChart
 
     /** [getLinePointsAmountOnDates] прежде чем отображать линейные графики, мы получаем информацию
      * о количестве точек если точек недостаточно для отображения графиков, выводится экран "Нет данных..." */
@@ -75,6 +62,18 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
         }
     }
 
+    /** [setScoresInRange] задаём точки (Entries) и список дат для столбчатого графика */
+    fun setScoresInRange() = viewModelScope.launch {
+        val tempEntries: MutableList<FloatEntry> = mutableListOf()
+        val tempDates: MutableList<LocalDate> = mutableListOf()
+        aesculapiusRepository.getAllAstResultsInRange().forEachIndexed { index, item ->
+            tempEntries.add(FloatEntry(index.toFloat(), item.score.toFloat()))
+            tempDates.add(item.date)
+        }
+        _chartEntryModelColumn.value.setEntries(tempEntries)
+        _datesForColumnChart.update { tempDates }
+    }
+
     /** [setMetricsOnDatesShort] задаём точки (Entries) и список дат для короткого периода (неделя/месяц) */
     fun setMetricsOnDatesShort(startDate: LocalDate, endDate: LocalDate) = viewModelScope.launch {
         val tempEntries: MutableList<FloatEntry> = mutableListOf()
@@ -89,7 +88,7 @@ class StatisticsViewModel @Inject constructor(private val aesculapiusRepository:
     fun initLineChartData() = viewModelScope.launch {
         aesculapiusRepository.deleteAllMetrics()
         repeat(20) { index ->
-            aesculapiusRepository.insertMetrics(Random.nextFloat()*1000, LocalDate.now().minusDays((20 - index).toLong()))
+            aesculapiusRepository.insertMetrics(Random.nextFloat()*1000, LocalDate.now().minusDays((19 - index).toLong()))
         }
     }
 

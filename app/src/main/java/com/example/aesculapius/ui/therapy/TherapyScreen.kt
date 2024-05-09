@@ -84,6 +84,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlin.math.abs
 
 object TherapyScreen : NavigationDestination {
     override val route = "TherapyScreen"
@@ -153,28 +154,19 @@ fun TherapyScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .wrapContentHeight()
-                                        .padding(vertical = 29.dp)
+                                        .padding(vertical = 29.dp),
+                                    shape = RoundedCornerShape(8.dp)
                                 ) {
-                                    Column(
-                                        modifier = Modifier.padding(
-                                            horizontal = 24.dp, vertical = 16.dp
-                                        )
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            text = stringResource(R.string.everyday_progress),
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                        LinearProgressIndicator(
-                                            progress = currentMedicines.progress,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            trackColor = MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier
-                                                .padding(top = 12.dp, bottom = 10.dp)
-                                                .height(6.dp)
-                                                .fillMaxWidth()
-                                                .clip(MaterialTheme.shapes.small)
-                                        )
-                                        Row(modifier = Modifier.fillMaxWidth()) {
+                                        Column {
+                                            Text(
+                                                text = stringResource(R.string.everyday_progress),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                modifier = Modifier.padding(bottom = 4.dp)
+                                            )
                                             Text(
                                                 text = stringResource(
                                                     R.string.done_medicines,
@@ -182,14 +174,68 @@ fun TherapyScreen(
                                                     currentMedicines.amount
                                                 ),
                                                 style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onError
+                                                color = MaterialTheme.colorScheme.primaryContainer
                                             )
-                                            Spacer(Modifier.weight(1f))
-                                            Text(
-                                                text = "${(currentMedicines.progress * 100).toInt()}%",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onError
-                                            )
+                                            Spacer(Modifier.height(31.dp))
+                                        }
+                                        Spacer(Modifier.weight(1f))
+                                        val distance0 = (currentMedicines.progress * 100).toInt()
+                                        val distance25 = abs(distance0 - 25)
+                                        val distance33 = abs(distance0 - 33)
+                                        val distance50 = abs(distance0 - 50)
+                                        val distance66 = abs(distance0 - 66)
+                                        val distance75 = abs(distance0 - 75)
+                                        val distance100 = abs(distance0 - 100)
+                                        val distance = minOf(distance0, distance25, distance33, distance50, distance66, distance75, distance100)
+                                        when (distance) {
+                                            distance0 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent0),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance25 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent25),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance33 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent33),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance50 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent50),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance66 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent66),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance75 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent75),
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                            distance100 -> {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.percent100),
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -427,7 +473,7 @@ fun MedicineCard(
                 start = Offset(x = 0f, y = cornerRadius.toPx() + 3),
                 end = Offset(
                     x = 0f,
-                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 3
+                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 2 - 11
                 ),
                 strokeWidth = 6.dp.toPx()
             )
@@ -438,7 +484,7 @@ fun MedicineCard(
                 useCenter = false,
                 topLeft = Offset(
                     x = 0f,
-                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 6
+                    y = ((size.height - 16).toDp() + cornerRadius).toPx() - cornerRadius.toPx() * 3 - 14
                 ),
                 size = Size(cornerRadius.toPx() * 2, cornerRadius.toPx() * 2),
                 style = Stroke(width = 6.dp.toPx())
@@ -491,36 +537,36 @@ fun MedicineCard(
                     Text(
                         text = medicine.name,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = medicine.undername,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
                     Text(
                         text = medicine.dose,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
                     Row(modifier = Modifier.padding(top = 16.dp)) {
                         if (!isMorning) Icon(
                             painter = painterResource(id = R.drawable.moon_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = MaterialTheme.colorScheme.onError
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                         else Icon(
                             painter = painterResource(id = R.drawable.sun_icon),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                            tint = MaterialTheme.colorScheme.onError
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                         Text(
                             text = medicine.frequency,
                             style = MaterialTheme.typography.labelSmall,
                             modifier = Modifier.padding(bottom = 12.dp),
-                            color = MaterialTheme.colorScheme.onError
+                            color = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 }
@@ -648,7 +694,7 @@ fun DayContent(
                     color =
                     if (isSelected) MaterialTheme.colorScheme.tertiaryContainer
                     else if (state.isCurrentDay) MaterialTheme.colorScheme.primary
-                    else if (state.isFromCurrentMonth) MaterialTheme.colorScheme.onError
+                    else if (state.isFromCurrentMonth) MaterialTheme.colorScheme.onSecondary
                     else MaterialTheme.colorScheme.surfaceVariant,
                     style = MaterialTheme.typography.headlineLarge
                 )

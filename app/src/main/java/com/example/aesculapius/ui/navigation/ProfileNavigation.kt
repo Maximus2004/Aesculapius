@@ -30,11 +30,16 @@ fun NavGraphBuilder.profileNavGraph(
     turnOnBars: () -> Unit,
     onProfileEvent: (ProfileEvent) -> Unit,
     navController: NavHostController,
+    getTestsScore: suspend () -> Double,
+    getMedicinesScore: suspend () -> Double
 ) {
     composable(route = ProfileScreen.route) {
         ProfileScreen(
             modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp),
-            onNavigate = navController::navigate
+            onNavigate = navController::navigate,
+            getTestsScore = getTestsScore,
+            getMedicinesScore = getMedicinesScore,
+            userRegisterDate = userUiState.userRegisterDate
         )
         turnOnBars()
     }
@@ -118,5 +123,6 @@ fun NavGraphBuilder.profileNavGraph(
             name = stringResource(id = arg[0]),
             text = stringResource(id = arg[1])
         )
+        turnOffBars()
     }
 }

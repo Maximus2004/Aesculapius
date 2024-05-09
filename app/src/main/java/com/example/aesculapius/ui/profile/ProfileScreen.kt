@@ -1,29 +1,45 @@
 package com.example.aesculapius.ui.profile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.aesculapius.R
+import com.example.aesculapius.data.learnList
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.AesculapiusTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.time.Duration
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 
 object ProfileScreen : NavigationDestination {
     override val route = "ProfileScreen"
@@ -31,10 +47,34 @@ object ProfileScreen : NavigationDestination {
 
 @Composable
 fun ProfileScreen(
+    userRegisterDate: LocalDate,
     onNavigate: (String) -> Unit,
+    getMedicinesScore: suspend () -> Double,
+    getTestsScore: suspend () -> Double,
     modifier: Modifier = Modifier
 ) {
+    var mainScore by remember { mutableStateOf(0.0) }
+    LaunchedEffect(key1 = Unit) {
+        Log.i("TAGTAG", userRegisterDate.toString())
+        mainScore = if (ChronoUnit.DAYS.between(userRegisterDate, LocalDate.now()) >= 30) {
+            withContext(Dispatchers.IO) {
+                (getMedicinesScore() + getTestsScore() + 1) * 2.5
+            }
+        } else -1.0
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
+        if (mainScore > 0)
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                elevation = 0.dp
+            ) {
+                YourActivity(score = mainScore, navigate = onNavigate)
+            }
+
         Card(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
@@ -64,38 +104,140 @@ fun ProfileScreen(
         }
         Card(
             shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onNavigate(SetReminderTimeProfile.route) },
             elevation = 0.dp
         ) {
-            Column {
-                SingleItem(
-                    image = R.drawable.timer_icon,
-                    name = stringResource(id = R.string.set_reminders),
-                    onClick = { onNavigate(SetReminderTimeProfile.route) }
-                )
-                Divider(
-                    color = MaterialTheme.colorScheme.secondary,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                SingleItem(image = R.drawable.theme_icon, name = stringResource(R.string.color_theme))
-                Divider(
-                    color = MaterialTheme.colorScheme.secondary,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                SingleItem(image = R.drawable.question_icon, name = stringResource(R.string.connect_with_developer))
-            }
+            SingleItem(
+                image = R.drawable.timer_icon,
+                name = stringResource(id = R.string.set_reminders),
+                onClick = { onNavigate(SetReminderTimeProfile.route) }
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = stringResource(R.string.version_1_0),
+            text = stringResource(R.string.version),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 20.dp),
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = MaterialTheme.colorScheme.primaryContainer,
             style = MaterialTheme.typography.headlineMedium
         )
+    }
+}
+
+@Composable
+fun YourActivity(score: Double, navigate: (String) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .padding(vertical = 16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.your_activity),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = stringResource(R.string.good_not_perfect),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primaryContainer
+            )
+            Row(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .clickable {
+                        navigate("${LearnItemScreen.route}/${learnList.last().name}^${learnList.last().text}")
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.what_is_activity),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 12.dp)
+                )
+                Icon(
+                    painter = painterResource(id = R.drawable.vector),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        Spacer(Modifier.weight(1f))
+        Box(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(vertical = 16.dp)
+                .padding(end = 27.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val distance0: Double = score
+            val distance25: Double = abs(score - 2.5)
+            val distance33: Double = abs(score - 3.3)
+            val distance50: Double = abs(score - 5.0)
+            val distance66: Double = abs(score - 6.6)
+            val distance75: Double = abs(score - 7.5)
+            val distance100: Double = abs(score - 10.0)
+            val distance = minOf(distance0, distance33, distance50, distance75, distance100)
+            when (distance) {
+                distance0 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress0),
+                        contentDescription = null
+                    )
+                }
+
+                distance25 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress25),
+                        contentDescription = null
+                    )
+                }
+
+                distance33 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress33),
+                        contentDescription = null
+                    )
+                }
+
+                distance50 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress50),
+                        contentDescription = null
+                    )
+                }
+
+                distance66 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress66),
+                        contentDescription = null
+                    )
+                }
+
+                distance75 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress75),
+                        contentDescription = null
+                    )
+                }
+
+                distance100 -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.progress100),
+                        contentDescription = null
+                    )
+                }
+            }
+            Text(
+                text = String.format("%.2f", score),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primaryContainer
+            )
+        }
     }
 }
 
@@ -121,6 +263,11 @@ fun SingleItem(image: Int, name: String, onClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 fun ProfileScreenPreview() {
     AesculapiusTheme {
-        ProfileScreen(onNavigate = {})
+        ProfileScreen(
+            onNavigate = {},
+            getMedicinesScore = { 3.3 },
+            getTestsScore = { 3.3 },
+            userRegisterDate = LocalDate.now().minusMonths(2)
+        )
     }
 }

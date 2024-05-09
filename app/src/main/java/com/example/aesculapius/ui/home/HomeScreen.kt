@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -20,8 +21,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,11 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -75,6 +74,7 @@ fun HomeScreen(
     onProfileEvent: (ProfileEvent) -> Unit,
     userUiState: SignUpUiState,
 ) {
+    val context = LocalContext.current
     val therapyViewModel: TherapyViewModel = hiltViewModel()
     val testsViewModel: TestsViewModel = hiltViewModel()
     val statisticsViewModel: StatisticsViewModel = hiltViewModel()
@@ -122,8 +122,7 @@ fun HomeScreen(
                 if (isBarsDisplayed) TopBar(
                     screenName = stringResource(
                         id = topBarHomeScreen[currentRoute]?.first ?: R.string.therapy_name
-                    ),
-                    isHelpButton = topBarHomeScreen[currentRoute]?.second ?: false
+                    )
                 )
             },
             bottomBar = {
@@ -159,7 +158,9 @@ fun HomeScreen(
                         turnOnBars = { isBarsDisplayed = true },
                         userUiState = userUiState,
                         navController = navController,
-                        onProfileEvent = onProfileEvent
+                        onProfileEvent = onProfileEvent,
+                        getTestsScore = testsViewModel::getTestsScore,
+                        getMedicinesScore = therapyViewModel::getMedicinesScore,
                     )
 
                     statisticsNavGraph(
@@ -187,12 +188,7 @@ fun HomeScreen(
 
 /** [TopBar] для главного экрана без навигации */
 @Composable
-fun TopBar(
-    modifier: Modifier = Modifier,
-    screenName: String,
-    isHelpButton: Boolean,
-    onClickHelpButton: () -> Unit = {}
-) {
+fun TopBar(modifier: Modifier = Modifier, screenName: String, onClickHelpButton: () -> Unit = {}) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -206,19 +202,6 @@ fun TopBar(
             modifier = Modifier.padding(start = 24.dp)
         )
         Spacer(Modifier.weight(1f))
-        if (isHelpButton)
-            IconButton(
-                onClick = { onClickHelpButton() },
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onTertiary
-                )
-            }
     }
 }
 
@@ -266,18 +249,17 @@ fun EditMedicineSheet(
             Column {
                 Text(
                     text = medicine.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onError
+                    style = MaterialTheme.typography.headlineLarge
                 )
                 Text(
                     text = medicine.undername,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onError
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
                 Text(
                     text = medicine.dose,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onError
+                    color = MaterialTheme.colorScheme.primaryContainer
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -291,19 +273,19 @@ fun EditMedicineSheet(
                     painter = painterResource(id = R.drawable.moon_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = MaterialTheme.colorScheme.onError
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             else
                 Icon(
                     painter = painterResource(id = R.drawable.sun_icon),
                     contentDescription = null,
                     modifier = Modifier.padding(end = 8.dp, bottom = 12.dp),
-                    tint = MaterialTheme.colorScheme.onError
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             Text(
                 text = medicine.frequency,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.onSecondary
             )
         }
         Divider(
@@ -317,7 +299,7 @@ fun EditMedicineSheet(
             TextButton(
                 onClick = { skipMedicine(medicine.doseId) },
                 modifier = Modifier
-                    .width(106.dp)
+                    .widthIn(min = 106.dp)
                     .padding(end = 8.dp)
             ) {
                 Text(
@@ -333,7 +315,7 @@ fun EditMedicineSheet(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.tertiaryContainer
                 ),
-                modifier = Modifier.width(106.dp)
+                modifier = Modifier.widthIn(min = 106.dp)
             ) {
                 Text(
                     text = stringResource(R.string.accept),

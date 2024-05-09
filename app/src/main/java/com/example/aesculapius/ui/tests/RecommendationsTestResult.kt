@@ -27,61 +27,18 @@ import com.example.aesculapius.ui.TopBar
 import com.example.aesculapius.ui.navigation.NavigationDestination
 import com.example.aesculapius.ui.theme.Roboto
 
-object AstTestResult : NavigationDestination {
-    override val route = "AstTestResult"
+object RecommendationsTestResult : NavigationDestination {
+    override val route = "RecommendationsTestResult"
 }
 
 @Composable
-fun ASTTestResultScreen(
+fun RecommendationsTestResult(
     onNavigateBack: () -> Unit,
     onClickReturnButton: () -> Unit,
     summaryScore: Int
 ) {
-    val textASTGoodResult = buildAnnotatedString {
-        append("Сумма ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("20-25 баллов")
-        }
-        append(" - ты полностью контролировал астму за последние 4 недели.")
-    }
-    val textASTMediumResult = buildAnnotatedString {
-        append("Сумма ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("16-19 балла")
-        }
-        append(" - ты у цели.")
-    }
-    val textASTBadResult = buildAnnotatedString {
-        append("Сумма ")
-        withStyle(
-            style = SpanStyle(
-                fontFamily = Roboto,
-                fontWeight = FontWeight.W500,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            append("15 баллов и меньше")
-        }
-        append(" - мимо цели.")
-    }
-
     Scaffold(topBar = {
-        TopBar(text = stringResource(id = R.string.ast_test_name), onNavigateBack = { onNavigateBack() }) }) { paddingValues ->
+        TopBar(text = stringResource(id = R.string.rec_test_name), onNavigateBack = { onNavigateBack() }) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -102,32 +59,11 @@ fun ASTTestResultScreen(
                     .align(Alignment.CenterHorizontally)
             )
             Text(
-                text =
-                when (summaryScore) {
-                    in 20..25 -> stringResource(R.string.very_good_ast_result)
-                    in 16..19 -> stringResource(R.string.good_ast_result)
-                    else -> stringResource(R.string.bad_ast_result)
-                },
+                text = stringResource(R.string.rec_test_result),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 40.dp),
+                textAlign = TextAlign.Center
             )
-            Text(
-                text = stringResource(R.string.explanation), style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(bottom = 8.dp),
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = stringResource(R.string.explanation_text),
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            Text(text = textASTGoodResult, style = MaterialTheme.typography.headlineMedium)
-            Text(
-                text = textASTMediumResult,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text(text = textASTBadResult, style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.weight(1f))
             Button(
                 onClick = { onClickReturnButton() },

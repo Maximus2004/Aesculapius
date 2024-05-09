@@ -1,5 +1,6 @@
 package com.example.aesculapius.ui.tests
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -57,6 +58,7 @@ object TestScreen : NavigationDestination {
 fun TestScreen(
     testName: String,
     questionsList: MutableList<Question>,
+    isAstTest: Boolean,
     onNavigateBack: () -> Unit,
     onClickSummary: (Int) -> Unit,
 ) {
@@ -120,7 +122,7 @@ fun TestScreen(
                                     style = MaterialTheme.typography.headlineMedium,
                                     color =
                                     if (currentAnswers[index] != -1 || index == currentPage) MaterialTheme.colorScheme.tertiaryContainer
-                                    else MaterialTheme.colorScheme.onError
+                                    else MaterialTheme.colorScheme.onSecondary
                                 )
                             }
                         }
@@ -140,7 +142,7 @@ fun TestScreen(
                 text = stringResource(id = questionsList[currentPage].questionText),
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(top = 29.dp, bottom = 18.dp),
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.onSecondary
             )
             LazyColumn() {
                 itemsIndexed(questionsList[currentPage].answersList) { index, answer ->
@@ -165,19 +167,31 @@ fun TestScreen(
             Button(
                 onClick = {
                     if (currentPage == questionsList.size - 1) {
-                        if (-1 in currentAnswers && currentAnswer == -1) {
+                        Log.i("TAGTAG", "$currentAnswer $currentAnswers")
+                        if (-1 in currentAnswers.subList(0, currentAnswers.size - 1) || currentAnswer == -1) {
                             Toast.makeText(context, context.getString(R.string.answer_all_questions), Toast.LENGTH_SHORT).show()
                             currentAnswers[currentPage] = currentAnswer
                         }
                         else {
                             currentAnswers[currentPage] = currentAnswer
-                            onClickSummary(currentAnswers.sum() + currentAnswers.size)
+                            if (isAstTest)
+                                onClickSummary(currentAnswers.sum() + currentAnswers.size)
+                            else {
+                                var tempSummary = 0
+                                for (i in 0..3)
+                                    tempSummary += currentAnswers[i]
+                                tempSummary += if (currentAnswers[4] == 0) 0 else 4
+                                tempSummary += currentAnswers[5]
+                                tempSummary += if (currentAnswers[6] == 0) 0 else 4
+                                tempSummary += if (currentAnswers[7] == 0) 0 else 4
+                                tempSummary += if (currentAnswers[8] == 0) 4 else 0
+                                onClickSummary(tempSummary)
+                            }
                         }
                     } else {
                         currentAnswers[currentPage] = currentAnswer
                         currentPage++
-                        currentAnswer =
-                            if (currentAnswers[currentPage] != -1) currentAnswers[currentPage] else -1
+                        currentAnswer = if (currentAnswers[currentPage] != -1) currentAnswers[currentPage] else -1
                     }
                 },
                 modifier = Modifier

@@ -133,7 +133,7 @@ fun SignUpScreen(
                     }
                     0 -> {
                         val regex = Regex("[а-яА-Яa-zA-Z]+")
-                        if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && regex.matches(userUiState.patronymic))
+                        if (regex.matches(userUiState.name) && regex.matches(userUiState.surname) && (userUiState.patronymic.isBlank() || regex.matches(userUiState.patronymic)))
                             onChangeCurrentPage()
                         else
                             Toast.makeText(context, context.getString(R.string.wrong_data), Toast.LENGTH_SHORT).show()
@@ -288,7 +288,7 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
         Card(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
-                .width(96.dp)
+                .weight(0.7f)
                 .wrapContentHeight(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         ) {
@@ -309,7 +309,7 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
             modifier = Modifier
                 .wrapContentHeight()
                 .padding(horizontal = 12.dp)
-                .width(96.dp),
+                .weight(1.1f),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         ) {
             ListItemPicker(
@@ -327,7 +327,7 @@ fun BirthdayFiled(onEvent: (SignUpEvent) -> Unit) {
         Card(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
-                .width(96.dp)
+                .weight(1.2f)
                 .wrapContentHeight(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
         ) {

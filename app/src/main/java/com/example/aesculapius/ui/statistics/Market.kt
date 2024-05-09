@@ -5,15 +5,14 @@ import android.graphics.Typeface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aesculapius.ui.theme.inverseOnSurface
 import com.example.aesculapius.ui.theme.inverseSurface
+import com.example.aesculapius.ui.theme.mediumResultColor
 import com.example.aesculapius.ui.theme.onErrorContainer
-import com.example.aesculapius.ui.theme.onSurface
 import com.example.aesculapius.ui.theme.outlineVariant
 import com.example.aesculapius.ui.theme.surfaceTint
 import com.example.aesculapius.ui.theme.tertiaryContainer
@@ -42,7 +41,7 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
     val assets = LocalContext.current
     val customTypeface = Typeface.createFromAsset(assets.assets, "inter_regular.ttf")
     val label = textComponent(
-        color = MaterialTheme.colorScheme.onError,
+        color = MaterialTheme.colorScheme.onSecondary,
         textSize = 12.sp,
         typeface = customTypeface,
         background = labelBackground,
@@ -102,7 +101,7 @@ internal fun rememberMarker(age: Int, height: Int): Marker {
                         height in 150 .. 160 && value in 279f .. 498f ||
                         height in 160 .. 170 && value in 384f .. 498f ||
                         height in 170 .. 190 && value in 384f .. 460f) {
-                        indicatorOuterComponent.color = onSurface.toArgb()
+                        indicatorOuterComponent.color = mediumResultColor.toArgb()
                         indicatorInnerComponent.color = tertiaryContainer.toArgb()
                         indicatorCenterComponent.color = surfaceTint.toArgb()
                     }
